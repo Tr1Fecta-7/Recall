@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,22 +24,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import nl.recall.R
+import nl.recall.theme.AndroidAppTheme
+import nl.recall.theme.AppTheme
 
 @Composable
 fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: String) {
-    // TODO: Get colors from theme
-    // Colors
-    val white = Color(0xFFFFFFFF)
-    val neutral300 = Color(0xFFCBD5E1)
-    val neutral400 = Color(0xFF94A3B8)
-    val neutral800 = Color(0xFF1E293B)
-
     Card(
         onClick = { /* */ },
         shape = RoundedCornerShape(18.dp),
-        border = BorderStroke(1.dp, neutral300),
+        border = BorderStroke(1.dp, AppTheme.neutral300),
         modifier = Modifier
             .fillMaxWidth()
     ) {
@@ -46,7 +41,7 @@ fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: Str
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .background(white)
+                .background(AppTheme.white)
                 .padding(horizontal = 16.dp, vertical = 18.dp)
                 .fillMaxWidth()
         ) {
@@ -66,18 +61,23 @@ fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: Str
                 }
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(title, color = neutral800, fontWeight = FontWeight.Bold)
+                    Text(
+                        title,
+                        color = AppTheme.neutral800,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                     Text(
                         stringResource(id = R.string.deck_card_count).format(cardCount),
-                        color = neutral400,
-                        fontSize = 14.sp
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppTheme.neutral400
                     )
                 }
             }
             Icon(
                 painter = painterResource(id = R.drawable.baseline_chevron_right_24),
                 contentDescription = "arrow right",
-                tint = neutral800
+                tint = AppTheme.neutral800
             )
         }
     }
@@ -91,5 +91,7 @@ fun Preview() {
     val backGroundColor = Color(0xFFFFEAEA)
     val icon = "🇨🇳"
 
-    DeckPreview(title, cardCount, backGroundColor, icon)
+    AndroidAppTheme {
+        DeckPreview(title, cardCount, backGroundColor, icon)
+    }
 }
