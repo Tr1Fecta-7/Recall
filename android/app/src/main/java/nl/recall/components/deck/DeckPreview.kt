@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nl.recall.R
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: String) {
     // TODO: Get colors from theme
     // Colors
+    val white = Color(0xFFFFFFFF)
     val neutral300 = Color(0xFFCBD5E1)
     val neutral400 = Color(0xFF94A3B8)
     val neutral800 = Color(0xFF1E293B)
@@ -41,12 +39,16 @@ fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: Str
         onClick = { /* */ },
         shape = RoundedCornerShape(18.dp),
         border = BorderStroke(1.dp, neutral300),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+            modifier = Modifier
+                .background(white)
+                .padding(horizontal = 16.dp, vertical = 18.dp)
+                .fillMaxWidth()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -65,7 +67,11 @@ fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: Str
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(title, color = neutral800, fontWeight = FontWeight.Bold)
-                    Text(stringResource(id = R.string.deck_card_count).format(cardCount), color = neutral400, fontSize = 14.sp)
+                    Text(
+                        stringResource(id = R.string.deck_card_count).format(cardCount),
+                        color = neutral400,
+                        fontSize = 14.sp
+                    )
                 }
             }
             Icon(
@@ -79,13 +85,11 @@ fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: Str
 
 @Preview
 @Composable
-fun preview() {
+fun Preview() {
     val title = "Mandarin HSK 1"
     val cardCount = 512
     val backGroundColor = Color(0xFFFFEAEA)
     val icon = "🇨🇳"
 
-    MaterialTheme {
-        DeckPreview(title, cardCount, backGroundColor, icon)
-    }
+    DeckPreview(title, cardCount, backGroundColor, icon)
 }
