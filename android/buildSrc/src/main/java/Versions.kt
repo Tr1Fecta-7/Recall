@@ -54,4 +54,6 @@ object Versions {
 
     // Coil
     const val COIL = "2.2.2"
+
+    const val MATERIAL = "1.0.1"
 }
