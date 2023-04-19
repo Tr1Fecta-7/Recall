@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Recall</string>
+    <string name="deck_card_count">%s cards</string>
 </resources>
