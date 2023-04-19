@@ -82,7 +82,10 @@ dependencies {
     implementation("androidx.compose.ui:ui:${Versions.COMPOSE}")
     implementation("androidx.compose.ui:ui-util:${Versions.COMPOSE}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Versions.COMPOSE}")
-    implementation("androidx.compose.material:material:${Versions.COMPOSE}")
+
+    implementation("androidx.compose.material3:material3:1.0.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.0.1")
+
     debugImplementation("androidx.compose.ui:ui-tooling:${Versions.COMPOSE}")
 
     // Kotlin immutable
