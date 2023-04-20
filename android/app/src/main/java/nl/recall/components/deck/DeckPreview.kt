@@ -25,15 +25,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import nl.recall.R
+import nl.recall.main.DeckPreviewData
 import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 
 @Composable
-fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: String) {
+fun DeckPreview(deck: DeckPreviewData) {
     Card(
         onClick = { /* */ },
         shape = RoundedCornerShape(18.dp),
-        border = BorderStroke(1.dp, AppTheme.neutral300),
+        border = BorderStroke(1.dp, AppTheme.neutral200),
         modifier = Modifier
             .fillMaxWidth()
     ) {
@@ -55,20 +56,20 @@ fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: Str
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(backgroundColor)
+                        .background(deck.backgroundColor)
                 ) {
-                    Text(icon)
+                    Text(deck.emoji)
                 }
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        title,
+                        deck.title,
                         color = AppTheme.neutral800,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        stringResource(id = R.string.deck_card_count).format(cardCount),
+                        stringResource(id = R.string.deck_card_count).format(deck.cardCount),
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppTheme.neutral400
                     )
@@ -86,12 +87,14 @@ fun DeckPreview(title: String, cardCount: Int, backgroundColor: Color, icon: Str
 @Preview
 @Composable
 fun Preview() {
-    val title = "Mandarin HSK 1"
-    val cardCount = 512
-    val backGroundColor = Color(0xFFFFEAEA)
-    val icon = "🇨🇳"
+    val deck = DeckPreviewData(
+        title = "Mandarin HSK 1",
+        cardCount = 512,
+        backgroundColor = Color(0xFFFFEAEA),
+        emoji = "🇨🇳",
+    )
 
     AndroidAppTheme {
-        DeckPreview(title, cardCount, backGroundColor, icon)
+        DeckPreview(deck)
     }
 }
