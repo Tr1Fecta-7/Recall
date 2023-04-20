@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Recall</string>
     <string name="deck_card_count">%s cards</string>
+    <string name="create_deck_title">Create deck</string>
+    <string name="create_deck_create_text_field">Deck name</string>
+    <string name="create_deck_create_text_field_placeholder">English vocabulary</string>
+    <string name="create_deck_select_icon">Select your icon</string>
 </resources>
