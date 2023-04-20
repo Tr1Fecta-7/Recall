@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.ramcosta.composedestinations.DestinationsNavHost
+import nl.recall.NavGraphs
+import nl.recall.destinations.DeckCreateDestination
 import nl.recall.theme.AndroidAppTheme
 import org.koin.core.component.KoinComponent
 
@@ -13,7 +15,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         super.onCreate(savedInstanceState)
         setContent {
             AndroidAppTheme {
-                DestinationsNavHost(navGraph = NavGraphs.root)
+                DestinationsNavHost(navGraph = NavGraphs.root, startRoute = DeckCreateDestination)
             }
         }
     }
