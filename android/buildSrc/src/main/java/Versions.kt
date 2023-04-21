@@ -57,6 +57,9 @@ object Versions {
 
     const val MATERIAL = "1.0.1"
 
+    //Colorpicker-compose
+    const val COLORPICKER = "1.0.2"
+
     //Room database
     const val ROOM = "2.5.0"
 }
