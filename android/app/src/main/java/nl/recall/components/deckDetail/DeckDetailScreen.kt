@@ -109,7 +109,7 @@ fun DeckDetailScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(AppTheme.white),
-                        border = BorderStroke(1.dp, AppTheme.neutral400),
+                        border = BorderStroke(1.dp, AppTheme.neutral200),
                         colors = CardDefaults.cardColors(
                             containerColor = AppTheme.white
                         ),
@@ -199,7 +199,7 @@ fun DeckDetailScreen() {
                                     .fillMaxWidth()
                                     .background(AppTheme.white)
                                     .padding(top = 2.dp),
-                                border = BorderStroke(1.dp, AppTheme.neutral400),
+                                border = BorderStroke(1.dp, AppTheme.neutral200),
                                 colors = CardDefaults.cardColors(
                                     containerColor = AppTheme.white
                                 ),
