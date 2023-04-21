@@ -1,9 +1,8 @@
 package nl.recall.domain.models
 
 data class DeckData(
-    val id: Int,
     val title: String,
-    val cards: Set<Card>,
-    val backgroundColor: String,
-    val emoji: String
+    val cards: Set<Card> = HashSet(),
+    val backgroundColor: String = "#DE2910",
+    val emoji: String = "\uD83E\uDDE0"
 )
