@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.ramcosta.composedestinations.annotation.Destination
 import nl.recall.components.deck.DeckPreview
+import nl.recall.domain.models.DeckPreviewData
 import nl.recall.theme.AppTheme
 
 @Destination
@@ -30,13 +31,13 @@ fun DecksOverviewScreen() {
         DeckPreviewData(
             title = "Mandarin HSK 1",
             cardCount = 512,
-            backgroundColor = Color("#FFEAEA".toColorInt()),
+            backgroundColor = "#FFEAEA", //Color("#FFEAEA".toColorInt()),
             emoji = "🇨🇳",
         ),
         DeckPreviewData(
             title = "Maths L1 & L2",
             cardCount = 256,
-            backgroundColor = Color("#FFEAB6".toColorInt()),
+            backgroundColor = "#FFEAB6", //Color("#FFEAB6".toColorInt()),
             emoji = "🧮",
         )
     )
@@ -88,13 +89,6 @@ private fun Content(decks: List<DeckPreviewData>) {
         }
     }
 }
-
-data class DeckPreviewData(
-    val title: String,
-    val cardCount: Int,
-    val backgroundColor: Color,
-    val emoji: String
-)
 
 @Preview
 @Composable

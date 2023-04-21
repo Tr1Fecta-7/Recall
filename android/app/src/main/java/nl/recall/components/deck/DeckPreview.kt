@@ -24,8 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import nl.recall.R
-import nl.recall.decksoverview.DeckPreviewData
+import nl.recall.domain.models.DeckPreviewData
 import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 
@@ -56,7 +57,7 @@ fun DeckPreview(deck: DeckPreviewData) {
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(deck.backgroundColor)
+                        .background(Color(deck.backgroundColor.toColorInt()))
                 ) {
                     Text(deck.emoji)
                 }
@@ -90,7 +91,7 @@ fun Preview() {
     val deck = DeckPreviewData(
         title = "Mandarin HSK 1",
         cardCount = 512,
-        backgroundColor = Color(0xFFFFEAEA),
+        backgroundColor = "#FFEAEA",
         emoji = "🇨🇳",
     )
 
