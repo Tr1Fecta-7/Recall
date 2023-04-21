@@ -1,35 +1,22 @@
-package nl.recall.detail
+package nl.recall.deckDetail
 
-import DeckDetailPreview
-import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,40 +25,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.DefaultTintColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import nl.recall.R
-import nl.recall.components.deck.DeckPreview
-import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 
-@RootNavGraph(start = true)
-@Destination
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-fun DeckDetailScreen() {
-    val list: List<String> = listOf("boe", "bah", "", "")
 
+//@RootNavGraph(start = true)
+@OptIn(ExperimentalMaterial3Api::class)
+@Destination
+@Composable
+fun DeckDetailSearchScreen() {
+    val list: List<String> = listOf("boe", "bah", "", "")
 
     Scaffold(
         topBar = {
@@ -80,58 +53,57 @@ fun DeckDetailScreen() {
                     containerColor = AppTheme.white
                 ),
                 title = {
-                    Text(text = "title")
+                    Text(text = stringResource(id = R.string.card_searchbar_title))
                 },
                 navigationIcon = {
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
                     }
                 },
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
-                    }
-                }
-
             )
         },
-        content = {
-            Column(
-                modifier = Modifier
-                    .padding(it)
-                    .padding(20.dp)
-                    .fillMaxSize()
-            ) {
-                DeckDetailPreview()
-                Text(
-                    modifier = Modifier.padding(top = 15.dp, bottom = 10.dp),
-                    text = stringResource(id = R.string.cards_title),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
 
-                Card(
+        content = { paddingValues ->
+            Column(modifier = Modifier
+                .padding(paddingValues)
+                .padding(horizontal = 20.dp)) {
+                TextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
-                    colors = CardDefaults.cardColors(
+                    value = "textState",
+                    colors = TextFieldDefaults.textFieldColors(
                         containerColor = AppTheme.neutral200,
+                        cursorColor = Color.Black,
+                        disabledLabelColor = AppTheme.white,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     ),
-                    shape = RoundedCornerShape(35.dp),
+                    onValueChange = {
 
-                    onClick = {
-                        
+                    },
+                    shape = RoundedCornerShape(35.dp),
+                    singleLine = true,
+                    trailingIcon = {
+                        if (false) {
+                            IconButton(onClick = { }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Close,
+                                    contentDescription = "clear textfield"
+                                )
+                            }
+                        } else {
+                            IconButton(
+                                modifier = Modifier.padding(end = 6.dp),
+                                onClick = { /*TODO*/ }) {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "search"
+                                )
+                            }
+                        }
                     }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(15.dp).fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = "textState")
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-                    }
-                }
+                )
 
                 LazyColumn(
                     modifier = Modifier.padding(top = 10.dp),
@@ -176,12 +148,8 @@ fun DeckDetailScreen() {
                     )
                 }
             }
-
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "add card")
-            }
         }
     )
+
+
 }

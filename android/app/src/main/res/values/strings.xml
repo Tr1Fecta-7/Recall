@@ -4,4 +4,5 @@
     <string name="start_learning_text">Start Learning</string>
     <string name="amount_of_cards_in_deck">%d cards</string>
     <string name="cards_title">Cards</string>
+    <string name="card_searchbar_title">Search for Cards</string>
 </resources>
