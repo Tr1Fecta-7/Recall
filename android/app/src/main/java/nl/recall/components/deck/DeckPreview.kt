@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import nl.recall.R
-import nl.recall.main.DeckPreviewData
+import nl.recall.decksoverview.DeckPreviewData
 import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 
