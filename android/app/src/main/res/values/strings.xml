@@ -5,4 +5,8 @@
     <string name="amount_of_cards_in_deck">%d cards</string>
     <string name="cards_title">Cards</string>
     <string name="card_searchbar_title">Search for Cards</string>
+    <string name="dropdown_menu_edit_deck">Edit deck</string>
+    <string name="dropdown_menu_edit_cards">Edit cards in deck</string>
+    <string name="dropdown_menu_delete_deck">Delete deck</string>
+    <string name="search_bar_card_hint">Search for card content</string>
 </resources>

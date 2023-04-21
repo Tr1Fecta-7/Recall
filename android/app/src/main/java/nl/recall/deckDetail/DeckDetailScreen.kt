@@ -28,6 +28,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -42,6 +45,10 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -55,12 +62,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.deck.DeckPreview
+import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 
@@ -69,8 +79,9 @@ import nl.recall.theme.AppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DeckDetailScreen() {
+fun DeckDetailScreen(navigator: DestinationsNavigator) {
     val list: List<String> = listOf("boe", "bah", "", "")
+    var expanded by remember { mutableStateOf(false) }
 
 
     Scaffold(
@@ -83,13 +94,33 @@ fun DeckDetailScreen() {
                     Text(text = "title")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { expanded = !expanded }) {
                         Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier
+                            .background(AppTheme.white)
+                            .width(180.dp),
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
+                            onClick = { /* Handle refresh! */ }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(id = R.string.dropdown_menu_edit_cards)) },
+                            onClick = { /* Handle settings! */ }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(id = R.string.dropdown_menu_delete_deck)) },
+                            onClick = { /* Handle send feedback! */ }
+                        )
                     }
                 }
 
@@ -118,17 +149,21 @@ fun DeckDetailScreen() {
                         containerColor = AppTheme.neutral200,
                     ),
                     shape = RoundedCornerShape(35.dp),
-
                     onClick = {
-                        
+                        navigator.navigate(DeckDetailSearchScreenDestination)
                     }
                 ) {
                     Row(
-                        modifier = Modifier.padding(15.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = "textState")
+                        Text(
+                            text = stringResource(R.string.search_bar_card_hint),
+                            color = AppTheme.neutral500
+                        )
                         Icon(imageVector = Icons.Default.Search, contentDescription = "search")
                     }
                 }
