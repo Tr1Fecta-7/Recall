@@ -1,18 +1,8 @@
 <resources>
     <string name="app_name">Recall</string>
     <string name="deck_card_count">%s cards</string>
-    <string name="start_learning_text">Start Learning</string>
-    <string name="amount_of_cards_in_deck">%d cards</string>
-    <string name="cards_title">Cards</string>
-    <string name="card_searchbar_title">Search for Cards</string>
-    <string name="dropdown_menu_edit_deck">Edit deck</string>
-    <string name="dropdown_menu_edit_cards">Edit cards in deck</string>
-    <string name="dropdown_menu_delete_deck">Delete deck</string>
-    <string name="search_bar_card_hint">Search for card content</string>
-    <string name="placeholder_title">Title deck</string>
-    <string name="placeholder_card_front">Front card</string>
     <string name="create_deck_title">Create deck</string>
-    <string name="create_deck_create_text_field">Deck name</string>
+    <string name="create_deck_create_text_field">deck name</string>
     <string name="create_deck_create_text_field_placeholder">English vocabulary</string>
     <string name="create_deck_select_icon">Select your icon</string>
     <string name="dialog_delete_deck_title">Delete deck</string>
