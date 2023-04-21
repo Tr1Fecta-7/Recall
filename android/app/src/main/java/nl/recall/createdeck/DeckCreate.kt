@@ -21,6 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import com.github.skydoves.colorpicker.compose.ColorEnvelope
+import com.github.skydoves.colorpicker.compose.HsvColorPicker
+import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
@@ -52,10 +55,26 @@ fun DeckCreate(navigator: DestinationsNavigator){
 @Composable
 private fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues){
     var createTextField by remember { mutableStateOf(TextFieldValue("")) }
-    var newDeck: DeckData = DeckData("")
+    val newDeck by remember {mutableStateOf(DeckData(""))}
     var iconTextField by remember { mutableStateOf(TextFieldValue(newDeck.emoji)) }
-//    iconTextField = TextFieldValue(newDeck.emoji)
-    Column(modifier = Modifier.fillMaxSize()) {
+    val controller = rememberColorPickerController()
+
+    Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+
+        HsvColorPicker(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .padding(10.dp),
+            controller = controller,
+            onColorChanged = { colorEnvelope: ColorEnvelope ->
+                Log.e("original color", newDeck.backgroundColor)
+                Log.e("clicked color", colorEnvelope.hexCode)
+               newDeck.backgroundColor = colorEnvelope.hexCode
+                Log.e("COLOR", newDeck.backgroundColor)
+            }
+        )
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -90,6 +109,7 @@ private fun MainContent(navigator: DestinationsNavigator, paddingValues: Padding
                         onValueChange = { newText ->
                             if(newText.text.length <= 2 && newText.text.length % 2 == 0){
                                 iconTextField = newText
+                                newDeck.emoji = newText.text
                             }
                         },
                         modifier = Modifier.background(color = Color.White),
