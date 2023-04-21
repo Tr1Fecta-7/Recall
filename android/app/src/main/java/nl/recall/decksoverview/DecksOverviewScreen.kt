@@ -1,4 +1,4 @@
-package nl.recall.main
+package nl.recall.decksoverview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +25,7 @@ import nl.recall.theme.AppTheme
 
 @Destination
 @Composable
-fun DecksOverview() {
+fun DecksOverviewScreen() {
     val decks = listOf(
         DeckPreviewData(
             title = "Mandarin HSK 1",
@@ -100,6 +100,6 @@ data class DeckPreviewData(
 @Composable
 fun Preview() {
     MaterialTheme {
-        DecksOverview()
+        DecksOverviewScreen()
     }
 }
