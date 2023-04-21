@@ -1,6 +1,4 @@
-package nl.recall.view
-import android.annotation.SuppressLint
-import android.content.res.Resources.Theme
+package nl.recall.createdeck
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
