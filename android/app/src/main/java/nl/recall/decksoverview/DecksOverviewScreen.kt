@@ -14,15 +14,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.components.deck.DeckPreview
+import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.domain.models.DeckPreviewData
 import nl.recall.theme.AppTheme
@@ -32,6 +30,7 @@ import nl.recall.theme.AppTheme
 @Composable
 fun DecksOverviewScreen(navigator: DestinationsNavigator) {
     val navigateToDetail: () -> Unit = { navigator.navigate(DeckDetailScreenDestination) }
+    val navigateToCreateDeck: () -> Unit = { navigator.navigate(DeckCreateDestination) }
 
     val decks = listOf(
         DeckPreviewData(
@@ -48,16 +47,16 @@ fun DecksOverviewScreen(navigator: DestinationsNavigator) {
         )
     )
 
-    Content(decks, navigateToDetail)
+    Content(decks, navigateToDetail, navigateToCreateDeck)
 }
 
 @Composable
-private fun Content(decks: List<DeckPreviewData>, navigateToDetail: () -> Unit) {
+private fun Content(decks: List<DeckPreviewData>, navigateToDetail: () -> Unit, navigateToCreateDeck: () -> Unit) {
     Scaffold(
         containerColor = AppTheme.neutral50,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = { navigateToCreateDeck()},
                 contentColor = AppTheme.primary900,
                 containerColor = AppTheme.primary300
             ) {

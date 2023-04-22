@@ -181,7 +181,11 @@ fun DeckDetailScreen(
         }
 
     }, floatingActionButton = {
-        FloatingActionButton(onClick = { /*TODO*/ }) {
+        FloatingActionButton(
+            onClick = { /*TODO*/ },
+            contentColor = AppTheme.primary900,
+            containerColor = AppTheme.primary300
+        ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "add card")
         }
     })
