@@ -182,9 +182,11 @@ fun DeckDetailScreen(
             }
 
             AlertWindow(
-                stringResource(id = R.string.dialog_delete_deck_title),
-                stringResource(id = R.string.dialog_delete_deck_text),
-                openDialog, closeDialog = {
+                title = stringResource(id = R.string.dialog_delete_deck_title),
+                subText = stringResource(id = R.string.dialog_delete_deck_text),
+                confirmText = stringResource(id = R.string.delete_text),
+                confirmTextColor = AppTheme.red700,
+                openDialog, onCloseDialog = {
                     openDialog = false
                     expandedMoreVert = false
                 },
