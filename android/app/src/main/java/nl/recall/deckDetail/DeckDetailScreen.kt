@@ -71,15 +71,25 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckDetailSearchScreenDestination
+import nl.recall.presentation.deckDetail.DeckDetailViewModel
+import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
 import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @RootNavGraph(start = true)
 @Destination
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DeckDetailScreen(navigator: DestinationsNavigator) {
+fun DeckDetailScreen(
+    navigator: DestinationsNavigator,
+    photoId: Int,
+    viewModel: DeckDetailViewModel = koinViewModel(
+        parameters = { parametersOf(DeckDetailViewModelArgs()) }
+    )
+) {
     val list: List<String> = listOf("boe", "bah", "", "")
     var expanded by remember { mutableStateOf(false) }
 
@@ -91,7 +101,7 @@ fun DeckDetailScreen(navigator: DestinationsNavigator) {
                     containerColor = AppTheme.white
                 ),
                 title = {
-                    Text(text = "title")
+                    Text(text = stringResource(id = R.string.placeholder_title))
                 },
                 navigationIcon = {
                     IconButton(onClick = { navigator.popBackStack() }) {
@@ -195,7 +205,7 @@ fun DeckDetailScreen(navigator: DestinationsNavigator) {
                                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                                     ) {
                                         Text(
-                                            text = stringResource(id = R.string.start_learning_text),
+                                            text = stringResource(id = R.string.placeholder_card_front),
                                             color = AppTheme.neutral800,
                                             style = MaterialTheme.typography.titleMedium,
                                         )

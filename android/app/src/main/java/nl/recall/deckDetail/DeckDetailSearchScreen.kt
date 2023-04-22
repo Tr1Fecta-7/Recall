@@ -147,7 +147,7 @@ fun DeckDetailSearchScreen(navigator: DestinationsNavigator) {
                                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                                     ) {
                                         Text(
-                                            text = stringResource(id = R.string.start_learning_text),
+                                            text = stringResource(id = R.string.placeholder_card_front),
                                             color = AppTheme.neutral800,
                                             style = MaterialTheme.typography.titleMedium,
                                         )

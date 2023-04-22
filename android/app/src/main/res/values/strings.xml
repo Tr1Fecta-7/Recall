@@ -9,4 +9,6 @@
     <string name="dropdown_menu_edit_cards">Edit cards in deck</string>
     <string name="dropdown_menu_delete_deck">Delete deck</string>
     <string name="search_bar_card_hint">Search for card content</string>
+    <string name="placeholder_title">Title deck</string>
+    <string name="placeholder_card_front">Front card</string>
 </resources>

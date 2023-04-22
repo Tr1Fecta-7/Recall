@@ -1,6 +1,7 @@
 package nl.recall.generic.di
 
 import nl.recall.data.DataModule
+import nl.recall.presentation.PresentationModule
 import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
@@ -17,9 +18,9 @@ val domainModule = module {
 }
 
 val presentationModule = module {
-    // Uncomment after creating a binding annotation in the presentation module
-    // Koin does not generate this file before creating a binding
-    //includes(PresentationModule().module)
+//     Uncomment after creating a binding annotation in the presentation module
+//     Koin does not generate this file before creating a binding
+//    includes(PresentationModule().module)
 }
 
 val dataModule = module {
