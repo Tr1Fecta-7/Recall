@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.deck.AlertWindow
 import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
 import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
@@ -66,7 +67,8 @@ fun DeckDetailScreen(
     })
 ) {
     val list: List<String> = listOf("boe", "", "", "")
-    var expanded by remember { mutableStateOf(false) }
+    var expandedMoreVert by remember { mutableStateOf(false) }
+    var openDialog by remember { mutableStateOf(false) }
 
 
     Scaffold(topBar = {
@@ -82,12 +84,12 @@ fun DeckDetailScreen(
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
             }
         }, actions = {
-            IconButton(onClick = { expanded = !expanded }) {
+            IconButton(onClick = { expandedMoreVert = !expandedMoreVert }) {
                 Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
             }
             DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
+                expanded = expandedMoreVert,
+                onDismissRequest = { expandedMoreVert = false },
                 modifier = Modifier
                     .background(AppTheme.white)
                     .width(180.dp),
@@ -95,7 +97,7 @@ fun DeckDetailScreen(
                 DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
                     onClick = { /* Handle edit deck! */ })
                 DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_delete_deck)) },
-                    onClick = { /* Handle send delete eck! */ })
+                    onClick = { openDialog = true })
             }
         }
 
@@ -178,6 +180,18 @@ fun DeckDetailScreen(
                     }
                 })
             }
+
+            AlertWindow(
+                stringResource(id = R.string.dialog_delete_deck_title),
+                stringResource(id = R.string.dialog_delete_deck_text),
+                openDialog, closeDialog = {
+                    openDialog = false
+                    expandedMoreVert = false
+                },
+                onPressConfirm = {
+
+                }
+            )
         }
 
     }, floatingActionButton = {
