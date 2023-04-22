@@ -20,13 +20,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.components.deck.DeckPreview
+import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.domain.models.DeckPreviewData
 import nl.recall.theme.AppTheme
 
+@RootNavGraph(start = true)
 @Destination
 @Composable
-fun DecksOverviewScreen() {
+fun DecksOverviewScreen(navigator: DestinationsNavigator) {
+    val navigateToDetail: () -> Unit = { navigator.navigate(DeckDetailScreenDestination) }
+
     val decks = listOf(
         DeckPreviewData(
             title = "Mandarin HSK 1",
@@ -42,11 +48,11 @@ fun DecksOverviewScreen() {
         )
     )
 
-    Content(decks)
+    Content(decks, navigateToDetail)
 }
 
 @Composable
-private fun Content(decks: List<DeckPreviewData>) {
+private fun Content(decks: List<DeckPreviewData>, navigateToDetail: () -> Unit) {
     Scaffold(
         containerColor = AppTheme.neutral50,
         floatingActionButton = {
@@ -83,17 +89,11 @@ private fun Content(decks: List<DeckPreviewData>) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(decks) { deck ->
-                    DeckPreview(deck)
+                    DeckPreview(deck, onClick = {
+                        navigateToDetail()
+                    })
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun Preview() {
-    MaterialTheme {
-        DecksOverviewScreen()
     }
 }

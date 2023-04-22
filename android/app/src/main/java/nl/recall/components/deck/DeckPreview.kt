@@ -31,9 +31,9 @@ import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 
 @Composable
-fun DeckPreview(deck: DeckPreviewData) {
+fun DeckPreview(deck: DeckPreviewData, onClick: () -> Unit) {
     Card(
-        onClick = { /* */ },
+        onClick = { onClick() },
         shape = RoundedCornerShape(18.dp),
         border = BorderStroke(1.dp, AppTheme.neutral200),
         modifier = Modifier
@@ -96,6 +96,8 @@ fun Preview() {
     )
 
     AndroidAppTheme {
-        DeckPreview(deck)
+        DeckPreview(deck, onClick = {
+
+        })
     }
 }
