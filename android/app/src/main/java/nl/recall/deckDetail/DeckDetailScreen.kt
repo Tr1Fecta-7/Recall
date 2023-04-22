@@ -61,7 +61,6 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DeckDetailScreen(
     navigator: DestinationsNavigator,
-    photoId: Int,
     viewModel: DeckDetailViewModel = koinViewModel(parameters = {
         parametersOf(DeckDetailViewModelArgs(1))
     })
