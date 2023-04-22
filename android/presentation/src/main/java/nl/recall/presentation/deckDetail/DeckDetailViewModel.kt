@@ -24,12 +24,6 @@ class DeckDetailViewModel(
 
     }
 
-//    private val _deck = MutableStateFlow<Deck?>(null)
-//    val deck: StateFlow<Deck?> by lazy {
-//        this._deck.asStateFlow()
-//
-//    }
-
     private fun fetchDeck() {
         viewModelScope.launch {
             _deck.value = UIState.Success(Deck())

@@ -20,7 +20,7 @@ val domainModule = module {
 val presentationModule = module {
 //     Uncomment after creating a binding annotation in the presentation module
 //     Koin does not generate this file before creating a binding
-//    includes(PresentationModule().module)
+   includes(PresentationModule().module)
 }
 
 val dataModule = module {
