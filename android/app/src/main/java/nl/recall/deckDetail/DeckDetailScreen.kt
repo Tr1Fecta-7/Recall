@@ -85,10 +85,10 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DeckDetailScreen(
     navigator: DestinationsNavigator,
-    photoId: Int,
-    viewModel: DeckDetailViewModel = koinViewModel(
-        parameters = { parametersOf(DeckDetailViewModelArgs()) }
-    )
+//    photoId: Int,
+//    viewModel: DeckDetailViewModel = koinViewModel(
+//        parameters = { parametersOf(DeckDetailViewModelArgs(1)) }
+//    )
 ) {
     val list: List<String> = listOf("boe", "bah", "", "")
     var expanded by remember { mutableStateOf(false) }
