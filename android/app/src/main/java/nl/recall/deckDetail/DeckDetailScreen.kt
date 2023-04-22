@@ -93,11 +93,9 @@ fun DeckDetailScreen(
                     .width(180.dp),
             ) {
                 DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
-                    onClick = { /* Handle refresh! */ })
-                DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_cards)) },
-                    onClick = { /* Handle settings! */ })
+                    onClick = { /* Handle edit deck! */ })
                 DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_delete_deck)) },
-                    onClick = { /* Handle send feedback! */ })
+                    onClick = { /* Handle send delete eck! */ })
             }
         }
 
