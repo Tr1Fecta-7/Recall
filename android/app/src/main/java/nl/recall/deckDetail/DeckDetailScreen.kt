@@ -48,6 +48,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.deck.AlertWindow
+import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
 import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
@@ -69,6 +70,7 @@ fun DeckDetailScreen(
     val list: List<String> = listOf("boe", "", "", "")
     var expandedMoreVert by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
+    val navigateToCreateCard: () -> Unit = { navigator.navigate(CreateCardScreenDestination) }
 
 
     Scaffold(topBar = {
@@ -198,7 +200,7 @@ fun DeckDetailScreen(
 
     }, floatingActionButton = {
         FloatingActionButton(
-            onClick = { /*TODO*/ },
+            onClick = { navigateToCreateCard() },
             contentColor = AppTheme.primary900,
             containerColor = AppTheme.primary300
         ) {

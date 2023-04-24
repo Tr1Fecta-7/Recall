@@ -18,4 +18,11 @@
     <string name="dialog_delete_deck_title">Delete deck</string>
     <string name="dialog_delete_deck_text">Are you sure you want to delete this deck?</string>
     <string name="delete_text">Delete</string>
+    <string name="create_card_title">Create card</string>
+
+    <string name="create_card_front_text_field">Front</string>
+    <string name="create_card_front_text_field_placeholder">Fill the front of the card in</string>
+
+    <string name="create_card_back_text_field">Back</string>
+    <string name="create_card_back_text_field_placeholder">Fill the back of the card in</string>
 </resources>
