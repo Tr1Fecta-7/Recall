@@ -31,6 +31,7 @@ import nl.recall.R
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
+import nl.recall.destinations.DecksOverviewSearchScreenDestination
 import nl.recall.domain.models.DeckPreviewData
 import nl.recall.theme.AppTheme
 
@@ -40,6 +41,9 @@ import nl.recall.theme.AppTheme
 fun DecksOverviewScreen(navigator: DestinationsNavigator) {
     val navigateToDetail: () -> Unit = { navigator.navigate(DeckDetailScreenDestination) }
     val navigateToCreateDeck: () -> Unit = { navigator.navigate(DeckCreateDestination) }
+    val navigateToDeckSearch: () -> Unit = {
+        navigator.navigate(DecksOverviewSearchScreenDestination)
+    }
 
     val decks = listOf(
         DeckPreviewData(
@@ -56,14 +60,15 @@ fun DecksOverviewScreen(navigator: DestinationsNavigator) {
         )
     )
 
-    Content(decks, navigateToDetail, navigateToCreateDeck)
+    Content(decks, navigateToDetail, navigateToCreateDeck, navigateToDeckSearch)
 }
 
 @Composable
 private fun Content(
     decks: List<DeckPreviewData>,
     navigateToDetail: () -> Unit,
-    navigateToCreateDeck: () -> Unit
+    navigateToCreateDeck: () -> Unit,
+    navigateToDeckSearch: () -> Unit
 ) {
     Scaffold(
         containerColor = AppTheme.neutral50,
@@ -104,7 +109,7 @@ private fun Content(
                 ),
                 shape = RoundedCornerShape(35.dp),
                 onClick = {
-                    // TODO: Navigate to deck search
+                    navigateToDeckSearch()
                 }
             ) {
                 Row(
