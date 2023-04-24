@@ -54,6 +54,7 @@ fun DecksOverviewSearchScreen(navigator: DestinationsNavigator) {
     )
 
     Scaffold(
+        containerColor = AppTheme.neutral50,
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -83,7 +84,7 @@ private fun Content(
     Column(
         modifier = Modifier
             .padding(paddingValues)
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 14.dp)
     ) {
         TextField(
             modifier = Modifier
