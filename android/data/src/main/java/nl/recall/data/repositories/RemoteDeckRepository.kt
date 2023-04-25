@@ -1,12 +1,10 @@
 package nl.recall.data.repositories
 
 
-import android.app.Application
 import android.content.Context
 import nl.recall.data.database.DeckDao
 import nl.recall.data.database.RecallRoomDatabase
 import nl.recall.data.mappers.DeckWithCardsMapper.toDomain
-import nl.recall.data.models.DeckWithCardsResult
 import nl.recall.domain.repositories.DeckRepository
 import nl.recall.domain.deck.model.DeckWithCards
 import org.koin.core.annotation.Factory
@@ -22,8 +20,6 @@ class RemoteDeckRepository(context: Context) : DeckRepository {
     }
 
     override suspend fun getDeckById(id: Long): DeckWithCards? {
-        val result = deckDao.getDeckById(id)
-        return if (result != null) result.toDomain() else null
+        return deckDao.getDeckById(id)?.toDomain()
     }
-
 }
