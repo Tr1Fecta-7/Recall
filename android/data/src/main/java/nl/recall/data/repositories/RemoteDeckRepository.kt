@@ -1,6 +1,7 @@
 package nl.recall.data.repositories
 
 
+import android.app.Application
 import android.content.Context
 import nl.recall.data.database.DeckDao
 import nl.recall.data.database.RecallRoomDatabase
@@ -20,8 +21,9 @@ class RemoteDeckRepository(context: Context) : DeckRepository {
         deckDao = database!!.deckDao()
     }
 
-    override suspend fun getDeckById(id: Long): DeckWithCards {
-        return deckDao.getDeckById(id).toDomain()
+    override suspend fun getDeckById(id: Long): DeckWithCards? {
+        val result = deckDao.getDeckById(id)
+        return if (result != null) result.toDomain() else null
     }
 
 }

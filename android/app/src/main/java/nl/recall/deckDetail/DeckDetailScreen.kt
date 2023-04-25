@@ -77,7 +77,7 @@ fun DeckDetailScreen(
             containerColor = AppTheme.white
         ), title = {
             Text(
-                text = viewModel.deck.value.data?.title
+                text = viewModel.deck.value.deck.title
                     ?: stringResource(id = R.string.placeholder_title)
             )
         }, navigationIcon = {
@@ -147,7 +147,7 @@ fun DeckDetailScreen(
                 modifier = Modifier.padding(top = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                items(items = list, itemContent = {
+                items(items = viewModel.deck.value.cards, itemContent = {
                     Card(
                         onClick = { /* */ },
                         shape = RoundedCornerShape(12.dp),
@@ -167,7 +167,7 @@ fun DeckDetailScreen(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                             ) {
                                 Text(
-                                    text = stringResource(id = R.string.placeholder_card_front),
+                                    text = it.front,
                                     color = AppTheme.neutral800,
                                     style = MaterialTheme.typography.titleMedium,
                                 )

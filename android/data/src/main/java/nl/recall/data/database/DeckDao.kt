@@ -13,7 +13,7 @@ import nl.recall.data.models.DeckWithCardsResult
 interface DeckDao {
     @Transaction
     @Query("SELECT * from deck where id = :id")
-    fun getDeckById(id: Long): DeckWithCardsResult
+    suspend fun getDeckById(id: Long): DeckWithCardsResult?
 
     @Transaction
     @MapInfo(valueColumn = "count")

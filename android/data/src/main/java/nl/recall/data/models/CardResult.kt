@@ -9,17 +9,17 @@ import java.util.Date
 data class CardResult(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    var id: Long,
+    var id: Long = 0,
 
     @ColumnInfo(name = "front")
-    var front: String,
+    var front: String = "",
 
     @ColumnInfo(name = "back")
-    var back: String,
+    var back: String = "",
 
     @ColumnInfo(name = "due_date")
-    var dueDate: Date,
+    var dueDate: Date = Date(),
 
     @ColumnInfo(name = "deck_id")
-    var deckId: Long
+    var deckId: Long = 0
 )
