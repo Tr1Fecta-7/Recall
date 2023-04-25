@@ -18,7 +18,7 @@ interface DeckDao {
     @Transaction
     @MapInfo(valueColumn = "count")
     @Query("SELECT deck.*, count(*) AS count FROM deck LEFT JOIN card ON deck.id = card.deck_id GROUP BY deck.id")
-    fun getDecksWithCardCount(): Map<Deck, Int>
+    fun getDecksWithCardCount(): Map<DeckResult, Int>
 
     @Insert
     suspend fun insert(deckResult: DeckResult)
