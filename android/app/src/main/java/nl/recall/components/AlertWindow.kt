@@ -1,4 +1,4 @@
-package nl.recall.components.deck
+package nl.recall.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog

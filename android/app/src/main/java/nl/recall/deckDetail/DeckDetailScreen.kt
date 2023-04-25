@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
-import nl.recall.components.deck.AlertWindow
+import nl.recall.components.AlertWindow
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination

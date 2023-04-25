@@ -1,10 +1,8 @@
 package nl.recall.createdeck
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -13,27 +11,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import com.github.skydoves.colorpicker.compose.ColorEnvelope
-import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.flow.StateFlow
 import nl.recall.R
+import nl.recall.components.AlertWindow
 import nl.recall.domain.deck.model.Deck
-import nl.recall.domain.models.DeckData
 import nl.recall.presentation.createDeck.CreateDeckViewModel
 import nl.recall.presentation.createDeck.model.CreateDeckViewModelArgs
-import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import nl.recall.theme.md_theme_light_primary
@@ -82,6 +74,10 @@ private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
         mutableStateOf(newDeck.data?.background_color)
     }
 
+    var showAlert by remember{
+        mutableStateOf(false)
+    }
+
     var createTextField by remember {
         mutableStateOf(TextFieldValue(""))
     }
@@ -93,18 +89,18 @@ private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
         .fillMaxSize()
         .padding(paddingValues)) {
 
-        HsvColorPicker(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(10.dp),
-            controller = controller,
-            onColorChanged = { colorEnvelope: ColorEnvelope ->
-                Log.e("color", "#${colorEnvelope.hexCode}")
-                deckColor = "#${colorEnvelope.hexCode}"
-            },
-            initialColor = AppTheme.neutral100
-        )
+//        HsvColorPicker(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(100.dp)
+//                .padding(10.dp),
+//            controller = controller,
+//            onColorChanged = { colorEnvelope: ColorEnvelope ->
+//                Log.e("color", "#${colorEnvelope.hexCode}")
+//                deckColor = "#${colorEnvelope.hexCode}"
+//            },
+//            initialColor = AppTheme.neutral100
+//        )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,6 +154,18 @@ private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
 
                     )
             }
+            Button(onClick = {showAlert = true}) {
+                Text(text = "select a color")
+            }
+            AlertWindow(
+                title = "Pick background color",
+                subText = "",
+                confirmText = "Select color",
+                confirmTextColor = AppTheme.primary300,
+                openDialog = true,
+                onCloseDialog = { showAlert = false },
+                onPressConfirm = {showAlert = false}
+            )
 
         }
         Column(
