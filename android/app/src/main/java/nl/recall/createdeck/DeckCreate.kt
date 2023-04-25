@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -26,10 +27,18 @@ import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.StateFlow
 import nl.recall.R
+import nl.recall.domain.deck.model.Deck
 import nl.recall.domain.models.DeckData
+import nl.recall.presentation.createDeck.CreateDeckViewModel
+import nl.recall.presentation.createDeck.model.CreateDeckViewModelArgs
+import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
+import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import nl.recall.theme.md_theme_light_primary
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Destination
 @Composable
@@ -54,12 +63,35 @@ fun DeckCreate(navigator: DestinationsNavigator){
 
 @Composable
 private fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues){
-    var createTextField by remember { mutableStateOf(TextFieldValue("")) }
-    val newDeck by remember {mutableStateOf(DeckData(""))}
-    var iconTextField by remember { mutableStateOf(TextFieldValue(newDeck.emoji)) }
-    val controller = rememberColorPickerController()
+    val viewModel: CreateDeckViewModel = koinViewModel(parameters = {
+        parametersOf(CreateDeckViewModelArgs(1, "title","#2596be"))
+    })
+    val newDeck: UIState<Deck> by viewModel.deck.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+    when(newDeck){
+        is UIState.Success -> { DeckSuccess(newDeck, paddingValues) }
+        else -> {}
+    }
+
+
+}
+
+@Composable
+private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
+    var deckColor by remember {
+        mutableStateOf(newDeck.data?.background_color)
+    }
+
+    var createTextField by remember {
+        mutableStateOf(TextFieldValue(""))
+    }
+    var iconTextField by remember {
+        mutableStateOf(TextFieldValue(""))
+    }
+    val controller = rememberColorPickerController()
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(paddingValues)) {
 
         HsvColorPicker(
             modifier = Modifier
@@ -68,11 +100,10 @@ private fun MainContent(navigator: DestinationsNavigator, paddingValues: Padding
                 .padding(10.dp),
             controller = controller,
             onColorChanged = { colorEnvelope: ColorEnvelope ->
-                Log.e("original color", newDeck.backgroundColor)
-                Log.e("clicked color", colorEnvelope.hexCode)
-               newDeck.backgroundColor = colorEnvelope.hexCode
-                Log.e("COLOR", newDeck.backgroundColor)
-            }
+                Log.e("color", "#${colorEnvelope.hexCode}")
+                deckColor = "#${colorEnvelope.hexCode}"
+            },
+            initialColor = AppTheme.neutral100
         )
 
         Column(
@@ -102,24 +133,28 @@ private fun MainContent(navigator: DestinationsNavigator, paddingValues: Padding
                 modifier = Modifier
                     .size(250.dp)
                     .clip(CircleShape)
-                    .background(Color(newDeck.backgroundColor.toColorInt())),
-            ) {
-                    TextField(
-                        value = iconTextField,
-                        onValueChange = { newText ->
-                            if(newText.text.length <= 2 && newText.text.length % 2 == 0){
-                                iconTextField = newText
-                                newDeck.emoji = newText.text
-                            }
-                        },
-                        modifier = Modifier.background(color = Color.White),
-                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 155.sp),
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color(newDeck.backgroundColor.toColorInt()),
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
-                        ),
+                    .background(
+                        Color(
+                            deckColor?.toColorInt() ?: "white".toColorInt()
+                        )
+                    ),
+           ) {
+                TextField(
+                    value = iconTextField,
+                    onValueChange = { newText ->
+                        if(newText.text.length <= 2 && newText.text.length % 2 == 0){
+                            iconTextField = newText
+                            newDeck.data?.icon = newText.text
+                        }
+                    },
+                    modifier = Modifier.background(color = Color.White),
+                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 155.sp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color(deckColor?.toColorInt()?: "white".toColorInt()),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
 
                     )
             }
@@ -147,5 +182,4 @@ private fun MainContent(navigator: DestinationsNavigator, paddingValues: Padding
             }
         }
     }
-
 }
