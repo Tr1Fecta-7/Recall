@@ -6,26 +6,27 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import nl.recall.data.models.Card
+import nl.recall.data.models.Deck
 
-@Database(entities = [Card::class], version = 3, exportSchema = true)
+@Database(entities = [Deck::class, Card::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
-abstract class CardRoomDatabase : RoomDatabase() {
+abstract class RoomDatabase : RoomDatabase() {
 
     abstract fun deckDao(): DeckDao
 
     companion object {
-        private const val DATABASE_NAME = "DECK_DATABASE"
+        private const val DATABASE_NAME = "recall"
 
         @Volatile
-        private var INSTANCE: CardRoomDatabase? = null
+        private var INSTANCE: RoomDatabase? = null
 
-        fun getDatabase(context: Context): CardRoomDatabase? {
+        fun getDatabase(context: Context): RoomDatabase? {
             if (INSTANCE == null) {
-                synchronized(CardRoomDatabase::class.java) {
+                synchronized(RoomDatabase::class.java) {
                     if (INSTANCE == null) {
                         INSTANCE = Room.databaseBuilder(
                             context.applicationContext,
-                            CardRoomDatabase::class.java, DATABASE_NAME
+                            RoomDatabase::class.java, DATABASE_NAME
                         )
                             .fallbackToDestructiveMigration()
                             .build()

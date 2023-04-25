@@ -59,7 +59,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
 
     // Room Database
-    kapt("androidx.room:room-compiler:${Versions.DATABASE}")
     ksp("androidx.room:room-compiler:${Versions.DATABASE}")
     implementation("androidx.room:room-runtime:${Versions.DATABASE}")
     implementation("androidx.room:room-ktx:${Versions.DATABASE}")
