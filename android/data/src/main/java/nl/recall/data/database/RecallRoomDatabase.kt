@@ -10,7 +10,7 @@ import nl.recall.data.models.Deck
 
 @Database(entities = [Deck::class, Card::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
-abstract class RoomDatabase : RoomDatabase() {
+abstract class RecallRoomDatabase : RoomDatabase() {
 
     abstract fun deckDao(): DeckDao
     abstract fun cardDao(): CardDao
@@ -19,15 +19,15 @@ abstract class RoomDatabase : RoomDatabase() {
         private const val DATABASE_NAME = "RECALL_DATABASE"
 
         @Volatile
-        private var INSTANCE: RoomDatabase? = null
+        private var INSTANCE: RecallRoomDatabase? = null
 
-        fun getDatabase(context: Context): RoomDatabase? {
+        fun getDatabase(context: Context): RecallRoomDatabase? {
             if (INSTANCE == null) {
                 synchronized(RoomDatabase::class.java) {
                     if (INSTANCE == null) {
                         INSTANCE = Room.databaseBuilder(
                             context.applicationContext,
-                            RoomDatabase::class.java, DATABASE_NAME
+                            RecallRoomDatabase::class.java, DATABASE_NAME
                         )
                             .fallbackToDestructiveMigration()
                             .build()
