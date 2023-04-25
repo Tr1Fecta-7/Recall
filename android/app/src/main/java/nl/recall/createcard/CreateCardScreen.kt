@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -49,12 +50,13 @@ fun CreateCardScreen(navigator: DestinationsNavigator) {
         containerColor = AppTheme.neutral50,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = AppTheme.neutral50),
                 title = { Text(stringResource(id = R.string.create_card_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.popBackStack()}) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
                     }
-                }
+                },
             )
         },
         content = { MainContent(navigator = navigator, it) }
