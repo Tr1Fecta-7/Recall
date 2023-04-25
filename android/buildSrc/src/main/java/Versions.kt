@@ -56,4 +56,7 @@ object Versions {
     const val COIL = "2.2.2"
 
     const val MATERIAL = "1.0.1"
+
+    //Room database
+    const val DATABASE = "2.5.0"
 }
