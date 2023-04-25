@@ -13,6 +13,7 @@ import nl.recall.data.models.Deck
 abstract class RoomDatabase : RoomDatabase() {
 
     abstract fun deckDao(): DeckDao
+    abstract fun cardDao(): CardDao
 
     companion object {
         private const val DATABASE_NAME = "RECALL_DATABASE"
