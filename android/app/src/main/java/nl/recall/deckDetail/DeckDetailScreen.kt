@@ -72,7 +72,6 @@ fun DeckDetailScreen(
     var openDialog by remember { mutableStateOf(false) }
     val navigateToCreateCard: () -> Unit = { navigator.navigate(CreateCardScreenDestination) }
 
-
     Scaffold(topBar = {
         TopAppBar(colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = AppTheme.white

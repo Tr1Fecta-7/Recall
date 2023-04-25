@@ -1,9 +1,12 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("kotlinx-serialization")
     id("de.mannodermaus.android-junit5")
     id("com.google.devtools.ksp")
+    id("kotlin-kapt")
 }
 
 android {
@@ -54,4 +57,10 @@ dependencies {
 
     // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
+
+    // Room Database
+    ksp("androidx.room:room-compiler:${Versions.DATABASE}")
+    implementation("androidx.room:room-runtime:${Versions.DATABASE}")
+    implementation("androidx.room:room-ktx:${Versions.DATABASE}")
+    annotationProcessor("androidx.room:room-compiler:${Versions.DATABASE}")
 }
