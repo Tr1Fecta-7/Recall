@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.StateFlow
 import nl.recall.R
 import nl.recall.components.AlertWindow
 import nl.recall.components.ColorPickerWindow
@@ -58,20 +59,19 @@ private fun MainContent(navigator: DestinationsNavigator, paddingValues: Padding
     val viewModel: CreateDeckViewModel = koinViewModel(parameters = {
         parametersOf(CreateDeckViewModelArgs(1, "title","#2596be"))
     })
-    val newDeck: UIState<Deck> by viewModel.deck.collectAsState()
-
-    when(newDeck){
-        is UIState.Success -> { DeckSuccess(newDeck, paddingValues) }
+    val newDeck: Deck by viewModel.deck.collectAsState()
+    val uiState: UIState by viewModel.state.collectAsState()
+    when(uiState){
+        UIState.NORMAL -> { DeckSuccess(newDeck, paddingValues) }
         else -> {}
     }
-
 
 }
 
 @Composable
-private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
+private fun DeckSuccess(newDeck: Deck, paddingValues: PaddingValues){
     var deckColor by remember {
-        mutableStateOf(newDeck.data?.background_color)
+        mutableStateOf(newDeck.background_color)
     }
 
     var showAlert by remember{
@@ -126,7 +126,7 @@ private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
                     onValueChange = { newText ->
                         if(newText.text.length <= 2 && newText.text.length % 2 == 0){
                             iconTextField = newText
-                            newDeck.data?.icon = newText.text
+                            newDeck.icon = newText.text
                         }
                     },
                     modifier = Modifier.background(color = Color.White),
@@ -148,10 +148,11 @@ private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
                 subText = "",
                 confirmText = "Select color",
                 confirmTextColor = AppTheme.primary300,
-                openDialog = true,
+                openDialog = showAlert,
                 onCloseDialog = { showAlert = false },
                 onPressConfirm = {showAlert = false},
-                onSelectColor = { deckColor = "#${it.hexCode}"}
+                onSelectColor = { deckColor = "#${it.hexCode}"},
+                preSelectedColor = deckColor
             )
 
         }
