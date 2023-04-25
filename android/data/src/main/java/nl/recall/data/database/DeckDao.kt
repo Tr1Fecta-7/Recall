@@ -6,15 +6,14 @@ import androidx.room.Insert
 import androidx.room.MapInfo
 import androidx.room.Query
 import androidx.room.Transaction
-import kotlinx.coroutines.flow.StateFlow
-import nl.recall.data.models.Deck
-import nl.recall.data.models.DeckWithCards
+import nl.recall.data.models.DeckResult
+import nl.recall.data.models.DeckWithCardsResult
 
 @Dao
 interface DeckDao {
     @Transaction
-    @Query("SELECT * from deck")
-    fun getDecksWithCards(): List<DeckWithCards>
+    @Query("SELECT * from deck where id = :id")
+    fun getDeckById(id: Long): DeckWithCardsResult
 
     @Transaction
     @MapInfo(valueColumn = "count")
@@ -22,13 +21,13 @@ interface DeckDao {
     fun getDecksWithCardCount(): Map<Deck, Int>
 
     @Insert
-    suspend fun insert(deck: Deck)
+    suspend fun insert(deckResult: DeckResult)
 
     @Insert
-    suspend fun insert(deck: List<Deck>)
+    suspend fun insert(deckResult: List<DeckResult>)
 
     @Delete
-    suspend fun delete(deck: Deck)
+    suspend fun delete(deckResult: DeckResult)
 
     @Query("DELETE from deck")
     suspend fun deleteAll()

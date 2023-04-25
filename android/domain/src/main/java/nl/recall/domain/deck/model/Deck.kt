@@ -8,5 +8,4 @@ data class Deck (
     var creationDate : Date = Date(),
     var icon : String = "",
     var background_color: String = "",
-    var cards : List<Card> = listOf()
     )

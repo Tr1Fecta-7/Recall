@@ -5,10 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import nl.recall.data.models.Card
+import nl.recall.data.models.CardResult
 import nl.recall.data.models.Deck
 
-@Database(entities = [Deck::class, Card::class], version = 3, exportSchema = false)
+@Database(entities = [Deck::class, CardResult::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class RecallRoomDatabase : RoomDatabase() {
 
@@ -17,6 +17,7 @@ abstract class RecallRoomDatabase : RoomDatabase() {
 
     companion object {
         private const val DATABASE_NAME = "RECALL_DATABASE"
+
 
         @Volatile
         private var INSTANCE: RecallRoomDatabase? = null
