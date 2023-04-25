@@ -13,7 +13,11 @@ import nl.recall.data.models.DeckWithCards
 interface DeckDao {
     @Transaction
     @Query("SELECT * from deck")
-    fun getDecks(): List<DeckWithCards>
+    fun getDecksWithCards(): List<DeckWithCards>
+
+    @Transaction
+    @Query("SELECT deck.*, count(*) FROM deck LEFT JOIN card ON deck.id = card.deck_id GROUP BY deck.id")
+    fun getDecksWithCardCount(): Map<Deck, Int>
 
     @Insert
     suspend fun insert(deck: Deck)
