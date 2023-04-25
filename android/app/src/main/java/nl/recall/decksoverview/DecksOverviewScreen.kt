@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,40 +34,34 @@ import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.DecksOverviewSearchScreenDestination
+import nl.recall.domain.deck.model.Deck
 import nl.recall.domain.models.DeckPreviewData
+import nl.recall.presentation.decksOverview.DecksOverviewViewModel
 import nl.recall.theme.AppTheme
+import org.koin.androidx.compose.koinViewModel
 
 @RootNavGraph(start = true)
 @Destination
 @Composable
-fun DecksOverviewScreen(navigator: DestinationsNavigator) {
+fun DecksOverviewScreen(
+    navigator: DestinationsNavigator,
+    viewModel: DecksOverviewViewModel = koinViewModel()
+) {
     val navigateToDetail: () -> Unit = { navigator.navigate(DeckDetailScreenDestination) }
     val navigateToCreateDeck: () -> Unit = { navigator.navigate(DeckCreateDestination) }
     val navigateToDeckSearch: () -> Unit = {
         navigator.navigate(DecksOverviewSearchScreenDestination)
     }
+    val decks by viewModel.decks.collectAsState()
+    val uiState by viewModel.state.collectAsState()
 
-    val decks = listOf(
-        DeckPreviewData(
-            title = "Mandarin HSK 1",
-            cardCount = 512,
-            backgroundColor = "#FFEAEA", // Color("#FFEAEA".toColorInt()),
-            emoji = "🇨🇳",
-        ),
-        DeckPreviewData(
-            title = "Maths L1 & L2",
-            cardCount = 256,
-            backgroundColor = "#FFEAB6", // Color("#FFEAB6".toColorInt()),
-            emoji = "🧮",
-        )
-    )
-
+    // TODO: rewrite UI State
     Content(decks, navigateToDetail, navigateToCreateDeck, navigateToDeckSearch)
 }
 
 @Composable
 private fun Content(
-    decks: List<DeckPreviewData>,
+    decks: Map<Deck, Int>?,
     navigateToDetail: () -> Unit,
     navigateToCreateDeck: () -> Unit,
     navigateToDeckSearch: () -> Unit
@@ -130,8 +126,8 @@ private fun Content(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(decks) { deck ->
-                    DeckPreview(deck, onClick = {
+                items(decks.orEmpty().entries.toList()) { entry ->
+                    DeckPreview(entry.key, cardCount = entry.value, onClick = {
                         navigateToDetail()
                     })
                 }

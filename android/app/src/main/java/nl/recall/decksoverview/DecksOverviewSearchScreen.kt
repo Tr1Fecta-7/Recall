@@ -21,6 +21,8 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -30,28 +32,21 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckDetailScreenDestination
-import nl.recall.domain.models.DeckPreviewData
+import nl.recall.domain.deck.model.Deck
+import nl.recall.presentation.decksOverview.DecksOverviewViewModel
 import nl.recall.theme.AppTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Destination
 @Composable
-fun DecksOverviewSearchScreen(navigator: DestinationsNavigator) {
+fun DecksOverviewSearchScreen(
+    navigator: DestinationsNavigator,
+    viewModel: DecksOverviewViewModel = koinViewModel()
+) {
     val navigateToDetail: () -> Unit = { navigator.navigate(DeckDetailScreenDestination) }
 
-    val decks = listOf(
-        DeckPreviewData(
-            title = "Mandarin HSK 1",
-            cardCount = 512,
-            backgroundColor = "#FFEAEA", // Color("#FFEAEA".toColorInt()),
-            emoji = "🇨🇳",
-        ),
-        DeckPreviewData(
-            title = "Maths L1 & L2",
-            cardCount = 256,
-            backgroundColor = "#FFEAB6", // Color("#FFEAB6".toColorInt()),
-            emoji = "🧮",
-        )
-    )
+    val decks by viewModel.decks.collectAsState()
+    val uiState by viewModel.state.collectAsState()
 
     Scaffold(
         containerColor = AppTheme.neutral50,
@@ -77,7 +72,7 @@ fun DecksOverviewSearchScreen(navigator: DestinationsNavigator) {
 
 @Composable
 private fun Content(
-    decks: List<DeckPreviewData>,
+    decks: Map<Deck, Int>,
     navigateToDetail: () -> Unit,
     paddingValues: PaddingValues
 ) {
@@ -134,8 +129,8 @@ private fun Content(
             modifier = Modifier.padding(top = 10.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(decks) { deck ->
-                DeckPreview(deck, onClick = {
+            items(decks.entries.toList()) { deck ->
+                DeckPreview(deck.key, cardCount = deck.value, onClick = {
                     navigateToDetail()
                 })
             }
