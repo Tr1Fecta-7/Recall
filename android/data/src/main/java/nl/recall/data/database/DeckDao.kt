@@ -3,6 +3,7 @@ package nl.recall.data.database
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.MapInfo
 import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,8 @@ interface DeckDao {
     fun getDecksWithCards(): List<DeckWithCards>
 
     @Transaction
-    @Query("SELECT deck.*, count(*) FROM deck LEFT JOIN card ON deck.id = card.deck_id GROUP BY deck.id")
+    @MapInfo(valueColumn = "count")
+    @Query("SELECT deck.*, count(*) AS count FROM deck LEFT JOIN card ON deck.id = card.deck_id GROUP BY deck.id")
     fun getDecksWithCardCount(): Map<Deck, Int>
 
     @Insert
