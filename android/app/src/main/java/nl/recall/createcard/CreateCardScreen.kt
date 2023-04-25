@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.card.CardPreview
+import nl.recall.domain.models.CardPreviewData
 import nl.recall.theme.AppTheme
 import nl.recall.theme.md_theme_light_primary
 
@@ -65,71 +67,13 @@ fun CreateCardScreen(navigator: DestinationsNavigator) {
 
 @Composable
 fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues) {
-    var frontTextFieldValue by remember { mutableStateOf(TextFieldValue("")) }
-    var backTextFieldValue by remember { mutableStateOf(TextFieldValue("")) }
-    var createButtonEnabled = remember {
-        derivedStateOf { frontTextFieldValue.text.isNotBlank() && backTextFieldValue.text.isNotBlank() }
-    }
+    val card = CardPreviewData(
+        front = "",
+        back = "",
+        buttonText = stringResource(id = R.string.create_card_title)
+    )
 
-    Card(
-        colors = CardDefaults.cardColors(containerColor = AppTheme.white),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(top = 20.dp, bottom = 0.dp, start = 15.dp, end = 15.dp)
-            .clip(RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(top = 100.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(35.dp),
-        ) {
-            Column(modifier = Modifier.heightIn(0.dp, 200.dp)) {
-                OutlinedTextField(
-                    value = frontTextFieldValue,
-                    onValueChange = {
-                        frontTextFieldValue = it
-                    },
-                    label = { Text(text = stringResource(id = R.string.create_card_front_text_field))},
-                    placeholder = { Text(text = stringResource(id = R.string.create_card_front_text_field_placeholder))},
-                )
-            }
+    CardPreview(card, paddingValues, onClick = {
 
-            Column(modifier = Modifier.heightIn(0.dp, 200.dp)) {
-                OutlinedTextField(
-                    value = backTextFieldValue,
-                    onValueChange = {
-                        backTextFieldValue = it
-                    },
-                    label = { Text(text = stringResource(id = R.string.create_card_back_text_field))},
-                    placeholder = { Text(text = stringResource(id = R.string.create_card_back_text_field_placeholder))},
-                )
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = { /*TODO*/ },
-                Modifier
-                    .clip(RoundedCornerShape(30.dp))
-                    .width(300.dp),
-                enabled = createButtonEnabled.value,
-            ) {
-                Text(
-                    text = stringResource(id = R.string.create_card_title),
-                    color = Color.White
-                )
-            }
-        }
-
-
-    }
+    })
 }
