@@ -5,26 +5,23 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import kotlinx.coroutines.flow.StateFlow
+import nl.recall.data.models.Card
 import nl.recall.data.models.Deck
 import nl.recall.data.models.DeckWithCards
 
 @Dao
-interface DeckDao {
-    @Transaction
-    @Query("SELECT * from deck")
-    fun getDecks(): List<DeckWithCards>
+interface CardDao {
 
     @Insert
-    suspend fun insert(deck: Deck)
+    suspend fun insert(card: Card)
 
     @Insert
-    suspend fun insert(deck: List<Deck>)
+    suspend fun insert(card: List<Card>)
 
     @Delete
-    suspend fun delete(deck: Deck)
+    suspend fun delete(card: Card)
 
-    @Query("DELETE from deck")
+    @Query("DELETE from card")
     suspend fun deleteAll()
 
 }

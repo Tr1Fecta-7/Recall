@@ -6,7 +6,7 @@ plugins {
     id("kotlinx-serialization")
     id("de.mannodermaus.android-junit5")
     id("com.google.devtools.ksp")
-    id ("kotlin-kapt")
+    id("kotlin-kapt")
 }
 
 android {
@@ -59,8 +59,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
 
     // Room Database
-    ksp ("androidx.room:room-compiler:${Versions.DATABASE}")
-    implementation ("androidx.room:room-runtime:${Versions.DATABASE}")
-
-    implementation("androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:${Versions.DATABASE}")
+    ksp("androidx.room:room-compiler:${Versions.DATABASE}")
+    implementation("androidx.room:room-runtime:${Versions.DATABASE}")
+    implementation("androidx.room:room-ktx:${Versions.DATABASE}")
+    annotationProcessor("androidx.room:room-compiler:${Versions.DATABASE}")
 }
