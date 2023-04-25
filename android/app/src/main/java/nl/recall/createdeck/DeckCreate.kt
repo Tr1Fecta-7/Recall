@@ -18,11 +18,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.AlertWindow
+import nl.recall.components.ColorPickerWindow
 import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.createDeck.CreateDeckViewModel
 import nl.recall.presentation.createDeck.model.CreateDeckViewModelArgs
@@ -84,23 +84,9 @@ private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
     var iconTextField by remember {
         mutableStateOf(TextFieldValue(""))
     }
-    val controller = rememberColorPickerController()
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(paddingValues)) {
-
-//        HsvColorPicker(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(100.dp)
-//                .padding(10.dp),
-//            controller = controller,
-//            onColorChanged = { colorEnvelope: ColorEnvelope ->
-//                Log.e("color", "#${colorEnvelope.hexCode}")
-//                deckColor = "#${colorEnvelope.hexCode}"
-//            },
-//            initialColor = AppTheme.neutral100
-//        )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -157,14 +143,15 @@ private fun DeckSuccess(newDeck: UIState<Deck>, paddingValues: PaddingValues){
             Button(onClick = {showAlert = true}) {
                 Text(text = "select a color")
             }
-            AlertWindow(
+            ColorPickerWindow(
                 title = "Pick background color",
                 subText = "",
                 confirmText = "Select color",
                 confirmTextColor = AppTheme.primary300,
                 openDialog = true,
                 onCloseDialog = { showAlert = false },
-                onPressConfirm = {showAlert = false}
+                onPressConfirm = {showAlert = false},
+                onSelectColor = { deckColor = "#${it.hexCode}"}
             )
 
         }
