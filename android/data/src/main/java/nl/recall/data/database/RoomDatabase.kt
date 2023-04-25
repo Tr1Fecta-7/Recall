@@ -15,7 +15,7 @@ abstract class RoomDatabase : RoomDatabase() {
     abstract fun deckDao(): DeckDao
 
     companion object {
-        private const val DATABASE_NAME = "recall"
+        private const val DATABASE_NAME = "RECALL_DATABASE"
 
         @Volatile
         private var INSTANCE: RoomDatabase? = null
