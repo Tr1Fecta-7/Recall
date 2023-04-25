@@ -70,7 +70,6 @@ fun DeckDetailScreen(
     var expandedMoreVert by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
 
-
     Scaffold(topBar = {
         TopAppBar(colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = AppTheme.white
