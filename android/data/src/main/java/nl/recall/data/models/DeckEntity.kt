@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 @Entity(tableName = "deck")
-data class DeckResult (
+data class DeckEntity (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Long = 0,

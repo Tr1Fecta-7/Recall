@@ -1,15 +1,15 @@
 package nl.recall.data.mappers
 
-import nl.recall.data.models.DeckResult
+import nl.recall.data.models.DeckEntity
 import nl.recall.domain.deck.model.Deck
 
 object DeckMapper {
 
-    internal fun List<DeckResult>.toDomain(): List<Deck> {
+    internal fun List<DeckEntity>.toDomain(): List<Deck> {
         return map { it.toDomain() }
     }
 
-    fun DeckResult.toDomain(): Deck {
+    fun DeckEntity.toDomain(): Deck {
         return Deck(id, title, creationDate, icon, backgroundColor)
     }
 }

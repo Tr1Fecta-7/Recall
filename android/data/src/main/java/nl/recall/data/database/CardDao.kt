@@ -4,19 +4,19 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import nl.recall.data.models.CardResult
+import nl.recall.data.models.CardEntity
 
 @Dao
 interface CardDao {
 
     @Insert
-    suspend fun insert(cardResult: CardResult)
+    suspend fun insert(cardEntity: CardEntity)
 
     @Insert
-    suspend fun insert(cardResult: List<CardResult>)
+    suspend fun insert(cardEntity: List<CardEntity>)
 
     @Delete
-    suspend fun delete(cardResult: CardResult)
+    suspend fun delete(cardEntity: CardEntity)
 
     @Query("DELETE from card")
     suspend fun deleteAll()
