@@ -67,7 +67,6 @@ fun DeckDetailScreen(
         parametersOf(DeckDetailViewModelArgs(1))
     })
 ) {
-    val list: List<String> = listOf("boe", "", "", "")
     var expandedMoreVert by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
     val navigateToCreateCard: () -> Unit = { navigator.navigate(CreateCardScreenDestination) }

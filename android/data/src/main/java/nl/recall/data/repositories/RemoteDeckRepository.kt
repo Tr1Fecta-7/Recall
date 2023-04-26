@@ -12,15 +12,7 @@ import nl.recall.domain.deck.model.DeckWithCards
 import org.koin.core.annotation.Factory
 
 @Factory
-class RemoteDeckRepository(context: Context) : DeckRepository {
-
-    private val deckDao: DeckDao
-
-    init {
-        val database = RecallRoomDatabase.getDatabase(context)
-        deckDao = database.deckDao()
-    }
-
+class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
     override suspend fun getDeckById(id: Long): DeckWithCards? {
         return deckDao.getDeckById(id)?.toDomain()
     }
