@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import nl.recall.R
 import nl.recall.domain.deck.model.Deck
-import nl.recall.domain.models.DeckPreviewData
 import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 import java.util.Date
@@ -59,7 +58,7 @@ fun DeckPreview(deck: Deck, cardCount: Int, onClick: () -> Unit) {
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(deck.background_color.toColorInt()))
+                        .background(Color(deck.color.toColorInt()))
                 ) {
                     Text(deck.icon)
                 }
@@ -95,7 +94,7 @@ fun Preview() {
         title = "Mandarin HSK 1",
         creationDate = Date(),
         icon = "🇨🇳",
-        background_color = "#FFEAEA"
+        color = "#FFEAEA"
     )
     val cardCount = 256
 

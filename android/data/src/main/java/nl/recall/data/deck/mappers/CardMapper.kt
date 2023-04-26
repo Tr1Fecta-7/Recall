@@ -1,6 +1,6 @@
-package nl.recall.data.mappers
+package nl.recall.data.deck.mappers
 
-import nl.recall.data.models.CardEntity
+import nl.recall.data.deck.models.CardEntity
 import nl.recall.domain.deck.model.Card
 
 object CardMapper {
@@ -9,6 +9,6 @@ object CardMapper {
     }
 
     fun CardEntity.toDomain(): Card {
-        return Card(id, front, back, dueDate)
+        return Card(id = id, front = front, back = back, dueDate = dueDate)
     }
 }

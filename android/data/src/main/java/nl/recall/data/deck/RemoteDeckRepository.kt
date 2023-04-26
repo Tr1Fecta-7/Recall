@@ -1,11 +1,9 @@
-package nl.recall.data.repositories
+package nl.recall.data.deck
 
 
-import android.content.Context
-import nl.recall.data.database.DeckDao
-import nl.recall.data.database.RecallRoomDatabase
-import nl.recall.data.mappers.DeckWithCardCountMapper.toDomain
-import nl.recall.data.mappers.DeckWithCardsMapper.toDomain
+import nl.recall.data.deck.storage.DeckDao
+import nl.recall.data.deck.mappers.DeckWithCardCountMapper.toDomain
+import nl.recall.data.deck.mappers.DeckWithCardsMapper.toDomain
 import nl.recall.domain.deck.model.Deck
 import nl.recall.domain.repositories.DeckRepository
 import nl.recall.domain.deck.model.DeckWithCards

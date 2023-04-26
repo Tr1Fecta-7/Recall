@@ -1,4 +1,4 @@
-package nl.recall.data.models
+package nl.recall.data.deck.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -9,17 +9,17 @@ import java.util.Date
 data class CardEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    var id: Long = 0,
+    val id: Long = 0,
 
     @ColumnInfo(name = "front")
-    var front: String = "",
+    val front: String = "",
 
     @ColumnInfo(name = "back")
-    var back: String = "",
+    val back: String = "",
 
     @ColumnInfo(name = "due_date")
-    var dueDate: Date = Date(),
+    val dueDate: Date = Date(),
 
     @ColumnInfo(name = "deck_id")
-    var deckId: Long = 0
+    val deckId: Long = 0
 )

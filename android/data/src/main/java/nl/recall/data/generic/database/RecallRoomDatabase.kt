@@ -1,12 +1,14 @@
-package nl.recall.data.database
+package nl.recall.data.generic.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import nl.recall.data.models.CardEntity
-import nl.recall.data.models.DeckEntity
+import nl.recall.data.deck.models.CardEntity
+import nl.recall.data.deck.models.DeckEntity
+import nl.recall.data.deck.storage.CardDao
+import nl.recall.data.deck.storage.DeckDao
 
 @Database(entities = [DeckEntity::class, CardEntity::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)

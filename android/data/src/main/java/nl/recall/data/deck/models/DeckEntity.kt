@@ -1,4 +1,4 @@
-package nl.recall.data.models
+package nl.recall.data.deck.models
 
 
 import androidx.room.ColumnInfo
@@ -10,17 +10,17 @@ import java.util.Date
 data class DeckEntity (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    var id: Long = 0,
+    val id: Long = 0,
 
     @ColumnInfo(name = "title")
-    var title: String = "",
+    val title: String = "",
 
     @ColumnInfo(name = "creation_date")
-    var creationDate : Date = Date(),
+    val creationDate : Date = Date(),
 
     @ColumnInfo(name = "icon")
-    var icon : String = "",
+    val icon : String = "",
 
-    @ColumnInfo(name = "background_color")
-    var backgroundColor: String = "",
+    @ColumnInfo(name = "color")
+    val color: String = "",
 )

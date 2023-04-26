@@ -1,4 +1,4 @@
-package nl.recall.data.database
+package nl.recall.data.deck.storage
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,8 +6,8 @@ import androidx.room.Insert
 import androidx.room.MapInfo
 import androidx.room.Query
 import androidx.room.Transaction
-import nl.recall.data.models.DeckEntity
-import nl.recall.data.models.DeckWithCardsEntity
+import nl.recall.data.deck.models.DeckEntity
+import nl.recall.data.deck.models.DeckWithCardsEntity
 
 @Dao
 interface DeckDao {

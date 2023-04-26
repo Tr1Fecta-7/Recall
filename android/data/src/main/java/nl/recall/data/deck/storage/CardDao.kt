@@ -1,10 +1,10 @@
-package nl.recall.data.database
+package nl.recall.data.deck.storage
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import nl.recall.data.models.CardEntity
+import nl.recall.data.deck.models.CardEntity
 
 @Dao
 interface CardDao {

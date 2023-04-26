@@ -1,8 +1,8 @@
 package nl.recall.data
 
 import android.content.Context
-import nl.recall.data.database.DeckDao
-import nl.recall.data.database.RecallRoomDatabase
+import nl.recall.data.deck.storage.DeckDao
+import nl.recall.data.generic.database.RecallRoomDatabase
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single

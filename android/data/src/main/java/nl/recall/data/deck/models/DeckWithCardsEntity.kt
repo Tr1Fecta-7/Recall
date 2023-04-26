@@ -1,4 +1,4 @@
-package nl.recall.data.models
+package nl.recall.data.deck.models
 
 import androidx.room.Embedded
 import androidx.room.Relation

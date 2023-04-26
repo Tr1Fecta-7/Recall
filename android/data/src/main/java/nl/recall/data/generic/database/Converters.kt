@@ -1,4 +1,4 @@
-package nl.recall.data.database
+package nl.recall.data.generic.database
 
 import androidx.room.TypeConverter
 import java.util.Date

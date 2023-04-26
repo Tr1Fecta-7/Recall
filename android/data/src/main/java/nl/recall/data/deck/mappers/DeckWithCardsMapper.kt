@@ -1,8 +1,8 @@
-package nl.recall.data.mappers
+package nl.recall.data.deck.mappers
 
-import nl.recall.data.mappers.CardMapper.toDomain
-import nl.recall.data.mappers.DeckMapper.toDomain
-import nl.recall.data.models.DeckWithCardsEntity
+import nl.recall.data.deck.mappers.CardMapper.toDomain
+import nl.recall.data.deck.mappers.DeckMapper.toDomain
+import nl.recall.data.deck.models.DeckWithCardsEntity
 import nl.recall.domain.deck.model.DeckWithCards
 
 object DeckWithCardsMapper {
