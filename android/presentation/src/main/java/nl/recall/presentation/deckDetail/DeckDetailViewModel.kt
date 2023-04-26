@@ -19,26 +19,24 @@ class DeckDetailViewModel(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UIState.LOADING)
-    val state: StateFlow<UIState> by lazy {
-        _state.asStateFlow()
-    }
+    val state: StateFlow<UIState> = _state.asStateFlow()
 
-    private val _deck = MutableStateFlow<DeckWithCards>(DeckWithCards())
-    val deck: StateFlow<DeckWithCards> by lazy {
-        fetchDeck(args.id)
+    private val _deck = MutableStateFlow<DeckWithCards?>(null)
+    val deck: StateFlow<DeckWithCards?> by lazy {
+        fetchDeck()
         _deck.asStateFlow()
     }
 
-    private fun fetchDeck(id: Long) {
+    private fun fetchDeck() {
         viewModelScope.launch {
-            _state.value = UIState.LOADING
-            val result = getDeckById(id)
-            if(result == null) {
-                UIState.ERROR
-            } else {
-                _deck.value = result
+            try {
+                _state.value = UIState.LOADING
+                _deck.value = getDeckById(args.id)
                 UIState.NORMAL
+            } catch (exception: Exception) {
+                _state.value = UIState.ERROR
             }
+
         }
     }
 }

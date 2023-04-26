@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,17 +50,20 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.deck.AlertWindow
 import nl.recall.destinations.CreateCardScreenDestination
+import nl.recall.destinations.DeckCreateDestination
+import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
+import nl.recall.destinations.DecksOverviewSearchScreenDestination
+import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
 import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
+import nl.recall.presentation.decksOverview.DecksOverviewViewModel
+import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-
 @Destination
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DeckDetailScreen(
     navigator: DestinationsNavigator,
@@ -67,16 +71,49 @@ fun DeckDetailScreen(
         parametersOf(DeckDetailViewModelArgs(1))
     })
 ) {
+    val uiState by viewModel.state.collectAsState()
+    val deckWithCards by viewModel.deck.collectAsState()
+
+    when (uiState) {
+        UIState.NORMAL -> {
+            Content(navigator, deckWithCards.let {
+                it!!
+            })
+        }
+        UIState.ERROR -> {
+
+        }
+
+        UIState.LOADING -> {
+
+        }
+
+        UIState.EMPTY -> {
+
+        }
+    }
+}
+
+
+@Destination
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun Content(
+    navigator: DestinationsNavigator,
+    deck: DeckWithCards
+) {
     var expandedMoreVert by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
     val navigateToCreateCard: () -> Unit = { navigator.navigate(CreateCardScreenDestination) }
+
 
     Scaffold(topBar = {
         TopAppBar(colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = AppTheme.white
         ), title = {
             Text(
-                text = viewModel.deck.value.deck.title
+                text = deck?.deck?.title
                     ?: stringResource(id = R.string.placeholder_title)
             )
         }, navigationIcon = {
@@ -146,7 +183,7 @@ fun DeckDetailScreen(
                 modifier = Modifier.padding(top = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                items(items = viewModel.deck.value.cards, itemContent = {
+                items(items = deck?.cards ?: listOf(), itemContent = {
                     Card(
                         onClick = { /* */ },
                         shape = RoundedCornerShape(12.dp),

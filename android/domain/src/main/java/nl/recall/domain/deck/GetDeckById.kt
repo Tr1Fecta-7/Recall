@@ -8,7 +8,7 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GetDeckById(private val deckRepository: DeckRepository) {
-    suspend operator fun invoke(id: Long): DeckWithCards? {
+    suspend operator fun invoke(id: Long): DeckWithCards {
         return deckRepository.getDeckById(id)
     }
 }
