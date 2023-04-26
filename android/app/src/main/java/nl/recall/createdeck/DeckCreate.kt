@@ -88,10 +88,23 @@ private fun DeckSuccess(paddingValues: PaddingValues){
         mutableStateOf(TextFieldValue(""))
     }
 
-
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(paddingValues)) {
+
+        //hidden by default
+        ColorPickerWindow(
+            title = "Pick background color",
+            subText = "",
+            confirmText = "Select color",
+            confirmTextColor = AppTheme.primary300,
+            openDialog = showAlert,
+            onCloseDialog = { showAlert = false },
+            onPressConfirm = {showAlert = false},
+            onSelectColor = { deckColor = "#${it.hexCode}"},
+            preSelectedColor = deckColor
+        )
+
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -131,7 +144,6 @@ private fun DeckSuccess(paddingValues: PaddingValues){
                     onValueChange = { newText ->
                         if(newText.text.length <= 2 && newText.text.length % 2 == 0){
                             iconTextField = newText
-                            deckColor = newText.text
                         }
                     },
                     modifier = Modifier.background(color = Color.White),
@@ -148,18 +160,6 @@ private fun DeckSuccess(paddingValues: PaddingValues){
             Button(onClick = {showAlert = true}) {
                 Text(text = "select a color")
             }
-            ColorPickerWindow(
-                title = "Pick background color",
-                subText = "",
-                confirmText = "Select color",
-                confirmTextColor = AppTheme.primary300,
-                openDialog = showAlert,
-                onCloseDialog = { showAlert = false },
-                onPressConfirm = {showAlert = false},
-                onSelectColor = { deckColor = "#${it.hexCode}"},
-                preSelectedColor = deckColor
-            )
-
         }
         Column(
             modifier = Modifier
