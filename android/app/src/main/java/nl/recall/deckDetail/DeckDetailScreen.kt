@@ -76,9 +76,9 @@ fun DeckDetailScreen(
 
     when (uiState) {
         UIState.NORMAL -> {
-            Content(navigator, deckWithCards.let {
-                it!!
-            })
+            deckWithCards?.let {
+                Content(navigator = navigator, deck = it)
+            }
         }
         UIState.ERROR -> {
 
