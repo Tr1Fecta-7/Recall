@@ -18,24 +18,22 @@ abstract class RecallRoomDatabase : RoomDatabase() {
     companion object {
         private const val DATABASE_NAME = "RECALL_DATABASE"
 
-
         @Volatile
         private var INSTANCE: RecallRoomDatabase? = null
 
-        fun getDatabase(context: Context): RecallRoomDatabase? {
-            if (INSTANCE == null) {
-                synchronized(RoomDatabase::class.java) {
-                    if (INSTANCE == null) {
-                        INSTANCE = Room.databaseBuilder(
-                            context.applicationContext,
-                            RecallRoomDatabase::class.java, DATABASE_NAME
-                        )
-                            .fallbackToDestructiveMigration()
-                            .build()
-                    }
-                }
+        fun getDatabase(context: Context): RecallRoomDatabase {
+            // if the INSTANCE is not null, then return it,
+            // if it is, then create the database
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    RecallRoomDatabase::class.java,
+                    DATABASE_NAME
+                ).build()
+                INSTANCE = instance
+                // return instance
+                instance
             }
-            return INSTANCE
         }
     }
 }

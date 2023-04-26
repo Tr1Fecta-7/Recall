@@ -29,7 +29,6 @@ class DecksOverviewViewModel(private val getDecksWithCardCount: GetDecksWithCard
     private fun fetchDecks() {
         _state.value = UIState.LOADING
 
-        // TODO: Remove sample data
         viewModelScope.launch {
             _decks.value = getDecksWithCardCount()
 

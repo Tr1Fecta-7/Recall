@@ -18,7 +18,7 @@ class RemoteDeckRepository(context: Context) : DeckRepository {
 
     init {
         val database = RecallRoomDatabase.getDatabase(context)
-        deckDao = database!!.deckDao()
+        deckDao = database.deckDao()
     }
 
     override suspend fun getDeckById(id: Long): DeckWithCards? {
