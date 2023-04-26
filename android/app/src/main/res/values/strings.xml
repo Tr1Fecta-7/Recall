@@ -25,4 +25,5 @@
     <string name="cards_title">Cards</string>
     <string name="card_searchbar_title">Search for cards</string>
     <string name="placeholder_card_front">front of card</string>
+    <string name="no_decks_found">No decks found</string>
 </resources>

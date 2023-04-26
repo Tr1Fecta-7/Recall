@@ -1,8 +1,10 @@
 package nl.recall.decksoverview
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,8 +39,8 @@ import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.DecksOverviewSearchScreenDestination
 import nl.recall.domain.deck.model.Deck
-import nl.recall.domain.models.DeckPreviewData
 import nl.recall.presentation.decksOverview.DecksOverviewViewModel
+import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,13 +59,34 @@ fun DecksOverviewScreen(
     val decks by viewModel.decks.collectAsState()
     val uiState by viewModel.state.collectAsState()
 
-    // TODO: rewrite UI State
-    Content(decks, navigateToDetail, navigateToCreateDeck, navigateToDeckSearch)
+
+    when (uiState) {
+        UIState.NORMAL, UIState.EMPTY -> {
+            Content(
+                decks = decks,
+                navigateToDetail = navigateToDetail,
+                navigateToCreateDeck = navigateToCreateDeck,
+                navigateToDeckSearch = navigateToDeckSearch
+            )
+        }
+        UIState.LOADING -> {
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        UIState.ERROR -> {
+            // TODO: Write error state
+        }
+    }
 }
 
 @Composable
 private fun Content(
-    decks: Map<Deck, Int>?,
+    decks: Map<Deck, Int>,
     navigateToDetail: () -> Unit,
     navigateToCreateDeck: () -> Unit,
     navigateToDeckSearch: () -> Unit
@@ -123,13 +148,33 @@ private fun Content(
                 }
             }
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(decks.orEmpty().entries.toList()) { entry ->
-                    DeckPreview(entry.key, cardCount = entry.value, onClick = {
-                        navigateToDetail()
-                    })
+            if (decks.isNotEmpty()) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(decks.orEmpty().entries.toList()) { entry ->
+                        DeckPreview(entry.key, cardCount = entry.value, onClick = {
+                            navigateToDetail()
+                        })
+                    }
+                }
+            } else {
+                Column(
+                    Modifier.fillMaxSize()
+                ) {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 60.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.no_decks_found),
+                            contentDescription = "No decks found"
+                        )
+                        Text(text = stringResource(id = R.string.no_decks_found))
+                    }
                 }
             }
         }
