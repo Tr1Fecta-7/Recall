@@ -113,8 +113,7 @@ fun Content(
             containerColor = AppTheme.white
         ), title = {
             Text(
-                text = deck?.deck?.title
-                    ?: stringResource(id = R.string.placeholder_title)
+                text = deck.deck.title
             )
         }, navigationIcon = {
             IconButton(onClick = { navigator.popBackStack() }) {
