@@ -1,7 +1,12 @@
 package nl.recall.presentation.createDeck.model
 
-class CreateDeckViewModelArgs(id: Long, title: String, background_color: String){
-    val id = id
-    val title = title
-    val background_color = background_color
-}
+import android.graphics.drawable.Icon
+import java.util.Date
+
+class CreateDeckViewModelArgs(
+    val id: Long,
+    val title: String,
+    val color: String,
+    val creationDate: Date,
+    val icon: String
+    )

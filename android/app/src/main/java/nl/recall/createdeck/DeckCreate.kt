@@ -1,4 +1,5 @@
 package nl.recall.createdeck
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -32,6 +33,7 @@ import nl.recall.theme.AppTheme
 import nl.recall.theme.md_theme_light_primary
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.util.Date
 
 @Destination
 @Composable
@@ -57,21 +59,22 @@ fun DeckCreate(navigator: DestinationsNavigator){
 @Composable
 private fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues){
     val viewModel: CreateDeckViewModel = koinViewModel(parameters = {
-        parametersOf(CreateDeckViewModelArgs(1, "title","#2596be"))
+        parametersOf(CreateDeckViewModelArgs(id = 1, title = "title", color = "#2596be", creationDate = Date(), icon = ""))
     })
-    val newDeck: Deck by viewModel.deck.collectAsState()
+    val deck = viewModel.deck.collectAsState()
     val uiState: UIState by viewModel.state.collectAsState()
+    Log.e("UISTATE", uiState.name)
     when(uiState){
-        UIState.NORMAL -> { DeckSuccess(newDeck, paddingValues) }
+        UIState.NORMAL -> { DeckSuccess(paddingValues) }
         else -> {}
     }
 
 }
 
 @Composable
-private fun DeckSuccess(newDeck: Deck, paddingValues: PaddingValues){
+private fun DeckSuccess(paddingValues: PaddingValues){
     var deckColor by remember {
-        mutableStateOf(newDeck.background_color)
+        mutableStateOf("#c9c9c9")
     }
 
     var showAlert by remember{
@@ -84,6 +87,8 @@ private fun DeckSuccess(newDeck: Deck, paddingValues: PaddingValues){
     var iconTextField by remember {
         mutableStateOf(TextFieldValue(""))
     }
+
+
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(paddingValues)) {
@@ -117,7 +122,7 @@ private fun DeckSuccess(newDeck: Deck, paddingValues: PaddingValues){
                     .clip(CircleShape)
                     .background(
                         Color(
-                            deckColor?.toColorInt() ?: "white".toColorInt()
+                            deckColor.toColorInt()
                         )
                     ),
            ) {
@@ -126,13 +131,13 @@ private fun DeckSuccess(newDeck: Deck, paddingValues: PaddingValues){
                     onValueChange = { newText ->
                         if(newText.text.length <= 2 && newText.text.length % 2 == 0){
                             iconTextField = newText
-                            newDeck.icon = newText.text
+                            deckColor = newText.text
                         }
                     },
                     modifier = Modifier.background(color = Color.White),
                     textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 155.sp),
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color(deckColor?.toColorInt()?: "white".toColorInt()),
+                        containerColor = Color(deckColor.toColorInt()),
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent

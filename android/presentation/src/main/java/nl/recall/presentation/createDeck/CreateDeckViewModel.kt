@@ -11,24 +11,29 @@ import nl.recall.presentation.createDeck.model.CreateDeckViewModelArgs
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
+import java.util.Date
 
 @KoinViewModel
 
 class CreateDeckViewModel(@InjectedParam private val args: CreateDeckViewModelArgs): ViewModel(){
-    private val _state = MutableStateFlow(UIState.EMPTY)
-    val state: StateFlow<UIState> by lazy {
-        _state.asStateFlow()
-    }
+    private val _state = MutableStateFlow(UIState.LOADING)
+    val state: StateFlow<UIState> = _state.asStateFlow()
 
-    private val _deck = MutableStateFlow<Deck>(Deck())
-    val deck: StateFlow<Deck> by lazy{
+    private val _deck = MutableStateFlow<Deck?>(null)
+    val deck: StateFlow<Deck?> by lazy{
         fetchDeck()
         _deck.asStateFlow()
     }
 
     private fun fetchDeck(){
         viewModelScope.launch {
-            _deck.value = Deck(id = args.id, title = args.title, background_color = args.background_color)
+            _deck.value = Deck(
+                id = args.id,
+                title = args.title,
+                color = args.color,
+                creationDate = args.creationDate,
+                icon = args.icon
+            )
             _state.value = UIState.NORMAL
         }
     }
