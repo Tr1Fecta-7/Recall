@@ -23,6 +23,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.ColorPickerWindow
+import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.createDeck.CreateDeckViewModel
 import nl.recall.presentation.createDeck.model.CreateDeckViewModelArgs
@@ -61,16 +62,31 @@ private fun MainContent(navigator: DestinationsNavigator, paddingValues: Padding
     })
     val deck = viewModel.deck.collectAsState().value
     val uiState: UIState by viewModel.state.collectAsState()
-    Log.e("UISTATE", uiState.name)
+    val savedDeckIntoDatabase = viewModel.savedDeckBoolean.collectAsState().value;
     when(uiState){
-        UIState.NORMAL -> { deck?.let { DeckSuccess(paddingValues = paddingValues, deck = it, navigator) } }
-        else -> {}
+        UIState.NORMAL -> { deck?.let { DeckSuccess(
+            paddingValues = paddingValues,
+            deck = it, navigator,
+            viewModel = viewModel,
+            savedDeckIntoDatabase = savedDeckIntoDatabase) } }
+        UIState.LOADING -> { DeckLoading() }
+        else -> {
+
+        }
     }
 
 }
 
 @Composable
-private fun DeckSuccess(paddingValues: PaddingValues, deck: Deck, navigator: DestinationsNavigator) {
+private fun DeckSuccess(
+    paddingValues: PaddingValues,
+    deck: Deck,
+    navigator: DestinationsNavigator,
+    viewModel: CreateDeckViewModel,
+    savedDeckIntoDatabase: Boolean
+) {
+    if(savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
+
     var deckColor by remember {
         mutableStateOf(deck.color)
     }
@@ -187,7 +203,7 @@ private fun DeckSuccess(paddingValues: PaddingValues, deck: Deck, navigator: Des
             Button(
                 enabled = validationTitle && validationEmoji,
                 onClick = {
-
+                    viewModel.saveDeckToDatabase(title = deckTitleTextField.text, creationDate = Date(), icon = emojiTextfield.text, color = deckColor)
                 },
                 modifier = Modifier
                     .clip(RoundedCornerShape(30.dp))
@@ -204,4 +220,16 @@ private fun DeckSuccess(paddingValues: PaddingValues, deck: Deck, navigator: Des
             }
         }
     }
+}
+
+@Composable
+fun DeckLoading(){
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+    }
+    CircularProgressIndicator()
 }

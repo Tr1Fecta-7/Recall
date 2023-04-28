@@ -21,7 +21,7 @@ interface DeckDao {
     suspend fun getDecksWithCardCount(): Map<DeckEntity, Int>
 
     @Insert
-    suspend fun insert(deckEntity: DeckEntity)
+    suspend fun insert(deckEntity: DeckEntity): Long
 
     @Insert
     suspend fun insert(deckEntity: List<DeckEntity>)
