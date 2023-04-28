@@ -21,9 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.flow.StateFlow
 import nl.recall.R
-import nl.recall.components.AlertWindow
 import nl.recall.components.ColorPickerWindow
 import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.createDeck.CreateDeckViewModel
@@ -59,38 +57,49 @@ fun DeckCreate(navigator: DestinationsNavigator){
 @Composable
 private fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues){
     val viewModel: CreateDeckViewModel = koinViewModel(parameters = {
-        parametersOf(CreateDeckViewModelArgs(id = 1, title = "title", color = "#2596be", creationDate = Date(), icon = ""))
+        parametersOf(CreateDeckViewModelArgs(id = 1, title = "", color = "#2596be", creationDate = Date(), icon = "\uD83D\uDD25"))
     })
-    val deck = viewModel.deck.collectAsState()
+    val deck = viewModel.deck.collectAsState().value
     val uiState: UIState by viewModel.state.collectAsState()
     Log.e("UISTATE", uiState.name)
     when(uiState){
-        UIState.NORMAL -> { DeckSuccess(paddingValues) }
+        UIState.NORMAL -> { deck?.let { DeckSuccess(paddingValues = paddingValues, deck = it, navigator) } }
         else -> {}
     }
 
 }
 
 @Composable
-private fun DeckSuccess(paddingValues: PaddingValues){
+private fun DeckSuccess(paddingValues: PaddingValues, deck: Deck, navigator: DestinationsNavigator) {
     var deckColor by remember {
-        mutableStateOf("#c9c9c9")
+        mutableStateOf(deck.color)
     }
 
-    var showAlert by remember{
+    var showAlert by remember {
         mutableStateOf(false)
     }
 
-    var createTextField by remember {
-        mutableStateOf(TextFieldValue(""))
+    var deckTitleTextField by remember {
+        mutableStateOf(TextFieldValue(deck.title))
     }
-    var iconTextField by remember {
-        mutableStateOf(TextFieldValue(""))
+    var emojiTextfield by remember {
+        mutableStateOf(TextFieldValue(deck.icon))
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues)) {
+    var validationTitle by remember {
+        mutableStateOf(false)
+    }
+
+    var validationEmoji by remember {
+        //stardart emoji present, thus onload always true
+        mutableStateOf(true)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
 
         //hidden by default
         ColorPickerWindow(
@@ -100,8 +109,8 @@ private fun DeckSuccess(paddingValues: PaddingValues){
             confirmTextColor = AppTheme.primary300,
             openDialog = showAlert,
             onCloseDialog = { showAlert = false },
-            onPressConfirm = {showAlert = false},
-            onSelectColor = { deckColor = "#${it.hexCode}"},
+            onPressConfirm = { showAlert = false },
+            onSelectColor = { deckColor = "#${it.hexCode}" },
             preSelectedColor = deckColor
         )
 
@@ -115,12 +124,14 @@ private fun DeckSuccess(paddingValues: PaddingValues){
                 .weight(1f)
         ) {
             OutlinedTextField(
-                value = createTextField,
-                label = { Text(text = stringResource(id = R.string.create_deck_create_text_field))},
+                value = deckTitleTextField,
+                label = { Text(text = stringResource(id = R.string.create_deck_create_text_field)) },
                 onValueChange = { newText ->
-                    createTextField = newText
+                    deckTitleTextField = newText
+                    validationTitle = newText.text.isNotBlank()
+
                 },
-                placeholder = { Text(text = stringResource(id = R.string.create_deck_create_text_field_placeholder))},
+                placeholder = { Text(text = stringResource(id = R.string.create_deck_create_text_field_placeholder)) },
             )
 
             Text(
@@ -138,16 +149,22 @@ private fun DeckSuccess(paddingValues: PaddingValues){
                             deckColor.toColorInt()
                         )
                     ),
-           ) {
+            ) {
                 TextField(
-                    value = iconTextField,
+                    value = emojiTextfield,
                     onValueChange = { newText ->
-                        if(newText.text.length <= 2 && newText.text.length % 2 == 0){
-                            iconTextField = newText
+                        if (newText.text.length <= 2 && newText.text.length % 2 == 0) {
+                            emojiTextfield = newText
+                            validationEmoji = newText.text.isNotBlank()
+                        } else {
+                            validationEmoji = false
                         }
                     },
                     modifier = Modifier.background(color = Color.White),
-                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 155.sp),
+                    textStyle = LocalTextStyle.current.copy(
+                        textAlign = TextAlign.Center,
+                        fontSize = 155.sp
+                    ),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color(deckColor.toColorInt()),
                         focusedIndicatorColor = Color.Transparent,
@@ -157,7 +174,7 @@ private fun DeckSuccess(paddingValues: PaddingValues){
 
                     )
             }
-            Button(onClick = {showAlert = true}) {
+            Button(onClick = { showAlert = true }) {
                 Text(text = "select a color")
             }
         }
@@ -168,13 +185,17 @@ private fun DeckSuccess(paddingValues: PaddingValues){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
+                enabled = validationTitle && validationEmoji,
                 onClick = {
 
                 },
-                Modifier
+                modifier = Modifier
                     .clip(RoundedCornerShape(30.dp))
-                    .background(md_theme_light_primary)
                     .width(300.dp),
+                colors = ButtonDefaults.buttonColors(
+                    disabledContainerColor = AppTheme.neutral500,
+                    containerColor = md_theme_light_primary
+                )
             ) {
                 Text(
                     text = stringResource(id = R.string.create_deck_title),
