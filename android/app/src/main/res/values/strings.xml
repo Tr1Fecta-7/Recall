@@ -26,4 +26,6 @@
     <string name="card_searchbar_title">Search for cards</string>
     <string name="placeholder_card_front">front of card</string>
     <string name="no_decks_found">No decks found</string>
+    <string name="deck_detail_title_placeholder">Deck name</string>
+    <string name="get_deck_error">Error while searching for deck details</string>
 </resources>

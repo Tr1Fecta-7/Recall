@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,6 +56,7 @@ import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.destinations.DecksOverviewSearchScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
+import nl.recall.errorScreen.ErrorScreen
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
 import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
 import nl.recall.presentation.decksOverview.DecksOverviewViewModel
@@ -81,11 +83,19 @@ fun DeckDetailScreen(
             }
         }
         UIState.ERROR -> {
-
+            ErrorScreen(titleText = stringResource(id = R.string.deck_detail_title_placeholder), errorText = stringResource(
+                id = R.string.get_deck_error
+            ), navigator)
         }
 
         UIState.LOADING -> {
-
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
         }
 
         UIState.EMPTY -> {
