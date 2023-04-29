@@ -7,5 +7,6 @@ import java.util.Date
 interface DeckRepository {
     suspend fun getDeckById(id: Long): DeckWithCards
     suspend fun getDeckWithCardCount(): Map<Deck, Int>
+    suspend fun searchDeckWithCardCount(title: String): Map<Deck, Int>
     suspend fun saveDeck(title: String, creationDate: Date, icon: String, color: String): Boolean
 }

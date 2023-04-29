@@ -36,7 +36,6 @@ import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckDetailScreenDestination
-import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.decksOverview.DecksOverviewViewModel
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
@@ -54,13 +53,13 @@ fun DecksOverviewSearchScreen(
     val decks by viewModel.decks.collectAsState()
     val uiState by viewModel.state.collectAsState()
 
-    Content(decks, navigateToDetail, navigateBack) {
+    Content(navigateBack) {
         when (uiState) {
             UIState.NORMAL -> {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(decks.orEmpty().entries.toList()) { entry ->
+                    items(decks.entries.toList()) { entry ->
                         DeckPreview(entry.key, cardCount = entry.value, onClick = {
                             navigateToDetail()
                         })
@@ -101,8 +100,6 @@ fun DecksOverviewSearchScreen(
 
 @Composable
 private fun Content(
-    decks: Map<Deck, Int>,
-    navigateToDetail: () -> Unit,
     navigateBack: () -> Unit,
     content: @Composable() (() -> Unit)
 ) {
@@ -111,7 +108,7 @@ private fun Content(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = AppTheme.white
+                    containerColor = AppTheme.neutral50
                 ),
                 title = {
                     Text(text = stringResource(id = R.string.deck_searchbar_title))

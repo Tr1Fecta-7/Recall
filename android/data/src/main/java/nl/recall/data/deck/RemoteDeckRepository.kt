@@ -2,14 +2,13 @@ package nl.recall.data.deck
 
 
 import android.content.res.Resources.NotFoundException
-import android.util.Log
-import nl.recall.data.deck.storage.DeckDao
 import nl.recall.data.deck.mappers.DeckWithCardCountMapper.toDomain
 import nl.recall.data.deck.mappers.DeckWithCardsMapper.toDomain
 import nl.recall.data.deck.models.DeckEntity
+import nl.recall.data.deck.storage.DeckDao
 import nl.recall.domain.deck.model.Deck
-import nl.recall.domain.repositories.DeckRepository
 import nl.recall.domain.deck.model.DeckWithCards
+import nl.recall.domain.repositories.DeckRepository
 import org.koin.core.annotation.Factory
 import java.util.Date
 
@@ -23,15 +22,26 @@ class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
         return deckDao.getDecksWithCardCount().toDomain()
     }
 
-    override suspend fun saveDeck(title: String, creationDate: Date, icon: String, color: String): Boolean {
+    override suspend fun searchDeckWithCardCount(title: String): Map<Deck, Int> {
+        return deckDao.searchDecksWithCardCount(title).toDomain()
+    }
+
+    override suspend fun saveDeck(
+        title: String,
+        creationDate: Date,
+        icon: String,
+        color: String
+    ): Boolean {
         val deckEntityRow: Long =
-            deckDao.insert(DeckEntity(
-            id = 0,
-            title = title,
-            creationDate = creationDate,
-            icon = icon,
-            color = color
-        ))
+            deckDao.insert(
+                DeckEntity(
+                    id = 0,
+                    title = title,
+                    creationDate = creationDate,
+                    icon = icon,
+                    color = color
+                )
+            )
         return deckEntityRow >= 0
 
     }
