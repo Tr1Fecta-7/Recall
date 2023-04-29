@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,7 +39,6 @@ import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.DecksOverviewSearchScreenDestination
-import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.decksOverview.DecksOverviewViewModel
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
@@ -59,37 +59,60 @@ fun DecksOverviewScreen(
     val decks by viewModel.decks.collectAsState()
     val uiState by viewModel.state.collectAsState()
 
+    Content(
+        navigateToCreateDeck = navigateToCreateDeck,
+        navigateToDeckSearch = navigateToDeckSearch
+    ) {
+        when (uiState) {
+            UIState.NORMAL -> {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(decks.orEmpty().entries.toList()) { entry ->
+                        DeckPreview(entry.key, cardCount = entry.value, onClick = {
+                            navigateToDetail()
+                        })
+                    }
+                }
+            }
 
-    when (uiState) {
-        UIState.NORMAL, UIState.EMPTY -> {
-            Content(
-                decks = decks,
-                navigateToDetail = navigateToDetail,
-                navigateToCreateDeck = navigateToCreateDeck,
-                navigateToDeckSearch = navigateToDeckSearch
-            )
-        }
-        UIState.LOADING -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
+            UIState.EMPTY -> {
+                Column(
+                    Modifier.fillMaxSize()
+                ) {
+                    ImageMessage(
+                        painter = painterResource(id = R.drawable.no_decks_found),
+                        text = stringResource(id = R.string.no_decks_found)
+                    )
+                }
+            }
+
+            UIState.LOADING -> {
+                Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            UIState.ERROR -> {
+                ImageMessage(
+                    painter = painterResource(id = R.drawable.error_image),
+                    text = stringResource(id = R.string.no_decks_found)
+                )
             }
         }
-        UIState.ERROR -> {
-            // TODO: Write error state
-        }
     }
+
 }
 
 @Composable
 private fun Content(
-    decks: Map<Deck, Int>,
-    navigateToDetail: () -> Unit,
     navigateToCreateDeck: () -> Unit,
-    navigateToDeckSearch: () -> Unit
+    navigateToDeckSearch: () -> Unit,
+    content: @Composable() (() -> Unit)
 ) {
     Scaffold(
         containerColor = AppTheme.neutral50,
@@ -148,35 +171,32 @@ private fun Content(
                 }
             }
 
-            if (decks.isNotEmpty()) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(decks.orEmpty().entries.toList()) { entry ->
-                        DeckPreview(entry.key, cardCount = entry.value, onClick = {
-                            navigateToDetail()
-                        })
-                    }
-                }
-            } else {
-                Column(
-                    Modifier.fillMaxSize()
-                ) {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 60.dp),
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.no_decks_found),
-                            contentDescription = "No decks found"
-                        )
-                        Text(text = stringResource(id = R.string.no_decks_found))
-                    }
-                }
-            }
+            content()
         }
     }
+}
+
+@Composable
+private fun ImageMessage(
+    painter: Painter,
+    text: String,
+) {
+    Column(
+        Modifier.fillMaxSize()
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 60.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painter,
+                contentDescription = text
+            )
+            Text(text = text)
+        }
+    }
+
 }
