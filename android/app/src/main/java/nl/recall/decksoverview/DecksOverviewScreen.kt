@@ -35,6 +35,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.ImageMessage
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
@@ -105,7 +106,6 @@ fun DecksOverviewScreen(
             }
         }
     }
-
 }
 
 @Composable
@@ -174,29 +174,4 @@ private fun Content(
             content()
         }
     }
-}
-
-@Composable
-private fun ImageMessage(
-    painter: Painter,
-    text: String,
-) {
-    Column(
-        Modifier.fillMaxSize()
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 60.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painter,
-                contentDescription = text
-            )
-            Text(text = text)
-        }
-    }
-
 }
