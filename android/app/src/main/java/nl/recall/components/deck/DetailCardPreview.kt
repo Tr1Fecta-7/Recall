@@ -22,10 +22,11 @@
     import androidx.compose.ui.text.font.FontWeight
     import androidx.compose.ui.unit.dp
     import nl.recall.R
-    import nl.recall.theme.AppTheme
+ import nl.recall.domain.deck.model.DeckWithCards
+ import nl.recall.theme.AppTheme
 
     @Composable
-    fun DeckDetailPreview() {
+    fun DeckDetailPreview(deckWithCards: DeckWithCards) {
         Card(
             onClick = { /* */ },
             shape = RoundedCornerShape(18.dp),
@@ -62,7 +63,7 @@
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = stringResource(id = R.string.amount_of_cards_in_deck),
+                            text = stringResource(id = R.string.amount_of_cards_in_deck, deckWithCards.cards.size),
                             style = MaterialTheme.typography.bodyMedium,
                             color = AppTheme.neutral400
                         )

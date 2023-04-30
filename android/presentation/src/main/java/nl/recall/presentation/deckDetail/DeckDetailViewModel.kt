@@ -32,7 +32,7 @@ class DeckDetailViewModel(
             try {
                 _state.value = UIState.LOADING
                 _deck.value = getDeckById(args.id)
-                UIState.ERROR
+                _state.value = UIState.NORMAL
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }

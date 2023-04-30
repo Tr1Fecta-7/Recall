@@ -17,8 +17,8 @@
     <string name="deck_overview_subtitle">Let\'s learn something today!</string>
     <string name="search_bar_deck_hint">Search decks by name</string>
     <string name="deck_searchbar_title">Search for Decks</string>
-    <string name="start_learning_text">start learning</string>
-    <string name="amount_of_cards_in_deck">amount of cards</string>
+    <string name="start_learning_text">Start Learning</string>
+    <string name="amount_of_cards_in_deck">%s cards</string>
     <string name="dropdown_menu_edit_deck">edit deck</string>
     <string name="dropdown_menu_delete_deck">delete deck</string>
     <string name="search_bar_card_hint">search word</string>
@@ -28,4 +28,5 @@
     <string name="no_decks_found">No decks found</string>
     <string name="deck_detail_title_placeholder">Deck name</string>
     <string name="get_deck_error">Error while searching for deck details</string>
+    <string name="search_error_card">There was a problem while searching for cards</string>
 </resources>

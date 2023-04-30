@@ -51,15 +51,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.AlertWindow
 import nl.recall.destinations.CreateCardScreenDestination
-import nl.recall.destinations.DeckCreateDestination
-import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
-import nl.recall.destinations.DecksOverviewSearchScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.errorScreen.ErrorScreen
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
 import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
-import nl.recall.presentation.decksOverview.DecksOverviewViewModel
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
@@ -79,7 +75,7 @@ fun DeckDetailScreen(
     when (uiState) {
         UIState.NORMAL -> {
             deckWithCards?.let {
-                Content(navigator = navigator, deck = it)
+                Content(navigator = navigator, deckWithCards = it)
             }
         }
         UIState.ERROR -> {
@@ -111,7 +107,7 @@ fun DeckDetailScreen(
 @Composable
 fun Content(
     navigator: DestinationsNavigator,
-    deck: DeckWithCards
+    deckWithCards: DeckWithCards
 ) {
     var expandedMoreVert by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
@@ -123,7 +119,7 @@ fun Content(
             containerColor = AppTheme.white
         ), title = {
             Text(
-                text = deck.deck.title
+                text = deckWithCards.deck.title
             )
         }, navigationIcon = {
             IconButton(onClick = { navigator.popBackStack() }) {
@@ -155,7 +151,7 @@ fun Content(
                 .padding(20.dp)
                 .fillMaxSize()
         ) {
-            DeckDetailPreview()
+            DeckDetailPreview(deckWithCards)
             Text(
                 modifier = Modifier.padding(top = 15.dp, bottom = 10.dp),
                 text = stringResource(id = R.string.cards_title),
@@ -192,7 +188,7 @@ fun Content(
                 modifier = Modifier.padding(top = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                items(items = deck?.cards ?: listOf(), itemContent = {
+                items(items = deckWithCards?.cards ?: listOf(), itemContent = {
                     Card(
                         onClick = { /* */ },
                         shape = RoundedCornerShape(12.dp),

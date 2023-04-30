@@ -6,6 +6,7 @@ import nl.recall.data.deck.mappers.DeckWithCardCountMapper.toDomain
 import nl.recall.data.deck.mappers.DeckWithCardsMapper.toDomain
 import nl.recall.data.deck.models.DeckEntity
 import nl.recall.data.deck.storage.DeckDao
+import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.Deck
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.domain.repositories.DeckRepository

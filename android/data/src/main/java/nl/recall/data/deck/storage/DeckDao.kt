@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import nl.recall.data.deck.models.DeckEntity
 import nl.recall.data.deck.models.DeckWithCardsEntity
+import nl.recall.domain.deck.model.Card
 
 @Dao
 interface DeckDao {
