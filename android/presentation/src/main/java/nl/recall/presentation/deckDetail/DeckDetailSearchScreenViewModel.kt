@@ -26,7 +26,7 @@ class DeckDetailSearchScreenViewModel(
 
     private val _cards = MutableStateFlow<List<Card>>(listOf())
     val cards: StateFlow<List<Card>> by lazy {
-//        searchDecks("")
+        searchDecks("")
         _cards.asStateFlow()
     }
 
