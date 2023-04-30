@@ -21,12 +21,12 @@ class DeckDetailSearchScreenViewModel(
     private val getCardsBySearchQuery: GetCardsBySearchQuery
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UIState.LOADING)
+    private val _state = MutableStateFlow(UIState.EMPTY)
     val state: StateFlow<UIState> = _state.asStateFlow()
 
     private val _cards = MutableStateFlow<List<Card>>(listOf())
     val cards: StateFlow<List<Card>> by lazy {
-        searchDecks("")
+//        searchDecks("")
         _cards.asStateFlow()
     }
 

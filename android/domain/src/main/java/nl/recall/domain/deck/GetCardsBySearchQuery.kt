@@ -2,7 +2,6 @@ package nl.recall.domain.deck
 
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.repositories.CardRepository
-import nl.recall.domain.repositories.DeckRepository
 import org.koin.core.annotation.Factory
 
 @Factory

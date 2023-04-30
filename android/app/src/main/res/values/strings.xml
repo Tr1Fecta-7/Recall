@@ -19,8 +19,8 @@
     <string name="deck_searchbar_title">Search for Decks</string>
     <string name="start_learning_text">Start Learning</string>
     <string name="amount_of_cards_in_deck">%s cards</string>
-    <string name="dropdown_menu_edit_deck">edit deck</string>
-    <string name="dropdown_menu_delete_deck">delete deck</string>
+    <string name="dropdown_menu_edit_deck">Edit deck</string>
+    <string name="dropdown_menu_delete_deck">Delete deck</string>
     <string name="search_bar_card_hint">search word</string>
     <string name="cards_title">Cards</string>
     <string name="card_searchbar_title">Search for cards</string>

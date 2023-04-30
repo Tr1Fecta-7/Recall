@@ -74,12 +74,13 @@ fun DeckDetailSearchScreen(
 ) {
     val cards by viewModel.cards.collectAsState()
     val uiState by viewModel.state.collectAsState()
-
-    val navigateToCard: (Long) -> Unit = {  }
-
     var searchQuery by remember {
         mutableStateOf(TextFieldValue(String()))
     }
+
+    val navigateToCard: (Long) -> Unit = {  }
+
+
 
     Scaffold(topBar = {
         TopAppBar(
