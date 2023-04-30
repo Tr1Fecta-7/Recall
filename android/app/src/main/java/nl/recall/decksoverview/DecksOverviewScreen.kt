@@ -67,7 +67,7 @@ fun DecksOverviewScreen(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(decks.orEmpty().entries.toList()) { entry ->
+                    items(decks.entries.toList()) { entry ->
                         DeckPreview(entry.key, cardCount = entry.value, onClick = {
                             navigateToDetail()
                         })
@@ -110,7 +110,7 @@ fun DecksOverviewScreen(
 private fun Content(
     navigateToCreateDeck: () -> Unit,
     navigateToDeckSearch: () -> Unit,
-    content: @Composable() (() -> Unit)
+    content: @Composable (() -> Unit)
 ) {
     Scaffold(
         containerColor = AppTheme.neutral50,

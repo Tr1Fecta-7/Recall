@@ -43,7 +43,7 @@ class DecksOverviewViewModel(
         }
     }
 
-    private fun searchDecks(title: String) {
+    fun searchDecks(title: String) {
         _state.value = UIState.LOADING
 
         viewModelScope.launch {
