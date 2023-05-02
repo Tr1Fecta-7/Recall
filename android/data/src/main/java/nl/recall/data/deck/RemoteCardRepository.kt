@@ -11,8 +11,7 @@ import org.koin.core.annotation.Factory
 @Factory
 class RemoteCardRepository(private val cardDao: CardDao): CardRepository {
     override suspend fun getCardsBySearchQuery(deckId: Long, query: String): List<Card> {
-        val queryForDatabase = String.format("%%s%", query)
-        println(queryForDatabase)
+        val queryForDatabase = "%$query%"
 
         return cardDao.getCardsBySearchQuery(deckId, queryForDatabase)?.toDomain() ?: throw Resources.NotFoundException()
     }

@@ -42,6 +42,7 @@ class DeckDetailSearchScreenViewModel(
                     _state.value = UIState.NORMAL
                 }
             } catch (e: Exception) {
+                println(e)
                 _state.value = UIState.ERROR
             }
         }

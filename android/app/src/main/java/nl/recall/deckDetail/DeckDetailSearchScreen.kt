@@ -48,6 +48,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.ImageMessage
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.detail.Content
 import nl.recall.domain.deck.model.Card
@@ -60,7 +61,6 @@ import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +78,7 @@ fun DeckDetailSearchScreen(
         mutableStateOf(TextFieldValue(String()))
     }
 
-    val navigateToCard: (Long) -> Unit = {  }
+    val navigateToCard: (Long) -> Unit = { }
 
 
 
@@ -145,36 +145,42 @@ fun DeckDetailSearchScreen(
                             }
                         }
                     })
-            }
-            when (uiState) {
-                UIState.NORMAL -> {
-                    cards?.let { cardList ->
-                        SearchResults(cardList, onClick = {
-                            navigateToCard(it)
-                        })
-                    }
-                }
-                UIState.ERROR -> {
-                    ErrorScreen(titleText = stringResource(id = R.string.deck_detail_title_placeholder), errorText = stringResource(
-                        id = R.string.search_error_card
-                    ), navigator)
-                }
 
-                UIState.LOADING -> {
-                    Column(
-                        Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator()
+                when (uiState) {
+                    UIState.NORMAL -> {
+                        cards?.let { cardList ->
+                            SearchResults(cardList, onClick = {
+                                navigateToCard(it)
+                            })
+                        }
                     }
-                }
 
-                UIState.EMPTY -> {
-                    cards?.let {
-                        SearchResults(listOf(), onClick = {
-                            navigateToCard(it)
-                        })
+                    UIState.ERROR -> {
+                        ErrorScreen(
+                            titleText = stringResource(id = R.string.deck_detail_title_placeholder),
+                            errorText = stringResource(
+                                id = R.string.search_error_card
+                            ),
+                            navigator
+                        )
+                    }
+
+                    UIState.LOADING -> {
+                        Column(
+                            Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    UIState.EMPTY -> {
+                        ImageMessage(
+                            painter = painterResource(id = R.drawable.no_decks_found),
+                            text = stringResource(id = R.string.no_cards_found)
+                        )
+
                     }
                 }
             }

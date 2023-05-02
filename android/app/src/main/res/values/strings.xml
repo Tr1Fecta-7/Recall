@@ -29,4 +29,5 @@
     <string name="deck_detail_title_placeholder">Deck name</string>
     <string name="get_deck_error">Error while searching for deck details</string>
     <string name="search_error_card">There was a problem while searching for cards</string>
+    <string name="no_cards_found">No cards found</string>
 </resources>
