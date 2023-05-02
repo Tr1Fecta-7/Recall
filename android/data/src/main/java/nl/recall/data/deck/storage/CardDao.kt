@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import nl.recall.data.deck.models.CardEntity
 import nl.recall.domain.deck.model.Card
+import org.koin.core.annotation.Singleton
 
 @Dao
 interface CardDao {
@@ -18,13 +19,5 @@ interface CardDao {
     @Insert
     suspend fun insert(cardEntity: CardEntity)
 
-    @Insert
-    suspend fun insert(cardEntity: List<CardEntity>)
-
-    @Delete
-    suspend fun delete(cardEntity: CardEntity)
-
-    @Query("DELETE from card")
-    suspend fun deleteAll()
 
 }

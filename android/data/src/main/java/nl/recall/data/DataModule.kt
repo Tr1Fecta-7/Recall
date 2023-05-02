@@ -1,6 +1,7 @@
 package nl.recall.data
 
 import android.content.Context
+import nl.recall.data.deck.storage.CardDao
 import nl.recall.data.deck.storage.DeckDao
 import nl.recall.data.generic.database.RecallRoomDatabase
 import org.koin.core.annotation.ComponentScan
@@ -18,5 +19,10 @@ class DataModule {
     @Single
     fun getDeckDao(database: RecallRoomDatabase): DeckDao {
         return database.deckDao()
+    }
+
+    @Single
+    fun getCarDao(database: RecallRoomDatabase): CardDao {
+        return database.cardDao()
     }
 }

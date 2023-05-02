@@ -2,6 +2,7 @@ package nl.recall.presentation.decksOverview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +33,7 @@ class DecksOverviewViewModel(
     private fun fetchDecks() {
         _state.value = UIState.LOADING
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _decks.value = getDecksWithCardCount()
 
             if (_decks.value.isEmpty()) {
@@ -46,7 +47,7 @@ class DecksOverviewViewModel(
     fun searchDecks(title: String) {
         _state.value = UIState.LOADING
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (title.isEmpty()) {
                 _decks.value = getDecksWithCardCount()
             } else {

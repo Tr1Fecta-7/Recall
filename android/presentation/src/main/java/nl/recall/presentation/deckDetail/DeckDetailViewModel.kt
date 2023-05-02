@@ -2,6 +2,7 @@ package nl.recall.presentation.deckDetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +29,7 @@ class DeckDetailViewModel(
     }
 
     private fun fetchDeck() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.value = UIState.LOADING
                 _deck.value = getDeckById(args.id)
