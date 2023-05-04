@@ -1,7 +1,7 @@
 package nl.recall.domain.models
 
 data class CardPreviewData(
-    val front: String,
-    val back: String,
+    var front: String,
+    var back: String,
     val buttonText: String,
 )
