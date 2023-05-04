@@ -17,7 +17,7 @@ interface CardDao {
     suspend fun getCardsBySearchQuery(deckId: Long, query: String): List<CardEntity>?
 
     @Insert
-    suspend fun insert(cardEntity: CardEntity)
+    suspend fun insert(cardEntity: CardEntity): Long
 
 
 }
