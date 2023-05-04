@@ -19,14 +19,13 @@ class RemoteCardRepository(private val cardDao: CardDao): CardRepository {
     }
 
     override suspend fun saveCard(
-        id: Long,
         front: String,
         back: String,
         dueDate: Date,
         deckId: Long
     ): Boolean {
         val cardEntityRow: Long = cardDao.insert(CardEntity(
-            id = id,
+            id = 0,
             front = front,
             back = back,
             dueDate = dueDate,

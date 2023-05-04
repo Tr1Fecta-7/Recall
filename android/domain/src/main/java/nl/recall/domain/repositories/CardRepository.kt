@@ -7,5 +7,5 @@ import java.util.Date
 interface CardRepository {
     suspend fun getCardsBySearchQuery(deckId: Long, query: String): List<Card>
 
-    suspend fun saveCard(id: Long, front: String, back: String, dueDate: Date, deckId: Long): Boolean
+    suspend fun saveCard(front: String, back: String, dueDate: Date, deckId: Long): Boolean
 }
