@@ -1,4 +1,4 @@
-package nl.recall.detail
+package nl.recall.deckDetail
 
 import DeckDetailPreview
 import android.annotation.SuppressLint
@@ -64,9 +64,10 @@ import org.koin.core.parameter.parametersOf
 @Destination
 @Composable
 fun DeckDetailScreen(
+    deckId: Long,
     navigator: DestinationsNavigator,
     viewModel: DeckDetailViewModel = koinViewModel(parameters = {
-        parametersOf(DeckDetailViewModelArgs(1))
+        parametersOf(DeckDetailViewModelArgs(deckId))
     })
 ) {
     val uiState by viewModel.state.collectAsState()
