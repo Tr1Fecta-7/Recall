@@ -52,7 +52,9 @@ fun DecksOverviewSearchScreen(
     viewModel: DecksOverviewViewModel = koinViewModel()
 ) {
     val navigateBack: () -> Unit = { navigator.popBackStack() }
-    val navigateToDetail: () -> Unit = { navigator.navigate(DeckDetailScreenDestination) }
+    val navigateToDetail: (Long) -> Unit = { deckId ->
+        navigator.navigate(DeckDetailScreenDestination(deckId = deckId))
+    }
 
     val decks by viewModel.decks.collectAsState()
     val uiState by viewModel.state.collectAsState()
@@ -65,7 +67,7 @@ fun DecksOverviewSearchScreen(
                 ) {
                     items(decks.entries.toList()) { entry ->
                         DeckPreview(entry.key, cardCount = entry.value, onClick = {
-                            navigateToDetail()
+                            navigateToDetail(entry.key.id)
                         })
                     }
                 }
