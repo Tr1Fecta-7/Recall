@@ -66,7 +66,7 @@ fun DeckDetailSearchScreen(
     val cards by viewModel.cards.collectAsState()
     val uiState by viewModel.state.collectAsState()
     var searchQuery by remember {
-        mutableStateOf(TextFieldValue(String()))
+        mutableStateOf(TextFieldValue(""))
     }
 
     val navigateToCard: (Long) -> Unit = { }
@@ -119,8 +119,11 @@ fun DeckDetailSearchScreen(
                     shape = RoundedCornerShape(35.dp),
                     singleLine = true,
                     trailingIcon = {
-                        if (false) {
-                            IconButton(onClick = { }) {
+                        if (searchQuery.text.isNotEmpty()) {
+                            IconButton(onClick = {
+                                searchQuery = TextFieldValue(String())
+                                viewModel.searchDecks(searchQuery.text)
+                            }) {
                                 Icon(
                                     imageVector = Icons.Outlined.Close,
                                     contentDescription = "clear textfield"
@@ -128,7 +131,7 @@ fun DeckDetailSearchScreen(
                             }
                         } else {
                             IconButton(modifier = Modifier.padding(end = 6.dp),
-                                onClick = { /*TODO*/ }) {
+                                onClick = { viewModel.searchDecks(searchQuery.text) }) {
                                 Icon(
                                     imageVector = Icons.Default.Search,
                                     contentDescription = "search"
