@@ -40,9 +40,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.BottomNav
 import nl.recall.components.card.CardPreview
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.DecksOverviewScreenDestination
@@ -58,7 +60,7 @@ import java.util.Date
 
 @Destination
 @Composable
-fun CreateCardScreen(navigator: DestinationsNavigator) {
+fun CreateCardScreen(navController: NavController, navigator: DestinationsNavigator) {
     Scaffold(
         containerColor = AppTheme.neutral50,
         topBar = {
@@ -72,6 +74,7 @@ fun CreateCardScreen(navigator: DestinationsNavigator) {
                 },
             )
         },
+        bottomBar = { BottomNav(navController = navController) },
         content = { MainContent(navigator = navigator, it) }
     )
 }

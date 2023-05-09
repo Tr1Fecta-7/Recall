@@ -1,48 +1,52 @@
 package nl.recall.createdeck
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
+import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
-import nl.recall.components.ColorPickerWindow
+import nl.recall.components.BottomNav
 import nl.recall.components.deck.DeckFrontEndComponent
 import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.presentation.createDeck.CreateDeckViewModel
 import nl.recall.presentation.createDeck.model.CreateDeckViewModelArgs
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
-import nl.recall.theme.md_theme_light_primary
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import java.util.Date
 
 @Destination
 @Composable
-fun DeckCreate(navigator: DestinationsNavigator){
+fun DeckCreate(navController: NavController, navigator: DestinationsNavigator) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(stringResource(id = R.string.create_deck_title))},
+                title = { Text(stringResource(id = R.string.create_deck_title)) },
                 navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack()}) {
+                    IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
                     }
                 },
@@ -51,7 +55,8 @@ fun DeckCreate(navigator: DestinationsNavigator){
                 ),
             )
         },
-        content = { MainContent(navigator = navigator, it)}
+        bottomBar = { BottomNav(navController = navController) },
+        content = { MainContent(navigator = navigator, it) }
     )
 }
 
@@ -59,17 +64,27 @@ fun DeckCreate(navigator: DestinationsNavigator){
 private fun MainContent(
     navigator: DestinationsNavigator,
     paddingValues: PaddingValues,
-    viewModel: CreateDeckViewModel = koinViewModel(parameters = { parametersOf(CreateDeckViewModelArgs(id = 1, title = "", color = "#2596be", creationDate = Date(), icon = "\uD83D\uDD25")) })
-){
+    viewModel: CreateDeckViewModel = koinViewModel(parameters = {
+        parametersOf(
+            CreateDeckViewModelArgs(
+                id = 1,
+                title = "",
+                color = "#2596be",
+                creationDate = Date(),
+                icon = "\uD83D\uDD25"
+            )
+        )
+    })
+) {
     val deck = viewModel.deck.collectAsState().value
     val uiState: UIState by viewModel.state.collectAsState()
     val savedDeckIntoDatabase = viewModel.savedDeckBoolean.collectAsState().value;
 
-    when(uiState){
+    when (uiState) {
         UIState.NORMAL -> {
             deck?.let {
 
-                if(savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
+                if (savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
 
                 var deckColor by remember {
                     mutableStateOf(deck.color)
@@ -90,7 +105,7 @@ private fun MainContent(
                 }
 
                 var validationEmoji by remember {
-                    //stardart emoji present, thus onload always true
+                    // stardart emoji present, thus onload always true
                     mutableStateOf(true)
                 }
 
@@ -109,7 +124,7 @@ private fun MainContent(
                     preSelectedColor = deck.color,
                     onSetColor = { color -> deckColor = color },
                     deckTitleTextField = deckTitleTextField,
-                    onDeckTextFieldValueChange = {text ->
+                    onDeckTextFieldValueChange = { text ->
                         deckTitleTextField = text
                         validationTitle = text.text.isNotBlank()
                     },
@@ -128,7 +143,11 @@ private fun MainContent(
                 )
             }
         }
-        UIState.LOADING -> { DeckLoading() }
+
+        UIState.LOADING -> {
+            DeckLoading()
+        }
+
         else -> {
 
         }
@@ -137,7 +156,7 @@ private fun MainContent(
 }
 
 @Composable
-fun DeckLoading(){
+fun DeckLoading() {
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,

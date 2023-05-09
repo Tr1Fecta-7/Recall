@@ -34,9 +34,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckDetailScreenDestination
@@ -48,18 +50,18 @@ import org.koin.androidx.compose.koinViewModel
 @Destination
 @Composable
 fun DecksOverviewSearchScreen(
+    navController: NavController,
     navigator: DestinationsNavigator,
     viewModel: DecksOverviewViewModel = koinViewModel()
 ) {
-    val navigateBack: () -> Unit = { navigator.popBackStack() }
-    val navigateToDetail: (Long) -> Unit = { deckId ->
-        navigator.navigate(DeckDetailScreenDestination(deckId = deckId))
-    }
-
     val decks by viewModel.decks.collectAsState()
     val uiState by viewModel.state.collectAsState()
 
-    Content(navigateBack, viewModel::searchDecks) {
+    Content(
+        navController = navController,
+        navigateBack = { navigator.popBackStack() },
+        viewModel::searchDecks
+    ) {
         when (uiState) {
             UIState.NORMAL -> {
                 LazyColumn(
@@ -67,7 +69,7 @@ fun DecksOverviewSearchScreen(
                 ) {
                     items(decks.entries.toList()) { entry ->
                         DeckPreview(entry.key, cardCount = entry.value, onClick = {
-                            navigateToDetail(entry.key.id)
+                            navigator.navigate(DeckDetailScreenDestination(deckId = entry.key.id))
                         })
                     }
                 }
@@ -106,6 +108,7 @@ fun DecksOverviewSearchScreen(
 
 @Composable
 private fun Content(
+    navController: NavController,
     navigateBack: () -> Unit,
     searchDecks: (String) -> Unit,
     content: @Composable (() -> Unit)
@@ -131,6 +134,7 @@ private fun Content(
                 },
             )
         },
+        bottomBar = { BottomNav(navController = navController) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
