@@ -52,6 +52,7 @@ import nl.recall.R
 import nl.recall.components.AlertWindow
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
+import nl.recall.destinations.StudyDeckScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.errorScreen.ErrorScreen
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
@@ -102,11 +103,11 @@ fun DeckDetailScreen(
 }
 
 
-@Destination
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Content(
+private fun Content(
     navigator: DestinationsNavigator,
     deckWithCards: DeckWithCards
 ) {
@@ -152,7 +153,9 @@ fun Content(
                 .padding(20.dp)
                 .fillMaxSize()
         ) {
-            DeckDetailPreview(deckWithCards)
+            DeckDetailPreview(deckWithCards, onClick = {
+                navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
+            })
             Text(
                 modifier = Modifier.padding(top = 15.dp, bottom = 10.dp),
                 text = stringResource(id = R.string.cards_title),
