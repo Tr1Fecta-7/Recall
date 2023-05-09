@@ -1,0 +1,138 @@
+package nl.recall.deckEdit
+
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import nl.recall.R
+import nl.recall.components.deck.DeckFrontEndComponent
+import nl.recall.createdeck.DeckLoading
+import nl.recall.destinations.DecksOverviewScreenDestination
+import nl.recall.presentation.createDeck.CreateDeckViewModel
+import nl.recall.presentation.deckEdit.DeckEditViewModel
+import nl.recall.presentation.deckEdit.model.DeckEditViewModelArgs
+import nl.recall.presentation.uiState.UIState
+import nl.recall.theme.AppTheme
+import org.koin.android.annotation.KoinViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
+import java.util.Date
+
+@Destination
+@Composable
+fun DeckEdit(
+    navigator: DestinationsNavigator,
+    clickedDeckId: Long,
+    viewModel: DeckEditViewModel =
+        koinViewModel(parameters = { parametersOf(DeckEditViewModelArgs(clickedDeckId)) })
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(id = R.string.edit_deck_title)) },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack()}) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = AppTheme.white
+                ),
+            )
+        },
+        content = { MainContent(navigator = navigator, it, viewModel) }
+    )
+}
+
+@Composable
+private fun MainContent(
+    navigator: DestinationsNavigator,
+    paddingValues: PaddingValues,
+    viewModel: DeckEditViewModel
+){
+    val deck = viewModel.deck.collectAsState().value
+    val uiState: UIState by viewModel.state.collectAsState()
+
+    when(uiState) {
+        UIState.NORMAL -> {
+            deck?.let {
+
+//                if(savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
+
+                var deckColor by remember {
+                    mutableStateOf(deck.color)
+                }
+
+                var showAlert by remember {
+                    mutableStateOf(false)
+                }
+
+                var deckTitleTextField by remember {
+                    mutableStateOf(TextFieldValue(deck.title))
+                }
+                var emojiTextfield by remember {
+                    mutableStateOf(TextFieldValue(deck.icon))
+                }
+                var validationTitle by remember {
+                    mutableStateOf(false)
+                }
+
+                var validationEmoji by remember {
+                    //stardart emoji present, thus onload always true
+                    mutableStateOf(true)
+                }
+
+                DeckFrontEndComponent(
+                    paddingValues = paddingValues,
+                    onSubmitDeck = {
+                        //TODO
+                    },
+                    showAlert = showAlert,
+                    toggleAlert = { showAlert = !showAlert },
+                    preSelectedColor = deck.color,
+                    onSetColor = { color -> deckColor = color },
+                    deckTitleTextField = deckTitleTextField,
+                    onDeckTextFieldValueChange = { text ->
+                        deckTitleTextField = text
+                        validationTitle = text.text.isNotBlank()
+                    },
+                    deckColor = deckColor,
+                    emojiTextfield = emojiTextfield,
+                    onEmojiTextFieldValueChange = { text ->
+                        if (text.text.length <= 2 && text.text.length % 2 == 0) {
+                            emojiTextfield = text
+                            validationEmoji = text.text.isNotBlank()
+                        } else {
+                            validationEmoji = false
+                        }
+                    },
+                    validationTitle = validationTitle,
+                    validationEmoji = validationEmoji,
+                )
+            }
+        }
+
+        UIState.LOADING -> {
+            DeckLoading()
+        }
+
+        else -> {
+
+        }
+    }
+}

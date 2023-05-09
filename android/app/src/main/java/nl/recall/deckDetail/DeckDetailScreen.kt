@@ -52,6 +52,7 @@ import nl.recall.R
 import nl.recall.components.AlertWindow
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
+import nl.recall.destinations.DeckEditDestination
 import nl.recall.destinations.StudyDeckScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.errorScreen.ErrorScreen
@@ -139,7 +140,7 @@ private fun Content(
                     .width(180.dp),
             ) {
                 DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
-                    onClick = { /* Handle edit deck! */ })
+                    onClick = { navigator.navigate(DeckEditDestination(deckWithCards.deck.id)) })
                 DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_delete_deck)) },
                     onClick = { openDialog = true })
             }
