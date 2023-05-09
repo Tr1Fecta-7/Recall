@@ -104,4 +104,7 @@ dependencies {
 
     //Colorpicker-compose
     implementation("com.github.skydoves:colorpicker-compose:${Versions.COLORPICKER}")
+
+    //Compose Tinder Card
+    implementation ("com.alexstyl.swipeablecard:swipeablecard:${Versions.TINDER_CARD}")
 }

@@ -62,4 +62,7 @@ object Versions {
 
     //Room database
     const val ROOM = "2.5.0"
+
+    //Tinder card
+    const val TINDER_CARD = "0.1.0"
 }

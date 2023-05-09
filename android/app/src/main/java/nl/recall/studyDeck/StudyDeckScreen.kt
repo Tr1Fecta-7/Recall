@@ -115,7 +115,9 @@ private fun Content(
                     .fillMaxSize()
                     .background(AppTheme.neutral50)
             ) {
-                StudyCard()
+                StudyCard(
+
+                )
             }
 
         }
