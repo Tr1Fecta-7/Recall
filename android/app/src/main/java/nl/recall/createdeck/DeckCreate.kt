@@ -96,10 +96,6 @@ private fun MainContent(
 
                 DeckSuccess(
                     paddingValues = paddingValues,
-                    deck = it,
-                    navigator = navigator,
-                    viewModel = viewModel,
-                    savedDeckIntoDatabase = savedDeckIntoDatabase,
                     onSubmitDeck = {
                         viewModel.saveDeckToDatabase(
                             title = deckTitleTextField.text,
@@ -147,10 +143,6 @@ private fun MainContent(
 @Composable
 private fun DeckSuccess(
     paddingValues: PaddingValues,
-    deck: Deck,
-    navigator: DestinationsNavigator,
-    viewModel: CreateDeckViewModel,
-    savedDeckIntoDatabase: Boolean,
     onSubmitDeck: () -> Unit,
     showAlert: Boolean,
     toggleAlert: () -> Unit,
