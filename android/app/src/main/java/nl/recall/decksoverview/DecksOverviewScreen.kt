@@ -29,10 +29,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckCreateDestination
@@ -47,22 +49,19 @@ import org.koin.androidx.compose.koinViewModel
 @Destination
 @Composable
 fun DecksOverviewScreen(
+    navController: NavController,
     navigator: DestinationsNavigator,
     viewModel: DecksOverviewViewModel = koinViewModel()
 ) {
-    val navigateToDetail: (Long) -> Unit = { deckId ->
-        navigator.navigate(DeckDetailScreenDestination(deckId = deckId))
-    }
-    val navigateToCreateDeck: () -> Unit = { navigator.navigate(DeckCreateDestination) }
-    val navigateToDeckSearch: () -> Unit = {
-        navigator.navigate(DecksOverviewSearchScreenDestination)
-    }
     val decks by viewModel.decks.collectAsState()
     val uiState by viewModel.state.collectAsState()
 
     Content(
-        navigateToCreateDeck = navigateToCreateDeck,
-        navigateToDeckSearch = navigateToDeckSearch
+        navigateToCreateDeck = { navigator.navigate(DeckCreateDestination) },
+        navigateToDeckSearch = {
+            navigator.navigate(DecksOverviewSearchScreenDestination)
+        },
+        navController = navController,
     ) {
         when (uiState) {
             UIState.NORMAL -> {
@@ -71,7 +70,7 @@ fun DecksOverviewScreen(
                 ) {
                     items(decks.entries.toList()) { entry ->
                         DeckPreview(entry.key, cardCount = entry.value, onClick = {
-                            navigateToDetail(entry.key.id)
+                            navigator.navigate(DeckDetailScreenDestination(deckId = entry.key.id))
                         })
                     }
                 }
@@ -112,6 +111,7 @@ fun DecksOverviewScreen(
 private fun Content(
     navigateToCreateDeck: () -> Unit,
     navigateToDeckSearch: () -> Unit,
+    navController: NavController,
     content: @Composable (() -> Unit)
 ) {
     Scaffold(
@@ -124,7 +124,8 @@ private fun Content(
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
             }
-        }
+        },
+        bottomBar = { BottomNav(navController = navController) }
     ) { paddingValues ->
         Column(
             Modifier.padding(
