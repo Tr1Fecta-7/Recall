@@ -30,6 +30,9 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.card.StudyCard
+import nl.recall.domain.deck.model.Card
+import nl.recall.domain.deck.model.Deck
+import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.errorScreen.ErrorScreen
 import nl.recall.presentation.deckDetail.DeckDetailSearchScreenViewModel
 import nl.recall.presentation.deckDetail.model.DeckDetailSearchScreenViewModelArgs
@@ -39,6 +42,7 @@ import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.util.Date
 
 @Destination
 @Composable
@@ -116,7 +120,16 @@ private fun Content(
                     .background(AppTheme.neutral50)
             ) {
                 StudyCard(
-
+                    DeckWithCards(
+                        Deck(1, "Test", Date(), "", ""),
+                        listOf(
+                            Card(1, "Front1", "Back1", Date(), 1),
+                            Card(2, "Front2", "Back2", Date(), 1),
+                            Card(3, "Front3", "Back3", Date(), 1),
+                            Card(4, "Front4", "Back4", Date(), 1),
+                            Card(5, "Front5", "Back5", Date(), 1),
+                        )
+                    )
                 )
             }
 

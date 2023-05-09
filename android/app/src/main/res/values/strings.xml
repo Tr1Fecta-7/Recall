@@ -34,4 +34,5 @@
     <string name="nav_settings_label">Settings</string>
     <string name="nav_community_label">Community</string>
     <string name="edit_deck_title">Edit deck</string>
+    <string name="click_to_rotate">Tap the card to reveal the back of the card.</string>
 </resources>
