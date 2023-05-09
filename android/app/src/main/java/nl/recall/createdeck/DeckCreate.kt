@@ -126,7 +126,7 @@ private fun DeckSuccess(
             openDialog = showAlert,
             onCloseDialog = { showAlert = false },
             onPressConfirm = { showAlert = false },
-            onSelectColor = { deckColor = "#${it.hexCode}" },
+            onSelectColor = { deckColor = it },
             preSelectedColor = deckColor
         )
 
@@ -191,7 +191,7 @@ private fun DeckSuccess(
                     )
             }
             Button(onClick = { showAlert = true }) {
-                Text(text = "select a color")
+                Text(text = "select a color", color = Color.White)
             }
         }
         Column(
