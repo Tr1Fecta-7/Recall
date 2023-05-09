@@ -23,8 +23,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.ColorPickerWindow
+import nl.recall.components.deck.DeckFrontEndComponent
 import nl.recall.destinations.DecksOverviewScreenDestination
-import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.createDeck.CreateDeckViewModel
 import nl.recall.presentation.createDeck.model.CreateDeckViewModelArgs
 import nl.recall.presentation.uiState.UIState
@@ -94,7 +94,7 @@ private fun MainContent(
                     mutableStateOf(true)
                 }
 
-                DeckSuccess(
+                DeckFrontEndComponent(
                     paddingValues = paddingValues,
                     onSubmitDeck = {
                         viewModel.saveDeckToDatabase(
@@ -107,11 +107,7 @@ private fun MainContent(
                     showAlert = showAlert,
                     toggleAlert = { showAlert = !showAlert },
                     preSelectedColor = deck.color,
-                    onSetColor = { color ->
-                        Log.e("ONSETCOLORBEFORECHANGE", color)
-                        deckColor = color
-                        Log.e("ONSETCOLORAFTERCHANGE", deckColor)
-                                 },
+                    onSetColor = { color -> deckColor = color },
                     deckTitleTextField = deckTitleTextField,
                     onDeckTextFieldValueChange = {text ->
                         deckTitleTextField = text
@@ -138,124 +134,6 @@ private fun MainContent(
         }
     }
 
-}
-
-@Composable
-private fun DeckSuccess(
-    paddingValues: PaddingValues,
-    onSubmitDeck: () -> Unit,
-    showAlert: Boolean,
-    toggleAlert: () -> Unit,
-    preSelectedColor: String,
-    onSetColor: (String) -> Unit,
-    deckTitleTextField: TextFieldValue,
-    onDeckTextFieldValueChange: (TextFieldValue) -> Unit,
-    deckColor: String,
-    emojiTextfield: TextFieldValue,
-    onEmojiTextFieldValueChange: (TextFieldValue) -> Unit,
-    validationEmoji: Boolean,
-    validationTitle: Boolean,
-
-) {
-    Log.e("DeckCreate", deckColor)
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-    ) {
-        //hidden by default
-        ColorPickerWindow(
-            confirmText = "Select color",
-            confirmTextColor = AppTheme.primary300,
-            openDialog = showAlert,
-            onCloseDialog = { toggleAlert() },
-            onSelectColor = { color -> onSetColor(color) },
-            preSelectedColor = preSelectedColor,
-        )
-
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-                .padding(top = 60.dp)
-                .weight(1f)
-        ) {
-            OutlinedTextField(
-                value = deckTitleTextField,
-                label = { Text(text = stringResource(id = R.string.create_deck_create_text_field)) },
-                onValueChange = { newText ->
-                    onDeckTextFieldValueChange(newText)
-                },
-                placeholder = { Text(text = stringResource(id = R.string.create_deck_create_text_field_placeholder)) },
-            )
-
-            Text(
-                text = stringResource(id = R.string.create_deck_select_icon),
-                modifier = Modifier.padding(0.dp, 30.dp, 0.dp, 30.dp)
-            )
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .size(250.dp)
-                    .clip(CircleShape)
-                    .background(
-                        Color(
-                            deckColor.toColorInt()
-                        )
-                    ),
-            ) {
-                TextField(
-                    value = emojiTextfield,
-                    onValueChange = { newText ->
-                        onEmojiTextFieldValueChange(newText)
-                    },
-                    modifier = Modifier.background(color = Color.White),
-                    textStyle = LocalTextStyle.current.copy(
-                        textAlign = TextAlign.Center,
-                        fontSize = 155.sp
-                    ),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color(deckColor.toColorInt()),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-
-                    )
-            }
-            Button(onClick = { toggleAlert() }) {
-                Text(text = "select a color", color = Color.White)
-            }
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                enabled = validationTitle && validationEmoji,
-                onClick = {
-                            onSubmitDeck()
-                          },
-                modifier = Modifier
-                    .clip(RoundedCornerShape(30.dp))
-                    .width(300.dp),
-                colors = ButtonDefaults.buttonColors(
-                    disabledContainerColor = AppTheme.neutral500,
-                    containerColor = md_theme_light_primary
-                )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.create_deck_title),
-                    color = Color.White
-                )
-            }
-        }
-    }
 }
 
 @Composable
