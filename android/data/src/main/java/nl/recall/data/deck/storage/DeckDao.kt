@@ -23,7 +23,7 @@ interface DeckDao {
 
     @Transaction
     @MapInfo(valueColumn = "count")
-    @Query("SELECT deck.*, count(card.id) AS count FROM deck LEFT JOIN card ON deck.id = card.deck_id WHERE deck.title = :title GROUP BY deck.id")
+    @Query("SELECT deck.*, count(card.id) AS count FROM deck LEFT JOIN card ON deck.id = card.deck_id WHERE deck.title LIKE :title GROUP BY deck.id")
     suspend fun searchDecksWithCardCount(title: String): Map<DeckEntity, Int>
 
     @Insert

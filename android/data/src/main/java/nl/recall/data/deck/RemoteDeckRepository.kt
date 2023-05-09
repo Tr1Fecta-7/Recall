@@ -24,7 +24,7 @@ class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
     }
 
     override suspend fun searchDeckWithCardCount(title: String): Map<Deck, Int> {
-        return deckDao.searchDecksWithCardCount(title).toDomain()
+        return deckDao.searchDecksWithCardCount("%$title%").toDomain()
     }
 
     override suspend fun saveDeck(
