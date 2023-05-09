@@ -56,19 +56,86 @@ fun DeckCreate(navigator: DestinationsNavigator){
 }
 
 @Composable
-private fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues){
-    val viewModel: CreateDeckViewModel = koinViewModel(parameters = {
-        parametersOf(CreateDeckViewModelArgs(id = 1, title = "", color = "#2596be", creationDate = Date(), icon = "\uD83D\uDD25"))
-    })
+private fun MainContent(
+    navigator: DestinationsNavigator,
+    paddingValues: PaddingValues,
+    viewModel: CreateDeckViewModel = koinViewModel(parameters = { parametersOf(CreateDeckViewModelArgs(id = 1, title = "", color = "#2596be", creationDate = Date(), icon = "\uD83D\uDD25")) })
+){
     val deck = viewModel.deck.collectAsState().value
     val uiState: UIState by viewModel.state.collectAsState()
     val savedDeckIntoDatabase = viewModel.savedDeckBoolean.collectAsState().value;
+
     when(uiState){
-        UIState.NORMAL -> { deck?.let { DeckSuccess(
-            paddingValues = paddingValues,
-            deck = it, navigator,
-            viewModel = viewModel,
-            savedDeckIntoDatabase = savedDeckIntoDatabase) } }
+        UIState.NORMAL -> {
+            deck?.let {
+
+                if(savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
+
+                var deckColor by remember {
+                    mutableStateOf(deck.color)
+                }
+
+                var showAlert by remember {
+                    mutableStateOf(false)
+                }
+
+                var deckTitleTextField by remember {
+                    mutableStateOf(TextFieldValue(deck.title))
+                }
+                var emojiTextfield by remember {
+                    mutableStateOf(TextFieldValue(deck.icon))
+                }
+                var validationTitle by remember {
+                    mutableStateOf(false)
+                }
+
+                var validationEmoji by remember {
+                    //stardart emoji present, thus onload always true
+                    mutableStateOf(true)
+                }
+
+                DeckSuccess(
+                    paddingValues = paddingValues,
+                    deck = it,
+                    navigator = navigator,
+                    viewModel = viewModel,
+                    savedDeckIntoDatabase = savedDeckIntoDatabase,
+                    onSubmitDeck = {
+                        viewModel.saveDeckToDatabase(
+                            title = deckTitleTextField.text,
+                            creationDate = Date(),
+                            icon = emojiTextfield.text,
+                            color = deckColor
+                        )
+                    },
+                    showAlert = showAlert,
+                    toggleAlert = { showAlert = !showAlert },
+                    preSelectedColor = deck.color,
+                    onSetColor = { color ->
+                        Log.e("ONSETCOLORBEFORECHANGE", color)
+                        deckColor = color
+                        Log.e("ONSETCOLORAFTERCHANGE", deckColor)
+                                 },
+                    deckTitleTextField = deckTitleTextField,
+                    onDeckTextFieldValueChange = {text ->
+                        deckTitleTextField = text
+                        validationTitle = text.text.isNotBlank()
+                    },
+                    deckColor = deckColor,
+                    emojiTextfield = emojiTextfield,
+                    onEmojiTextFieldValueChange = { text ->
+                        if (text.text.length <= 2 && text.text.length % 2 == 0) {
+                            emojiTextfield = text
+                            validationEmoji = text.text.isNotBlank()
+                        } else {
+                            validationEmoji = false
+                        }
+                    },
+                    validationTitle = validationTitle,
+                    validationEmoji = validationEmoji,
+                )
+            }
+        }
         UIState.LOADING -> { DeckLoading() }
         else -> {
 
@@ -83,51 +150,35 @@ private fun DeckSuccess(
     deck: Deck,
     navigator: DestinationsNavigator,
     viewModel: CreateDeckViewModel,
-    savedDeckIntoDatabase: Boolean
+    savedDeckIntoDatabase: Boolean,
+    onSubmitDeck: () -> Unit,
+    showAlert: Boolean,
+    toggleAlert: () -> Unit,
+    preSelectedColor: String,
+    onSetColor: (String) -> Unit,
+    deckTitleTextField: TextFieldValue,
+    onDeckTextFieldValueChange: (TextFieldValue) -> Unit,
+    deckColor: String,
+    emojiTextfield: TextFieldValue,
+    onEmojiTextFieldValueChange: (TextFieldValue) -> Unit,
+    validationEmoji: Boolean,
+    validationTitle: Boolean,
+
 ) {
-    if(savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
-
-    var deckColor by remember {
-        mutableStateOf(deck.color)
-    }
-
-    var showAlert by remember {
-        mutableStateOf(false)
-    }
-
-    var deckTitleTextField by remember {
-        mutableStateOf(TextFieldValue(deck.title))
-    }
-    var emojiTextfield by remember {
-        mutableStateOf(TextFieldValue(deck.icon))
-    }
-
-    var validationTitle by remember {
-        mutableStateOf(false)
-    }
-
-    var validationEmoji by remember {
-        //stardart emoji present, thus onload always true
-        mutableStateOf(true)
-    }
-
+    Log.e("DeckCreate", deckColor)
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-
         //hidden by default
         ColorPickerWindow(
-            title = "Pick background color",
-            subText = "",
             confirmText = "Select color",
             confirmTextColor = AppTheme.primary300,
             openDialog = showAlert,
-            onCloseDialog = { showAlert = false },
-            onPressConfirm = { showAlert = false },
-            onSelectColor = { deckColor = it },
-            preSelectedColor = deckColor
+            onCloseDialog = { toggleAlert() },
+            onSelectColor = { color -> onSetColor(color) },
+            preSelectedColor = preSelectedColor,
         )
 
 
@@ -143,9 +194,7 @@ private fun DeckSuccess(
                 value = deckTitleTextField,
                 label = { Text(text = stringResource(id = R.string.create_deck_create_text_field)) },
                 onValueChange = { newText ->
-                    deckTitleTextField = newText
-                    validationTitle = newText.text.isNotBlank()
-
+                    onDeckTextFieldValueChange(newText)
                 },
                 placeholder = { Text(text = stringResource(id = R.string.create_deck_create_text_field_placeholder)) },
             )
@@ -169,12 +218,7 @@ private fun DeckSuccess(
                 TextField(
                     value = emojiTextfield,
                     onValueChange = { newText ->
-                        if (newText.text.length <= 2 && newText.text.length % 2 == 0) {
-                            emojiTextfield = newText
-                            validationEmoji = newText.text.isNotBlank()
-                        } else {
-                            validationEmoji = false
-                        }
+                        onEmojiTextFieldValueChange(newText)
                     },
                     modifier = Modifier.background(color = Color.White),
                     textStyle = LocalTextStyle.current.copy(
@@ -190,7 +234,7 @@ private fun DeckSuccess(
 
                     )
             }
-            Button(onClick = { showAlert = true }) {
+            Button(onClick = { toggleAlert() }) {
                 Text(text = "select a color", color = Color.White)
             }
         }
@@ -203,8 +247,8 @@ private fun DeckSuccess(
             Button(
                 enabled = validationTitle && validationEmoji,
                 onClick = {
-                    viewModel.saveDeckToDatabase(title = deckTitleTextField.text, creationDate = Date(), icon = emojiTextfield.text, color = deckColor)
-                },
+                            onSubmitDeck()
+                          },
                 modifier = Modifier
                     .clip(RoundedCornerShape(30.dp))
                     .width(300.dp),

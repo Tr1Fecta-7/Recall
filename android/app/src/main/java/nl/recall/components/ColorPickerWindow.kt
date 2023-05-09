@@ -33,13 +33,10 @@ import nl.recall.theme.AppTheme
 
 @Composable
 fun ColorPickerWindow(
-    title: String,
-    subText: String,
     confirmText: String,
     confirmTextColor: Color,
     openDialog: Boolean,
     onCloseDialog: () -> Unit,
-    onPressConfirm: () -> Unit,
     onSelectColor: (color: String) -> Unit,
     preSelectedColor: String
 ) {
@@ -83,7 +80,6 @@ fun ColorPickerWindow(
                         TextButton(
                             onClick = {
                                 onSelectColor(selectedColor)
-                                onPressConfirm()
                                 onCloseDialog()
                             }) {
                             Text(
