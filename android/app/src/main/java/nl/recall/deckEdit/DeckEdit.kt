@@ -89,7 +89,7 @@ private fun MainContent(
                     mutableStateOf(TextFieldValue(deck.icon))
                 }
                 var validationTitle by remember {
-                    mutableStateOf(false)
+                    mutableStateOf(true)
                 }
 
                 var validationEmoji by remember {
