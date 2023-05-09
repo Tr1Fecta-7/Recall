@@ -6,9 +6,9 @@ import androidx.room.Insert
 import androidx.room.MapInfo
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import nl.recall.data.deck.models.DeckEntity
 import nl.recall.data.deck.models.DeckWithCardsEntity
-import nl.recall.domain.deck.model.Card
 
 @Dao
 interface DeckDao {
@@ -37,4 +37,7 @@ interface DeckDao {
 
     @Query("DELETE from deck")
     suspend fun deleteAll()
+
+    @Update
+    suspend fun updateDeck(deck: DeckEntity): Int
 }

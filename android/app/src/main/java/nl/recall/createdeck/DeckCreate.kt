@@ -51,7 +51,7 @@ fun DeckCreate(navController: NavController, navigator: DestinationsNavigator) {
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = AppTheme.white
+                    containerColor = AppTheme.neutral50
                 ),
             )
         },

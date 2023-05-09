@@ -46,4 +46,10 @@ class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
         return deckEntityRow >= 0
 
     }
+
+    override suspend fun updateDeck(deck: Deck): Boolean {
+        return deckDao.updateDeck(
+            DeckEntity(deck.id, deck.title, deck.creationDate, deck.icon, deck.color)
+        ) >= 0
+    }
 }

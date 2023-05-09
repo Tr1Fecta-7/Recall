@@ -53,7 +53,7 @@ fun ColorPickerWindow(
                     onDismissRequest = {
                         onCloseDialog()
                     },
-                    containerColor = AppTheme.white,
+                    containerColor = AppTheme.neutral50,
                     title = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             HsvColorPicker(

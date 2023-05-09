@@ -122,7 +122,7 @@ fun DeckFrontEndComponent(
                     )
             }
             Button(onClick = { toggleAlert() }) {
-                Text(text = "select a color", color = Color.White)
+                Text(text = stringResource(id = R.string.create_deck_select_icon), color = Color.White)
             }
         }
         Column(

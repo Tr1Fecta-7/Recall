@@ -23,15 +23,14 @@ import nl.recall.R
 import nl.recall.components.deck.DeckFrontEndComponent
 import nl.recall.createdeck.DeckLoading
 import nl.recall.destinations.DecksOverviewScreenDestination
+import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.createDeck.CreateDeckViewModel
 import nl.recall.presentation.deckEdit.DeckEditViewModel
 import nl.recall.presentation.deckEdit.model.DeckEditViewModelArgs
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
-import org.koin.android.annotation.KoinViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import java.util.Date
 
 @Destination
 @Composable
@@ -67,12 +66,13 @@ private fun MainContent(
 ){
     val deck = viewModel.deck.collectAsState().value
     val uiState: UIState by viewModel.state.collectAsState()
+    val updatedInDatabase = viewModel.updatedDeckBoolean.collectAsState()
 
     when(uiState) {
         UIState.NORMAL -> {
             deck?.let {
 
-//                if(savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
+                if(updatedInDatabase.value) navigator.popBackStack()
 
                 var deckColor by remember {
                     mutableStateOf(deck.color)
@@ -100,7 +100,14 @@ private fun MainContent(
                 DeckFrontEndComponent(
                     paddingValues = paddingValues,
                     onSubmitDeck = {
-                        //TODO
+                        viewModel.updateDeckInDatabase(
+                            Deck(
+                                id = deck.id,
+                                title = deckTitleTextField.text,
+                                creationDate = deck.creationDate,
+                                icon = emojiTextfield.text,
+                                color = deckColor)
+                        )
                     },
                     showAlert = showAlert,
                     toggleAlert = { showAlert = !showAlert },

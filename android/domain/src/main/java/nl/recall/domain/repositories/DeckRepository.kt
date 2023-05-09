@@ -9,4 +9,5 @@ interface DeckRepository {
     suspend fun getDeckWithCardCount(): Map<Deck, Int>
     suspend fun searchDeckWithCardCount(title: String): Map<Deck, Int>
     suspend fun saveDeck(title: String, creationDate: Date, icon: String, color: String): Boolean
+    suspend fun updateDeck(deck: Deck): Boolean
 }
