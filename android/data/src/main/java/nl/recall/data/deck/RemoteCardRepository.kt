@@ -13,9 +13,7 @@ import java.util.Date
 @Factory
 class RemoteCardRepository(private val cardDao: CardDao): CardRepository {
     override suspend fun getCardsBySearchQuery(deckId: Long, query: String): List<Card> {
-        val queryForDatabase = "%$query%"
-
-        return cardDao.getCardsBySearchQuery(deckId, queryForDatabase)?.toDomain() ?: throw Resources.NotFoundException()
+        return cardDao.getCardsBySearchQuery(deckId, "%$query%")?.toDomain() ?: throw Resources.NotFoundException()
     }
 
     override suspend fun saveCard(
