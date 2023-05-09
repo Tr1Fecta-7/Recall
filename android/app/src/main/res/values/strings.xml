@@ -21,7 +21,7 @@
     <string name="amount_of_cards_in_deck">%s cards</string>
     <string name="dropdown_menu_edit_deck">Edit deck</string>
     <string name="dropdown_menu_delete_deck">Delete deck</string>
-    <string name="search_bar_card_hint">search word</string>
+    <string name="search_bar_card_hint">Search word</string>
     <string name="cards_title">Cards</string>
     <string name="card_searchbar_title">Search for cards</string>
     <string name="placeholder_card_front">front of card</string>
