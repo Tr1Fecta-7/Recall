@@ -9,6 +9,6 @@ object CardMapper {
     }
 
     fun CardEntity.toDomain(): Card {
-        return Card(id = id, front = front, back = back, dueDate = dueDate)
+        return Card(id = id, front = front, back = back, dueDate = dueDate, deckId = deckId)
     }
 }

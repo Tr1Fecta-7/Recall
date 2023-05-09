@@ -22,7 +22,7 @@ class DataModule {
     }
 
     @Single
-    fun getCarDao(database: RecallRoomDatabase): CardDao {
+    fun getCardDao(database: RecallRoomDatabase): CardDao {
         return database.cardDao()
     }
 }

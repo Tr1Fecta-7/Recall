@@ -62,6 +62,7 @@ fun CardPreview(card: CardPreviewData, paddingValues: PaddingValues, onClick: ()
                     value = frontTextFieldValue,
                     onValueChange = {
                         frontTextFieldValue = it
+                        card.front = it.text
                     },
                     label = { Text(text = stringResource(id = R.string.create_card_front_text_field)) },
                     placeholder = { Text(text = stringResource(id = R.string.create_card_front_text_field_placeholder)) },
@@ -73,6 +74,7 @@ fun CardPreview(card: CardPreviewData, paddingValues: PaddingValues, onClick: ()
                     value = backTextFieldValue,
                     onValueChange = {
                         backTextFieldValue = it
+                        card.back = it.text
                     },
                     label = { Text(text = stringResource(id = R.string.create_card_back_text_field)) },
                     placeholder = { Text(text = stringResource(id = R.string.create_card_back_text_field_placeholder)) },
