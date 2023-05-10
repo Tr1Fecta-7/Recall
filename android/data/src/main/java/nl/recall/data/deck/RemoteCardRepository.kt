@@ -16,6 +16,10 @@ class RemoteCardRepository(private val cardDao: CardDao): CardRepository {
         return cardDao.getCardsBySearchQuery(deckId, "%$query%")?.toDomain() ?: throw Resources.NotFoundException()
     }
 
+    override suspend fun getCardById(deckId: Long, cardId: Long): Card {
+        return cardDao.getCardById(deckId, cardId)?.toDomain() ?: throw Resources.NotFoundException()
+    }
+
     override suspend fun saveCard(
         front: String,
         back: String,
