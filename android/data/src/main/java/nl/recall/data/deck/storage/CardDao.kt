@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import nl.recall.data.deck.models.CardEntity
 import nl.recall.domain.deck.model.Card
 import org.koin.core.annotation.Singleton
@@ -19,5 +20,6 @@ interface CardDao {
     @Insert
     suspend fun insert(cardEntity: CardEntity): Long
 
-
+    @Update
+    suspend fun updateCard(cardEntity: CardEntity): Int
 }
