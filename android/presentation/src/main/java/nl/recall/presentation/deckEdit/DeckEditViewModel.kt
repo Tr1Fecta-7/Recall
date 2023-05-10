@@ -20,12 +20,13 @@ class DeckEditViewModel(
     @InjectedParam private val args: DeckEditViewModelArgs,
     private val getDeckById: GetDeckById,
     private val updateDeck: UpdateDeck
-    ) : ViewModel() {
+) : ViewModel() {
+
     private val _state = MutableStateFlow(UIState.LOADING)
     val state: StateFlow<UIState> = _state.asStateFlow()
 
     private val _deck = MutableStateFlow<Deck?>(null)
-    val deck: StateFlow<Deck?> by lazy{
+    val deck: StateFlow<Deck?> by lazy {
         fetchDeck(args.id)
         _deck.asStateFlow()
     }
@@ -36,14 +37,14 @@ class DeckEditViewModel(
         _updatedDeckBoolean.asStateFlow()
     }
 
-    private fun fetchDeck(id: Long){
+    private fun fetchDeck(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             _deck.value = getDeckById.invoke(id).deck
             _state.value = UIState.NORMAL
         }
     }
 
-    fun updateDeckInDatabase(deck: Deck){
+    fun updateDeckInDatabase(deck: Deck) {
         viewModelScope.launch(Dispatchers.IO) {
             _state.value = UIState.LOADING
             _updatedDeckBoolean.value = updateDeck.invoke(deck)

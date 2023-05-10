@@ -15,7 +15,7 @@ interface CardDao {
 
     @Transaction
     @Query("SELECT * FROM card WHERE deck_id = :deckId AND (card.front LIKE :query or card.back LIKE :query)")
-    suspend fun getCardsBySearchQuery(deckId: Long, query: String): List<CardEntity>?
+    suspend fun getCardsBySearchQuery(deckId: Long, query: String): List<CardEntity>
 
     @Transaction
     @Query("SELECT * FROM card where deck_id = :deckId AND card.id = :cardId")

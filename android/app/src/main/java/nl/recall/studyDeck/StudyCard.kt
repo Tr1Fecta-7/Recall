@@ -28,7 +28,7 @@ import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import nl.recall.R
 import nl.recall.domain.deck.model.DeckWithCards
-import nl.recall.presentation.studyDeck.model.CardFace
+import nl.recall.studyDeck.model.CardFaceUIState
 
 @OptIn(ExperimentalSwipeableCardApi::class)
 @Composable
@@ -73,14 +73,14 @@ fun StudyCard(deckWithCards: DeckWithCards) {
                 .fillMaxSize()
         ) {
             cards.forEachIndexed() { index, (card, cardState) ->
-                var cardFace by remember {
-                    mutableStateOf(CardFace.Front)
+                var cardFaceUIState by remember {
+                    mutableStateOf(CardFaceUIState.Front)
                 }
-//                        && (index == iterator || index ==(iterator-1))
-                if (cardState.swipedDirection == null && (index >= iterator-1) ) {
+//                        && (index == iterator || index ==(iterator-1)) // && (index >= iterator-1)
+                if (cardState.swipedDirection == null) {
                     FlipCard(
-                        cardFace = cardFace,
-                        onClick = { cardFace = CardFace.Back },
+                        cardFaceUIState = cardFaceUIState,
+                        onClick = { cardFaceUIState = CardFaceUIState.Back },
                         modifierFront = Modifier,
                         modifierBack = Modifier
                             .swipableCard(
