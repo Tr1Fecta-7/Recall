@@ -13,6 +13,7 @@
     <string name="create_card_front_text_field_placeholder">Fill the front of the card in</string>
     <string name="create_card_back_text_field">Back</string>
     <string name="create_card_back_text_field_placeholder">Fill the back of the card in</string>
+    <string name="edit_card_title">Edit card</string>
     <string name="deck_overview_title">Decks</string>
     <string name="deck_overview_subtitle">Let\'s learn something today!</string>
     <string name="search_bar_deck_hint">Search decks by name</string>
