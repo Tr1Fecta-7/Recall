@@ -47,5 +47,13 @@ fun EditCardScreen(navController: NavController, navigator: DestinationsNavigato
 @Composable
 fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues,
                 clickedCardId: Long, deckId: Long) {
+    val card = CardPreviewData(
+        front = "",
+        back = "",
+        buttonText = stringResource(id = R.string.edit_card_title)
+    )
 
+    CardPreview(card = card, paddingValues = paddingValues, onClick = {
+
+    })
 }
