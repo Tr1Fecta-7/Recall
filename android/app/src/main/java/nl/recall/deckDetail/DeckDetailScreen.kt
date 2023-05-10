@@ -53,6 +53,7 @@ import nl.recall.components.AlertWindow
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.destinations.DeckEditDestination
+import nl.recall.destinations.EditCardScreenDestination
 import nl.recall.destinations.StudyDeckScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.errorScreen.ErrorScreen
@@ -195,7 +196,7 @@ private fun Content(
             ) {
                 items(items = deckWithCards?.cards ?: listOf(), itemContent = {
                     Card(
-                        onClick = { /* */ },
+                        onClick = { navigator.navigate(EditCardScreenDestination(clickedCardId = it.id, deckId = it.deckId )) },
                         shape = RoundedCornerShape(12.dp),
                         border = BorderStroke(1.dp, AppTheme.neutral200),
                         modifier = Modifier.fillMaxWidth()
