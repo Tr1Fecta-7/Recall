@@ -128,6 +128,7 @@ private fun Content(
                             Card(3, "Front3", "Back3", Date(), 1),
                             Card(4, "Front4", "Back4", Date(), 1),
                             Card(5, "Front5", "Back5", Date(), 1),
+                            Card(6, "Front6", "Back6", Date(), 1),
                         )
                     )
                 )
