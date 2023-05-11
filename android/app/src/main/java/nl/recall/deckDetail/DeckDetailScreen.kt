@@ -83,9 +83,10 @@ fun DeckDetailScreen(
             }
         }
         UIState.ERROR -> {
-            ErrorScreen(titleText = stringResource(id = R.string.deck_detail_title_placeholder), errorText = stringResource(
-                id = R.string.get_deck_error
-            ), navigator)
+//            ErrorScreen(
+//
+//                errorText = R.string.get_deck_error
+//            )
         }
 
         UIState.LOADING -> {

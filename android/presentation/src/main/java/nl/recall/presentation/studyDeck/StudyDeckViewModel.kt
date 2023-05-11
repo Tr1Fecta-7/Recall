@@ -17,10 +17,33 @@ import org.koin.core.annotation.InjectedParam
 
 @KoinViewModel
 class StudyDeckViewModel(
-    @InjectedParam private val args: StudyDeckViewModelArgs,
+    @InjectedParam private val args: StudyDeckViewModelArgs, private val getDeckById: GetDeckById
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UIState.NORMAL)
+    private val _state = MutableStateFlow(UIState.EMPTY)
     val state: StateFlow<UIState> = _state.asStateFlow()
+
+    private val _deckWithCards = MutableStateFlow<DeckWithCards?>(null)
+    val deckWithCards : StateFlow<DeckWithCards?> by lazy {
+        fetchDeckWithCards()
+        _deckWithCards.asStateFlow()
+    }
+
+    private fun fetchDeckWithCards() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _state.value = UIState.LOADING
+                _deckWithCards.value = getDeckById(args.deckId)
+                if (_deckWithCards.value?.cards.isNullOrEmpty()) {
+                    _state.value = UIState.EMPTY
+                } else {
+                    _state.value = UIState.NORMAL
+                }
+
+            } catch (exception: Exception) {
+                _state.value = UIState.ERROR
+            }
+        }
+    }
 
 }
