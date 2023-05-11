@@ -36,7 +36,7 @@ fun StudyCard(deckWithCards: DeckWithCards) {
     val progressStep = (1.0000f / deckWithCards.cards.size)
     val state = rememberSwipeableCardState()
     var iterator by remember {
-        mutableStateOf(deckWithCards.cards.size.dec())
+        mutableStateOf(0)
     }
     var progress by remember { mutableStateOf(0.0000f) }
     val animatedProgress = animateFloatAsState(
@@ -77,7 +77,7 @@ fun StudyCard(deckWithCards: DeckWithCards) {
                     mutableStateOf(CardFaceUIState.Front)
                 }
 //                        && (index == iterator || index ==(iterator-1)) // && (index >= iterator-1)
-                if (cardState.swipedDirection == null) {
+                if (cardState.swipedDirection == null && index == iterator && (index >= iterator-1)) {
                     FlipCard(
                         cardFaceUIState = cardFaceUIState,
                         onClick = { cardFaceUIState = CardFaceUIState.Back },
@@ -88,7 +88,7 @@ fun StudyCard(deckWithCards: DeckWithCards) {
                                 onSwiped = { direction ->
                                     println("The card was swiped to $direction")
                                     progress += progressStep
-                                    iterator--
+                                    iterator++
                                 },
                                 onSwipeCancel = {
                                     println("The swiping was cancelled")
