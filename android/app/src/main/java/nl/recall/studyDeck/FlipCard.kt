@@ -10,6 +10,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
@@ -24,6 +28,7 @@ fun FlipCard(
     modifierBack: Modifier = Modifier,
     back: @Composable () -> Unit = {},
     front: @Composable () -> Unit = {},
+    elevation: Int
 ) {
     val rotation = animateFloatAsState(
         targetValue = cardFaceUIState.angle,
@@ -32,6 +37,7 @@ fun FlipCard(
             easing = FastOutSlowInEasing,
         )
     )
+
 
     Box(
         modifier = Modifier
@@ -43,7 +49,7 @@ fun FlipCard(
         if (rotation.value <= 90f) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = AppTheme.white),
-                elevation = CardDefaults.cardElevation(5.dp),
+                elevation = CardDefaults.cardElevation(elevation.dp),
                 shape = RoundedCornerShape(20.dp),
                 modifier = modifierFront
                     .fillMaxSize()
@@ -55,7 +61,7 @@ fun FlipCard(
         } else {
             Card(
                 colors = CardDefaults.cardColors(containerColor = AppTheme.white),
-                elevation = CardDefaults.cardElevation(5.dp),
+                elevation = CardDefaults.cardElevation(3.dp),
                 shape = RoundedCornerShape(20.dp),
                 modifier = modifierBack
                     .fillMaxSize()

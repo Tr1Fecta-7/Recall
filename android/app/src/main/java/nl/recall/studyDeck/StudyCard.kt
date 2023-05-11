@@ -51,21 +51,6 @@ fun StudyCard(deckWithCards: DeckWithCards) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             LinearProgressIndicator(progress = animatedProgress, Modifier.fillMaxWidth())
-//            OutlinedButton(
-//                onClick = {
-//                    if (progress < 1f) progress += 0.1f
-//                }
-//            ) {
-//                Text("Increase")
-//            }
-//
-//            OutlinedButton(
-//                onClick = {
-//                    if (progress > 0f) progress -= 0.1f
-//                }
-//            ) {
-//                Text("Decrease")
-//            }
         }
         Box(
             Modifier
@@ -76,9 +61,17 @@ fun StudyCard(deckWithCards: DeckWithCards) {
                 var cardFaceUIState by remember {
                     mutableStateOf(CardFaceUIState.Front)
                 }
-//                        && (index == iterator || index ==(iterator-1)) // && (index >= iterator-1)
-                if (cardState.swipedDirection == null && index == iterator && (index >= iterator-1)) {
+
+                if (cardState.swipedDirection == null) {
+                    var elevation by remember {
+                        mutableStateOf(0)
+                    }
+                    if(index == iterator) {
+                        elevation = 3
+                    }
+
                     FlipCard(
+                        elevation = elevation,
                         cardFaceUIState = cardFaceUIState,
                         onClick = { cardFaceUIState = CardFaceUIState.Back },
                         modifierFront = Modifier,
