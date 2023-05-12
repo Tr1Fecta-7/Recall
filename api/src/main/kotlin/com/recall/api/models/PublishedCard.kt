@@ -1,17 +1,33 @@
 package com.recall.api.models
 
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
+import com.fasterxml.jackson.annotation.JsonIgnore
+import jakarta.persistence.*
+import org.hibernate.Hibernate
 
 @Entity
 data class PublishedCard(
 	@Id
-	var id: Long,
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	var id: Long? = null,
 	var front: String,
 	var back: String,
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "deck_id", nullable = false)
 	var deck: PublishedDeck
-)
+) {
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+		other as PublishedCard
+
+		return id != null && id == other.id
+	}
+
+	override fun hashCode(): Int = javaClass.hashCode()
+
+	@Override
+	override fun toString(): String {
+		return this::class.simpleName + "(id = $id )"
+	}
+}
