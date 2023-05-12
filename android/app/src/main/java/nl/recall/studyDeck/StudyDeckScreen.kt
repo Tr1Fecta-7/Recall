@@ -12,14 +12,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -27,15 +24,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,15 +52,11 @@ import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
-import nl.recall.domain.deck.model.Card
-import nl.recall.domain.deck.model.Deck
 import nl.recall.domain.deck.model.DeckWithCards
-import nl.recall.errorScreen.ErrorScreen
-import nl.recall.presentation.deckDetail.DeckDetailSearchScreenViewModel
-import nl.recall.presentation.deckDetail.model.DeckDetailSearchScreenViewModelArgs
 import nl.recall.presentation.studyDeck.StudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
 import nl.recall.presentation.studyDeck.model.SwipeDirection
@@ -76,7 +66,6 @@ import nl.recall.studyDeck.model.CardFaceUIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import java.util.Date
 
 @Destination
 @Composable
@@ -93,7 +82,8 @@ fun StudyDeckScreen(
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
 
-    ContentScaffold(title = deckWithCards?.deck?.title,
+    ContentScaffold(
+        title = deckWithCards?.deck?.title,
         navigator = navigator,
         content = { paddingValues ->
             when (uiState) {
@@ -199,11 +189,10 @@ fun Content(
         targetValue = progress, animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
     val cards = deckWithCards.cards.reversed().map { it to rememberSwipeableCardState() }
-    var currentColor by remember { mutableStateOf(BackgroundColors.Normal) }
+    var currentColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
 
     Crossfade(
-        targetState = currentColor,
-        animationSpec = tween(durationMillis = 1000)
+        targetState = currentColor, animationSpec = tween(durationMillis = 1000)
     ) { backgroundColor ->
         Column(
             modifier = Modifier
@@ -218,8 +207,7 @@ fun Content(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(13.dp),
-                    horizontalArrangement = Arrangement.End
+                        .padding(13.dp), horizontalArrangement = Arrangement.End
                 ) {
                     Card(
                         shape = RoundedCornerShape(10.dp)
@@ -228,9 +216,7 @@ fun Content(
                             fontSize = 14.sp,
                             modifier = Modifier.padding(4.dp),
                             text = stringResource(
-                                id = R.string.study_progression,
-                                iterator,
-                                deckWithCards.cards.size
+                                id = R.string.study_progression, iterator, deckWithCards.cards.size
                             )
                         )
                     }
@@ -246,6 +232,7 @@ fun Content(
                     var cardFaceUIState by remember {
                         mutableStateOf(CardFaceUIState.Front)
                     }
+                    val scope = rememberCoroutineScope()
 
                     if (cardState.swipedDirection == null) {
                         var elevation by remember {
@@ -264,10 +251,10 @@ fun Content(
                                 onSwiped = { direction ->
                                     if (direction == Direction.Left) {
                                         viewModel.onSwipeCard(SwipeDirection.LEFT, card)
-                                        currentColor = BackgroundColors.Correct
+                                        currentColor = BackgroundColors.CORRECT
                                     } else {
                                         viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
-                                        currentColor = BackgroundColors.Wrong
+                                        currentColor = BackgroundColors.WRONG
                                     }
 
                                 },
@@ -324,14 +311,22 @@ fun Content(
                                         Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceAround
                                     ) {
-                                        Button(
-                                            modifier= Modifier.size(50.dp),
+                                        Button(modifier = Modifier.size(50.dp),
                                             shape = CircleShape,
                                             contentPadding = PaddingValues(0.dp),
                                             colors = ButtonDefaults.buttonColors(
                                                 containerColor = AppTheme.red300
                                             ),
-                                            onClick = { /*TODO*/ }) {
+                                            onClick = {
+                                                scope.launch {
+                                                    cardState.swipe(Direction.Right)
+                                                    viewModel.onSwipeCard(
+                                                        SwipeDirection.RIGHT,
+                                                        card
+                                                    )
+                                                    currentColor = BackgroundColors.WRONG
+                                                }
+                                            }) {
                                             Icon(
                                                 tint = AppTheme.red700,
                                                 imageVector = Icons.Default.Close,
@@ -340,13 +335,22 @@ fun Content(
                                         }
                                         Button(
 
-                                            modifier= Modifier.size(50.dp),
+                                            modifier = Modifier.size(50.dp),
                                             shape = CircleShape,
                                             contentPadding = PaddingValues(0.dp),
                                             colors = ButtonDefaults.buttonColors(
                                                 containerColor = AppTheme.primary300
                                             ),
-                                            onClick = { /*TODO*/ }) {
+                                            onClick = {
+                                                scope.launch {
+                                                    cardState.swipe(Direction.Left)
+                                                    viewModel.onSwipeCard(
+                                                        SwipeDirection.LEFT,
+                                                        card
+                                                    )
+                                                    currentColor = BackgroundColors.CORRECT
+                                                }
+                                            }) {
                                             Icon(
                                                 tint = AppTheme.primary700,
                                                 imageVector = Icons.Default.Check,
