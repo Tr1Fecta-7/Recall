@@ -110,7 +110,7 @@ fun DeckFrontEndComponent(
                     modifier = Modifier.background(color = Color.White),
                     textStyle = LocalTextStyle.current.copy(
                         textAlign = TextAlign.Center,
-                        fontSize = 155.sp
+                        fontSize = 120.sp
                     ),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color(deckColor.toColorInt()),

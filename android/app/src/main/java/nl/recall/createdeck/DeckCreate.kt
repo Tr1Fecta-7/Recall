@@ -131,9 +131,9 @@ private fun MainContent(
                     deckColor = deckColor,
                     emojiTextfield = emojiTextfield,
                     onEmojiTextFieldValueChange = { text ->
-                        if (text.text.length <= 2 && text.text.length % 2 == 0) {
+                        if (text.text.length <= 2) {
                             emojiTextfield = text
-                            validationEmoji = text.text.isNotBlank()
+                            validationEmoji = emojiTextfield.text.isNotBlank()
                         } else {
                             validationEmoji = false
                         }
