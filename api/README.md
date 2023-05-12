@@ -1,5 +1,6 @@
 # Setup
-Create a MySQL schema with the name "recall". Add environment variables to connect to your database:
+Create a MySQL schema with the name "recall". Add environment variables to where you run the API to connect to your 
+database:
 
 ```dotenv
 " Add your credentials
