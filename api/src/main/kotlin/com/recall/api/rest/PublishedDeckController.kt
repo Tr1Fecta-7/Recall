@@ -1,6 +1,7 @@
 package com.recall.api.rest
 
-import com.recall.api.models.PublishedCard
+import com.recall.api.mappers.PublishCardRequestMapper.toPublishedCard
+import com.recall.api.mappers.PublishDeckRequestMapper.toPublishedDeck
 import com.recall.api.models.PublishedDeck
 import com.recall.api.repositories.PublishedCardRepository
 import com.recall.api.repositories.PublishedDeckRepository
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import java.time.LocalDate
 import java.util.*
 
 @RequestMapping("/api/v1/deck")
@@ -29,22 +29,8 @@ class PublishedDeckController(
 
 	@PostMapping
 	fun saveDeck(@RequestBody deck: PublishDeckRequest): ResponseEntity<Any> {
-		val savedDeck = publishedDeckRepository.save(
-			PublishedDeck(
-				title = deck.title,
-				creation = LocalDate.now(),
-				icon = deck.icon,
-				color = deck.color,
-				downloads = 0,
-				cards = emptyList()
-			)
-		)
-
-		deck.cards.forEach { card ->
-			publishedCardRepository.save(
-				PublishedCard(front = card.front, back = card.back, deck = savedDeck)
-			)
-		}
+		val savedDeck = publishedDeckRepository.save(deck.toPublishedDeck())
+		deck.cards.forEach { publishedCardRepository.save(it.toPublishedCard(savedDeck)) }
 
 		val location = ServletUriComponentsBuilder
 			.fromCurrentRequest()
