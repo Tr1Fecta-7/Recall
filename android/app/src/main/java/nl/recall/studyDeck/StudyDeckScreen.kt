@@ -335,7 +335,7 @@ fun Content(
                                             Icon(
                                                 tint = AppTheme.red700,
                                                 imageVector = Icons.Default.Close,
-                                                contentDescription = ""
+                                                contentDescription = "wrong"
                                             )
                                         }
                                         Button(
@@ -350,7 +350,7 @@ fun Content(
                                             Icon(
                                                 tint = AppTheme.primary700,
                                                 imageVector = Icons.Default.Check,
-                                                contentDescription = ""
+                                                contentDescription = "correct"
                                             )
                                         }
                                     }
