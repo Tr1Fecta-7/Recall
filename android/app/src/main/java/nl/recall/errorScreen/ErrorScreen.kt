@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -33,45 +34,6 @@ import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 
 @Composable
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-fun ErrorScreen(titleText: String, errorText: String, navigator: DestinationsNavigator) {
-    Scaffold(topBar = {
-        TopAppBar(
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = AppTheme.white
-            ),
-            title = {
-                Text(
-                    text = titleText
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = {navigator.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-                }
-            },
+fun ErrorScreen(paddingValues: PaddingValues, errorText: String) {
 
-            )
-    },
-        content = {
-            Column(
-                modifier = Modifier
-                    .padding(it)
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    modifier = Modifier.width(250.dp),
-                    painter = painterResource(id = R.drawable.error_image),
-                    contentDescription = "error"
-                )
-                Text(text = errorText)
-            }
-
-
-        }
-
-    )
 }

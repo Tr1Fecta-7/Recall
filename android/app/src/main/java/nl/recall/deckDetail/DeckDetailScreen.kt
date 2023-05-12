@@ -46,13 +46,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.AlertWindow
+import nl.recall.components.BottomNav
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.destinations.DeckEditDestination
+import nl.recall.destinations.EditCardScreenDestination
 import nl.recall.destinations.StudyDeckScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.errorScreen.ErrorScreen
@@ -67,6 +70,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DeckDetailScreen(
     deckId: Long,
+    navController: NavController,
     navigator: DestinationsNavigator,
     viewModel: DeckDetailViewModel = koinViewModel(parameters = {
         parametersOf(DeckDetailViewModelArgs(deckId))
@@ -78,13 +82,14 @@ fun DeckDetailScreen(
     when (uiState) {
         UIState.NORMAL -> {
             deckWithCards?.let {
-                Content(navigator = navigator, deckWithCards = it)
+                Content(navigator = navigator, deckWithCards = it, navController = navController)
             }
         }
         UIState.ERROR -> {
-            ErrorScreen(titleText = stringResource(id = R.string.deck_detail_title_placeholder), errorText = stringResource(
-                id = R.string.get_deck_error
-            ), navigator)
+//            ErrorScreen(
+//
+//                errorText = R.string.get_deck_error
+//            )
         }
 
         UIState.LOADING -> {
@@ -109,6 +114,7 @@ fun DeckDetailScreen(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 private fun Content(
+    navController: NavController,
     navigator: DestinationsNavigator,
     deckWithCards: DeckWithCards
 ) {
@@ -147,7 +153,11 @@ private fun Content(
         }
 
         )
-    }, content = {
+    }, bottomBar = {
+                   BottomNav(navController = navController)
+    },
+
+        content = {
         Column(
             modifier = Modifier
                 .padding(it)
@@ -195,7 +205,7 @@ private fun Content(
             ) {
                 items(items = deckWithCards?.cards ?: listOf(), itemContent = {
                     Card(
-                        onClick = { /* */ },
+                        onClick = { navigator.navigate(EditCardScreenDestination(clickedCardId = it.id, deckId = it.deckId )) },
                         shape = RoundedCornerShape(12.dp),
                         border = BorderStroke(1.dp, AppTheme.neutral200),
                         modifier = Modifier.fillMaxWidth()

@@ -50,7 +50,7 @@ fun DeckFrontEndComponent(
     onEmojiTextFieldValueChange: (TextFieldValue) -> Unit,
     validationEmoji: Boolean,
     validationTitle: Boolean,
-
+    submitButtonText: String
     ) {
     Log.e("DeckCreate", deckColor)
     Column(
@@ -74,7 +74,7 @@ fun DeckFrontEndComponent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues)
-                .padding(top = 60.dp)
+                .padding(top = 20.dp)
                 .weight(1f)
         ) {
             OutlinedTextField(
@@ -121,14 +121,14 @@ fun DeckFrontEndComponent(
 
                     )
             }
-            Button(onClick = { toggleAlert() }) {
-                Text(text = stringResource(id = R.string.create_deck_select_icon), color = Color.White)
+            Button(onClick = { toggleAlert() }, modifier = Modifier.padding(5.dp)) {
+                Text(text = stringResource(id = R.string.create_deck_select_background_color), color = AppTheme.white)
             }
         }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 40.dp),
+                .padding(bottom = 25.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
@@ -145,7 +145,7 @@ fun DeckFrontEndComponent(
                 )
             ) {
                 Text(
-                    text = stringResource(id = R.string.create_deck_title),
+                    text = submitButtonText,
                     color = Color.White
                 )
             }

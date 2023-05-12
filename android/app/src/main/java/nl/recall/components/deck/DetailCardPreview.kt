@@ -28,6 +28,7 @@ import nl.recall.theme.AppTheme
 @Composable
 fun DeckDetailPreview(deckWithCards: DeckWithCards, onClick: (Long) -> (Unit)) {
     Card(
+        enabled = deckWithCards.cards.isNotEmpty(),
         onClick = { onClick(deckWithCards.deck.id) },
         shape = RoundedCornerShape(18.dp),
         border = BorderStroke(1.dp, AppTheme.neutral200),

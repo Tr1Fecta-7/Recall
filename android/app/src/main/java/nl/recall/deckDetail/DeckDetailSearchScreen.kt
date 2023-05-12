@@ -150,13 +150,13 @@ fun DeckDetailSearchScreen(
                     }
 
                     UIState.ERROR -> {
-                        ErrorScreen(
-                            titleText = stringResource(id = R.string.deck_detail_title_placeholder),
-                            errorText = stringResource(
-                                id = R.string.search_error_card
-                            ),
-                            navigator
-                        )
+//                        ErrorScreen(
+////                            titleText = stringResource(id = R.string.deck_detail_title_placeholder),
+////                            errorText = stringResource(
+////                                id = R.string.search_error_card
+////                            ),
+////                            navigator
+//                        )
                     }
 
                     UIState.LOADING -> {
