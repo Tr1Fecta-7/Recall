@@ -82,8 +82,7 @@ fun StudyDeckScreen(
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
 
-    ContentScaffold(
-        title = deckWithCards?.deck?.title,
+    ContentScaffold(title = deckWithCards?.deck?.title,
         navigator = navigator,
         content = { paddingValues ->
             when (uiState) {
@@ -280,7 +279,8 @@ fun Content(
                                     ) {
                                         Text(
                                             text = stringResource(id = R.string.click_to_rotate),
-                                            fontSize = 10.sp
+                                            fontSize = 10.sp,
+                                            lineHeight = 12.sp,
                                         )
                                     }
                                 }
@@ -307,55 +307,66 @@ fun Content(
                                         )
                                     }
 
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceAround
-                                    ) {
-                                        Button(modifier = Modifier.size(50.dp),
-                                            shape = CircleShape,
-                                            contentPadding = PaddingValues(0.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = AppTheme.red300
-                                            ),
-                                            onClick = {
-                                                scope.launch {
-                                                    cardState.swipe(Direction.Right)
-                                                    viewModel.onSwipeCard(
-                                                        SwipeDirection.RIGHT,
-                                                        card
-                                                    )
-                                                    currentColor = BackgroundColors.WRONG
-                                                }
-                                            }) {
-                                            Icon(
-                                                tint = AppTheme.red700,
-                                                imageVector = Icons.Default.Close,
-                                                contentDescription = "wrong"
-                                            )
-                                        }
-                                        Button(
 
-                                            modifier = Modifier.size(50.dp),
-                                            shape = CircleShape,
-                                            contentPadding = PaddingValues(0.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = AppTheme.primary300
-                                            ),
-                                            onClick = {
-                                                scope.launch {
-                                                    cardState.swipe(Direction.Left)
-                                                    viewModel.onSwipeCard(
-                                                        SwipeDirection.LEFT,
-                                                        card
-                                                    )
-                                                    currentColor = BackgroundColors.CORRECT
-                                                }
-                                            }) {
-                                            Icon(
-                                                tint = AppTheme.primary700,
-                                                imageVector = Icons.Default.Check,
-                                                contentDescription = "correct"
-                                            )
+
+                                    Column(
+                                        Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Text(
+                                            fontSize = 10.sp,
+                                            lineHeight = 12.sp,
+                                            text = stringResource(id = R.string.instructions_back_card_study_deck)
+                                        )
+
+                                        Row(
+                                            Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceAround
+                                        ) {
+                                            Button(modifier = Modifier.size(50.dp),
+                                                shape = CircleShape,
+                                                contentPadding = PaddingValues(0.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = AppTheme.red300
+                                                ),
+                                                onClick = {
+                                                    scope.launch {
+                                                        cardState.swipe(Direction.Right)
+                                                        viewModel.onSwipeCard(
+                                                            SwipeDirection.RIGHT, card
+                                                        )
+                                                        currentColor = BackgroundColors.WRONG
+                                                    }
+                                                }) {
+                                                Icon(
+                                                    tint = AppTheme.red700,
+                                                    imageVector = Icons.Default.Close,
+                                                    contentDescription = "wrong"
+                                                )
+                                            }
+                                            Button(
+
+                                                modifier = Modifier.size(50.dp),
+                                                shape = CircleShape,
+                                                contentPadding = PaddingValues(0.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = AppTheme.primary300
+                                                ),
+                                                onClick = {
+                                                    scope.launch {
+                                                        cardState.swipe(Direction.Left)
+                                                        viewModel.onSwipeCard(
+                                                            SwipeDirection.LEFT, card
+                                                        )
+                                                        currentColor = BackgroundColors.CORRECT
+                                                    }
+                                                }) {
+                                                Icon(
+                                                    tint = AppTheme.primary700,
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = "correct"
+                                                )
+                                            }
                                         }
                                     }
                                 }
