@@ -1,3 +1,6 @@
 package nl.recall.presentation.studyDeck.model
 
-data class SwipeDirection()
+enum class SwipeDirection() {
+    LEFT, RIGHT
+}
+

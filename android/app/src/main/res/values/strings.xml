@@ -37,6 +37,5 @@
     <string name="edit_deck_title">Edit deck</string>
     <string name="click_to_rotate">Tap the card to reveal the back of the card.</string>
     <string name="error_when_retrieving_for_cards">There was an error while retrieving cards</string>
-    <string name="create_deck_select_background_color">Select your background color</string>
-    <string name="update_deck_submit_button">Update deck</string>
+    <string name="study_progression">%s / %s</string>
 </resources>
