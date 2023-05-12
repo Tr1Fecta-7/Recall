@@ -13,7 +13,7 @@ data class PublishedDeck(
 	var creation: Date,
 	var icon: String,
 	var backgroundColor: String,
-	var downloads: Int,
+	var downloads: Long,
 	@OneToMany(mappedBy = "deck")
 	var cards: Set<PublishedCard>
 )

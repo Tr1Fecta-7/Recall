@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import nl.recall.domain.deck.SaveCard
-import nl.recall.presentation.createCard.model.CreateCardViewModelArgs
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
@@ -16,20 +15,16 @@ import java.util.Date
 
 @KoinViewModel
 class CreateCardViewModel(
-    @InjectedParam private val args: CreateCardViewModelArgs,
     private val saveCard: SaveCard,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UIState.NORMAL)
-    val state: StateFlow<UIState> by lazy {
-        _state.asStateFlow()
-    }
+    val state: StateFlow<UIState> = _state.asStateFlow()
 
     private val _savedCardBoolean = MutableStateFlow(false)
 
-    val savedCardBoolean: StateFlow<Boolean> by lazy {
-        _savedCardBoolean.asStateFlow()
-    }
+    val savedCardBoolean: StateFlow<Boolean> = _savedCardBoolean.asStateFlow()
+
 
     fun saveCardToDatabase(front: String, back: String, dueDate: Date, deckId: Long) {
         viewModelScope.launch(Dispatchers.IO) {

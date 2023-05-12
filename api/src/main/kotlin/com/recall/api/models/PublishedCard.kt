@@ -12,6 +12,6 @@ data class PublishedCard(
 	var front: String,
 	var back: String,
 	@ManyToOne
-	@JoinColumn(name = "id", nullable = false)
+	@JoinColumn(name = "deck_id", nullable = false)
 	var deck: PublishedDeck
 )

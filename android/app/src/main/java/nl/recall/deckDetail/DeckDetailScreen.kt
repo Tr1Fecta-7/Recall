@@ -120,7 +120,7 @@ private fun Content(
 ) {
     var expandedMoreVert by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
-    val navigateToCreateCard: () -> Unit = { navigator.navigate(CreateCardScreenDestination) }
+    val navigateToCreateCard: (Long) -> Unit = { navigator.navigate(CreateCardScreenDestination(it)) }
 
 
     Scaffold(topBar = {
@@ -203,7 +203,7 @@ private fun Content(
                 modifier = Modifier.padding(top = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                items(items = deckWithCards?.cards ?: listOf(), itemContent = {
+                items(items = deckWithCards.cards, itemContent = {
                     Card(
                         onClick = { navigator.navigate(EditCardScreenDestination(clickedCardId = it.id, deckId = it.deckId )) },
                         shape = RoundedCornerShape(12.dp),
@@ -255,7 +255,7 @@ private fun Content(
 
     }, floatingActionButton = {
         FloatingActionButton(
-            onClick = { navigateToCreateCard() },
+            onClick = { navigateToCreateCard(deckWithCards.deck.id) },
             contentColor = AppTheme.primary900,
             containerColor = AppTheme.primary300
         ) {
