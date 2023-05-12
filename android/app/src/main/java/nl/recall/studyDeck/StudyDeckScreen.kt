@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,8 @@ import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import nl.recall.R
 import nl.recall.components.ImageMessage
@@ -82,7 +85,8 @@ fun StudyDeckScreen(
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
 
-    ContentScaffold(title = deckWithCards?.deck?.title,
+    ContentScaffold(
+        title = deckWithCards?.deck?.title,
         navigator = navigator,
         content = { paddingValues ->
             when (uiState) {
@@ -189,9 +193,10 @@ fun Content(
     ).value
     val cards = deckWithCards.cards.reversed().map { it to rememberSwipeableCardState() }
     var currentColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
+    val scope = rememberCoroutineScope()
 
     Crossfade(
-        targetState = currentColor, animationSpec = tween(durationMillis = 1000)
+        targetState = currentColor, animationSpec = tween(durationMillis = 500)
     ) { backgroundColor ->
         Column(
             modifier = Modifier
@@ -201,6 +206,15 @@ fun Content(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
+
+                LaunchedEffect(key1 = backgroundColor, block = {
+                    if (backgroundColor == BackgroundColors.CORRECT || backgroundColor == BackgroundColors.WRONG) {
+                        delay(800)
+                        currentColor = BackgroundColors.NORMAL
+                    }
+
+
+                })
                 LinearProgressIndicator(progress = animatedProgress, Modifier.fillMaxWidth())
 
                 Row(
@@ -231,7 +245,6 @@ fun Content(
                     var cardFaceUIState by remember {
                         mutableStateOf(CardFaceUIState.Front)
                     }
-                    val scope = rememberCoroutineScope()
 
                     if (cardState.swipedDirection == null) {
                         var elevation by remember {
@@ -330,7 +343,7 @@ fun Content(
                                                     containerColor = AppTheme.red300
                                                 ),
                                                 onClick = {
-                                                    scope.launch {
+                                                    scope.launch(Dispatchers.Unconfined) {
                                                         cardState.swipe(Direction.Right)
                                                         viewModel.onSwipeCard(
                                                             SwipeDirection.RIGHT, card
@@ -353,7 +366,7 @@ fun Content(
                                                     containerColor = AppTheme.primary300
                                                 ),
                                                 onClick = {
-                                                    scope.launch {
+                                                    scope.launch(Dispatchers.Unconfined) {
                                                         cardState.swipe(Direction.Left)
                                                         viewModel.onSwipeCard(
                                                             SwipeDirection.LEFT, card
@@ -377,4 +390,5 @@ fun Content(
             }
         }
     }
+
 }
