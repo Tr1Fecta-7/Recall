@@ -44,6 +44,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.ImageMessage
+import nl.recall.destinations.EditCardScreenDestination
 import nl.recall.domain.deck.model.Card
 import nl.recall.errorScreen.ErrorScreen
 import nl.recall.presentation.deckDetail.DeckDetailSearchScreenViewModel
@@ -59,9 +60,10 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DeckDetailSearchScreen(
     navigator: DestinationsNavigator,
+    deckId: Long,
     viewModel: DeckDetailSearchScreenViewModel = koinViewModel(parameters = {
-        parametersOf(DeckDetailSearchScreenViewModelArgs(1))
-    })
+        parametersOf(DeckDetailSearchScreenViewModelArgs(deckId))
+    }),
 ) {
     val cards by viewModel.cards.collectAsState()
     val uiState by viewModel.state.collectAsState()
@@ -69,7 +71,7 @@ fun DeckDetailSearchScreen(
         mutableStateOf(TextFieldValue(""))
     }
 
-    val navigateToCard: (Long) -> Unit = { }
+    val navigateToCard: (Long) -> Unit = { navigator.navigate(EditCardScreenDestination(clickedCardId = it, deckId = deckId)) }
 
 
 
@@ -142,11 +144,9 @@ fun DeckDetailSearchScreen(
 
                 when (uiState) {
                     UIState.NORMAL -> {
-                        cards?.let { cardList ->
-                            SearchResults(cardList, onClick = {
-                                navigateToCard(it)
-                            })
-                        }
+                        SearchResults(cards, onClick = {
+                            navigateToCard(it)
+                        })
                     }
 
                     UIState.ERROR -> {
