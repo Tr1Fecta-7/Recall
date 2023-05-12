@@ -29,21 +29,37 @@ class StudyDeckViewModel(
         _deckWithCards.asStateFlow()
     }
 
+    private val _progress = MutableStateFlow(0.0000f)
+    val progress: StateFlow<Float> = _progress.asStateFlow()
+
+    private val _iterator = MutableStateFlow(0)
+    val iterator: StateFlow<Int> = _iterator.asStateFlow()
+
+    private val _progressStep = MutableStateFlow(0.0000f)
+
     private fun fetchDeckWithCards() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.value = UIState.LOADING
                 _deckWithCards.value = getDeckById(args.deckId)
                 if (_deckWithCards.value?.cards.isNullOrEmpty()) {
+                    _progressStep.value = (0.000f)
                     _state.value = UIState.EMPTY
                 } else {
                     _state.value = UIState.NORMAL
+                    //Ask if this can be done better
+                    _progressStep.value = (1.000f / _deckWithCards.value?.cards?.size!!)
                 }
 
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }
         }
+    }
+
+    fun onSwipeCard() {
+        _progress.value += _progressStep.value
+        _iterator.value++
     }
 
 }

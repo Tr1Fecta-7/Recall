@@ -72,6 +72,9 @@ fun StudyDeckScreen(
 
     val uiState by viewModel.state.collectAsState()
     val deckWithCards by viewModel.deckWithCards.collectAsState()
+    val progress by viewModel.progress.collectAsState()
+    val iterator by viewModel.iterator.collectAsState()
+
     ContentScaffold(
         title = deckWithCards?.deck?.title,
         navigator = navigator,
@@ -79,7 +82,13 @@ fun StudyDeckScreen(
             when (uiState) {
                 UIState.NORMAL -> {
                     deckWithCards?.let { deckWithCards ->
-                        Content(deckWithCards = deckWithCards, paddingValues = paddingValues)
+                        Content(
+                            deckWithCards = deckWithCards,
+                            paddingValues = paddingValues,
+                            progress = progress,
+                            iterator = iterator,
+                            viewModel = viewModel,
+                        )
                     }
 
                 }
@@ -165,19 +174,19 @@ private fun ContentScaffold(
 
 @OptIn(ExperimentalSwipeableCardApi::class)
 @Composable
-fun Content(paddingValues: PaddingValues, deckWithCards: DeckWithCards) {
+fun Content(
+    paddingValues: PaddingValues,
+    deckWithCards: DeckWithCards,
+    progress: Float,
+    iterator: Int,
+    viewModel: StudyDeckViewModel,
+) {
     Column(
         modifier = Modifier
             .padding(paddingValues)
             .fillMaxSize()
             .background(AppTheme.neutral50)
     ) {
-        val progressStep = (1.0000f / deckWithCards.cards.size)
-        val state = rememberSwipeableCardState()
-        var iterator by remember {
-            mutableStateOf(0)
-        }
-        var progress by remember { mutableStateOf(0.0000f) }
         val animatedProgress = animateFloatAsState(
             targetValue = progress,
             animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
@@ -218,9 +227,7 @@ fun Content(paddingValues: PaddingValues, deckWithCards: DeckWithCards) {
                                 .swipableCard(
                                     state = cardState,
                                     onSwiped = { direction ->
-                                        println("The card was swiped to $direction")
-                                        progress += progressStep
-                                        iterator++
+                                        viewModel.onSwipeCard()
                                     },
                                     onSwipeCancel = {
                                         println("The swiping was cancelled")
