@@ -33,9 +33,7 @@ class DeckEditViewModel(
 
     private val _updatedDeckBoolean = MutableStateFlow(false)
 
-    val updatedDeckBoolean: StateFlow<Boolean> by lazy {
-        _updatedDeckBoolean.asStateFlow()
-    }
+    val updatedDeckBoolean: StateFlow<Boolean> =_updatedDeckBoolean.asStateFlow()
 
     private fun fetchDeck(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
