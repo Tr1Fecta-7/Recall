@@ -174,30 +174,33 @@ private fun Content(
                 fontWeight = FontWeight.Bold
             )
 
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = AppTheme.neutral200,
-                ),
-                shape = RoundedCornerShape(35.dp),
-                onClick = {
-                    navigator.navigate(DeckDetailSearchScreenDestination)
-                }) {
-                Row(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(R.string.search_bar_card_hint),
-                        color = AppTheme.neutral500
-                    )
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+            if (deckWithCards.cards.isNotEmpty()) {
+                Card(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = AppTheme.neutral200,
+                    ),
+                    shape = RoundedCornerShape(35.dp),
+                    onClick = {
+                        navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
+                    }) {
+                    Row(
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = stringResource(R.string.search_bar_card_hint),
+                            color = AppTheme.neutral500
+                        )
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+                    }
                 }
             }
+
 
             LazyColumn(
                 modifier = Modifier.padding(top = 10.dp),
