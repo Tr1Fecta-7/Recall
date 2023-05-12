@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -71,26 +72,28 @@ fun DeckDetailSearchScreen(
         mutableStateOf(TextFieldValue(""))
     }
 
-    val navigateToCard: (Long) -> Unit = { navigator.navigate(EditCardScreenDestination(clickedCardId = it, deckId = deckId)) }
+    val navigateToCard: (Long) -> Unit =
+        { navigator.navigate(EditCardScreenDestination(clickedCardId = it, deckId = deckId)) }
 
 
 
-    Scaffold(topBar = {
-        TopAppBar(
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = AppTheme.white
-            ),
-            title = {
-                Text(text = stringResource(id = R.string.card_searchbar_title))
-            },
-            navigationIcon = {
-                IconButton(onClick = { navigator.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-                }
-            },
-        )
-    },
-
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = AppTheme.neutral50
+                ),
+                title = {
+                    Text(text = stringResource(id = R.string.card_searchbar_title))
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+                    }
+                },
+            )
+        },
+        containerColor = AppTheme.neutral50,
         content = { paddingValues ->
             Column(
                 modifier = Modifier
