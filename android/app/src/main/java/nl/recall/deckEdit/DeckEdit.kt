@@ -130,6 +130,7 @@ private fun MainContent(
                     },
                     validationTitle = validationTitle,
                     validationEmoji = validationEmoji,
+                    submitButtonText = stringResource(id = R.string.edit_deck_title)
                 )
             }
         }
