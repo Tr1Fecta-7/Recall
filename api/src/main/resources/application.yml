@@ -1,1 +1,24 @@
+server:
+  port: 8080
+  servlet.context-path: "/"
+  error.include-message: always
 
+logging:
+  level:
+    org.springframework: info
+
+spring:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  # MySQL DATABASE
+  datasource:
+    url: "jdbc:mysql://${MYSQL_HOST:localhost}:3306/${MYSQL_DB}"
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
