@@ -2,8 +2,8 @@
     <string name="app_name">Recall</string>
     <string name="deck_card_count">%s cards</string>
     <string name="create_deck_title">Create deck</string>
-    <string name="create_deck_create_text_field">deck name</string>
-    <string name="create_deck_create_text_field_placeholder">English vocabulary</string>
+    <string name="create_deck_create_text_field">Deck name</string>
+    <string name="create_deck_create_text_field_placeholder">Input your deck name</string>
     <string name="create_deck_select_icon">Select your icon</string>
     <string name="dialog_delete_deck_title">Delete deck</string>
     <string name="dialog_delete_deck_text">Are you sure you want to delete this deck?</string>
@@ -37,4 +37,6 @@
     <string name="edit_deck_title">Edit deck</string>
     <string name="click_to_rotate">Tap the card to reveal the back of the card.</string>
     <string name="error_when_retrieving_for_cards">There was an error while retrieving cards</string>
+    <string name="create_deck_select_background_color">Select your background color</string>
+    <string name="update_deck_submit_button">Update deck</string>
 </resources>
