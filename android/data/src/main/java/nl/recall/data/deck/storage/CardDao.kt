@@ -9,6 +9,7 @@ import androidx.room.Update
 import nl.recall.data.deck.models.CardEntity
 import nl.recall.domain.deck.model.Card
 import org.koin.core.annotation.Singleton
+import java.util.Date
 
 @Dao
 interface CardDao {
@@ -26,4 +27,8 @@ interface CardDao {
 
     @Update
     suspend fun updateCard(cardEntity: CardEntity): Int
+
+    @Transaction
+    @Query("UPDATE card SET due_date = :date WHERE id = :id")
+    suspend fun updateDateCard(id: Long, date: Date): Int
 }

@@ -41,4 +41,8 @@ class RemoteCardRepository(private val cardDao: CardDao): CardRepository {
         return cardDao.updateCard(CardEntity(id = card.id, front = card.front, back = card.back,
             dueDate = card.dueDate, deckId = card.deckId)) >= 0
     }
+
+    override suspend fun updateDateCard(id: Long, date: Date): Boolean {
+        return cardDao.updateDateCard(id, date) > 0
+    }
 }
