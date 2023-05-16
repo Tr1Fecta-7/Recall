@@ -2,6 +2,8 @@ package nl.recall.data.deck
 
 
 import android.content.res.Resources.NotFoundException
+import nl.recall.data.deck.mappers.DeckEntityMapper.toDomain
+import nl.recall.data.deck.mappers.DeckMapper
 import nl.recall.data.deck.mappers.DeckWithCardCountMapper.toDomain
 import nl.recall.data.deck.mappers.DeckWithCardsMapper.toDomain
 import nl.recall.data.deck.models.DeckEntity
@@ -49,7 +51,11 @@ class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
 
     override suspend fun updateDeck(deck: Deck): Boolean {
         return deckDao.updateDeck(
-            DeckEntity(deck.id, deck.title, deck.creationDate, deck.icon, deck.color)
+            deck.toDomain()
         ) >= 0
+    }
+
+    override suspend fun deleteDeckById(deckWithCards: DeckWithCards): Boolean {
+        return deckDao.delete(deckWithCards.deck.toDomain()) >= 0
     }
 }

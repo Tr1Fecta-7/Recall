@@ -55,6 +55,7 @@ import nl.recall.components.BottomNav
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.destinations.DeckEditDestination
+import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.destinations.EditCardScreenDestination
 import nl.recall.destinations.StudyDeckScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
@@ -78,11 +79,16 @@ fun DeckDetailScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
     val deckWithCards by viewModel.deck.collectAsState()
+    val isDeckDeleted by viewModel.isDeckDeleted.collectAsState()
 
     when (uiState) {
         UIState.NORMAL -> {
-            deckWithCards?.let {
-                Content(navigator = navigator, deckWithCards = it, navController = navController)
+            if(isDeckDeleted){
+                navigator.navigate(DecksOverviewScreenDestination)
+            } else {
+                deckWithCards?.let {
+                    Content(navigator = navigator, deckWithCards = it, navController = navController, viewModel = viewModel)
+                }
             }
         }
 
@@ -116,7 +122,8 @@ fun DeckDetailScreen(
 private fun Content(
     navController: NavController,
     navigator: DestinationsNavigator,
-    deckWithCards: DeckWithCards
+    deckWithCards: DeckWithCards,
+    viewModel: DeckDetailViewModel
 ) {
     var expandedMoreVert by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
@@ -262,7 +269,7 @@ private fun Content(
                         expandedMoreVert = false
                     },
                     onPressConfirm = {
-
+                        viewModel.deleteDeckById(deckWithCards)
                     }
                 )
             }

@@ -11,4 +11,5 @@ interface DeckRepository {
     suspend fun searchDeckWithCardCount(title: String): Map<Deck, Int>
     suspend fun saveDeck(title: String, creationDate: Date, icon: String, color: String): Boolean
     suspend fun updateDeck(deck: Deck): Boolean
+    suspend fun deleteDeckById(deckWithCards: DeckWithCards): Boolean
 }
