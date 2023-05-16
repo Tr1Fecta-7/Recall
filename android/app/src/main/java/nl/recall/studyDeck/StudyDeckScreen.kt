@@ -1,5 +1,6 @@
 package nl.recall.studyDeck
 
+import androidx.compose.animation.Animatable
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -42,6 +43,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexstyl.swipeablecard.Direction
 import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
+import com.alexstyl.swipeablecard.SwipeableCardState
 import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.ramcosta.composedestinations.annotation.Destination
@@ -195,28 +198,14 @@ fun Content(
     var currentColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val scope = rememberCoroutineScope()
 
-    Crossfade(
-        targetState = currentColor, animationSpec = tween(durationMillis = 500)
-    ) { backgroundColor ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(backgroundColor.color)
+                .background(currentColor.color)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-
-                LaunchedEffect(key1 = backgroundColor, block = {
-                    if (backgroundColor == BackgroundColors.CORRECT || backgroundColor == BackgroundColors.WRONG) {
-                        delay(800)
-                        currentColor = BackgroundColors.NORMAL
-                    }
-
-
-                })
                 LinearProgressIndicator(progress = animatedProgress, Modifier.fillMaxWidth())
-
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -247,10 +236,30 @@ fun Content(
                     }
 
                     if (cardState.swipedDirection == null) {
+                        LaunchedEffect(cardState.offset.value.x) {
+                            if (cardState.offset.value.x < 0.0f) {
+                                currentColor = BackgroundColors.CORRECT
+                            }
+
+                            if (cardState.offset.value.x > 0.0f) {
+                                currentColor = BackgroundColors.WRONG
+                            }
+
+                            if (cardState.offset.value.x == 0.0f) {
+                                currentColor = BackgroundColors.NORMAL
+                            }
+
+                            if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
+                                currentColor = BackgroundColors.NORMAL
+                            }
+
+
+                        }
+
                         var elevation by remember {
                             mutableStateOf(0)
                         }
-                        if (index == iterator) {
+                        if (index == iterator + 1) {
                             elevation = 3
                         }
 
@@ -263,15 +272,12 @@ fun Content(
                                 onSwiped = { direction ->
                                     if (direction == Direction.Left) {
                                         viewModel.onSwipeCard(SwipeDirection.LEFT, card)
-                                        currentColor = BackgroundColors.CORRECT
                                     } else {
                                         viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
-                                        currentColor = BackgroundColors.WRONG
                                     }
-
                                 },
                                 onSwipeCancel = {
-                                    println("The swiping was cancelled")
+                                    currentColor = BackgroundColors.NORMAL
                                 }),
                             front = {
                                 Column(
@@ -343,12 +349,14 @@ fun Content(
                                                     containerColor = AppTheme.red300
                                                 ),
                                                 onClick = {
-                                                    scope.launch(Dispatchers.Unconfined) {
+                                                    scope.launch(Dispatchers.Main) {
                                                         cardState.swipe(Direction.Right)
                                                         viewModel.onSwipeCard(
                                                             SwipeDirection.RIGHT, card
                                                         )
                                                         currentColor = BackgroundColors.WRONG
+                                                        delay(800)
+                                                        currentColor = BackgroundColors.NORMAL
                                                     }
                                                 }) {
                                                 Icon(
@@ -372,6 +380,8 @@ fun Content(
                                                             SwipeDirection.LEFT, card
                                                         )
                                                         currentColor = BackgroundColors.CORRECT
+                                                        delay(800)
+                                                        currentColor = BackgroundColors.NORMAL
                                                     }
                                                 }) {
                                                 Icon(
@@ -389,6 +399,5 @@ fun Content(
                 }
             }
         }
-    }
 
 }
