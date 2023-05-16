@@ -33,7 +33,7 @@ interface DeckDao {
     suspend fun insert(deckEntity: List<DeckEntity>)
 
     @Delete
-    suspend fun delete(deckEntity: DeckEntity)
+    suspend fun delete(deckEntity: DeckEntity): Int
 
     @Query("DELETE from deck")
     suspend fun deleteAll()
