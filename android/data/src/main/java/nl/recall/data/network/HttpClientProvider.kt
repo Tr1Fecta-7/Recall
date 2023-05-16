@@ -6,7 +6,6 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.http.URLProtocol
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 import io.ktor.client.features.json.Json as JsonFeature
@@ -27,7 +26,6 @@ class HttpClientProvider {
 
     private fun HttpClientConfig<*>.installBaseUrl() = defaultRequest {
         url {
-            protocol = URLProtocol.HTTPS
             host = BASE_URL
         }
     }
@@ -41,7 +39,6 @@ class HttpClientProvider {
     }
 
     companion object {
-
-        private const val BASE_URL = "some-endpoint.com"
+        private const val BASE_URL = "localhost:8080"
     }
 }

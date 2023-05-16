@@ -40,4 +40,5 @@
     <string name="study_progression">%s / %s</string>
     <string name="create_deck_select_background_color">Select your background color</string>
     <string name="instructions_back_card_study_deck">Swipe the card to the right when you got the answer correct. Swipe to the left when you got it wrong. Or use the buttons below.</string>
+    <string name="dropdown_menu_publish_deck">Publish deck</string>
 </resources>
