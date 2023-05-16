@@ -74,6 +74,7 @@ import nl.recall.studyDeckFinished.StudyDeckFinishedScreen
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.math.absoluteValue
 
 @Destination
 @Composable
@@ -90,7 +91,8 @@ fun StudyDeckScreen(
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
 
-    ContentScaffold(title = deckWithCards?.deck?.title,
+    ContentScaffold(
+        title = deckWithCards?.deck?.title,
         navigator = navigator,
         content = { paddingValues ->
             when (uiState) {
@@ -239,12 +241,9 @@ fun Content(
         ) {
 
             this@Column.AnimatedVisibility(
-                visible = (progress == 1.0f),
-                enter = fadeIn(),
-                exit = fadeOut()
+                visible = (progress == 1.0f), enter = fadeIn(), exit = fadeOut()
             ) {
                 StudyDeckFinishedScreen(navigator = navigator)
-
             }
 
 
@@ -252,6 +251,8 @@ fun Content(
                 var cardFaceUIState by remember {
                     mutableStateOf(CardFaceUIState.Front)
                 }
+
+                val indexList = (index-deckWithCards.cards.size+1).absoluteValue
 
                 if (cardState.swipedDirection == null) {
                     LaunchedEffect(cardState.offset.value.x) {
@@ -272,9 +273,13 @@ fun Content(
                         }
                     }
                     FlipCard(
-                        elevation = if (index == iterator) 3 else 0,
+                        elevation = if (indexList == iterator) 3 else 0,
                         cardFaceUIState = cardFaceUIState,
-                        onClick = { cardFaceUIState = CardFaceUIState.Back },
+                        onClick = {
+                            if (indexList == iterator) {
+                                cardFaceUIState = CardFaceUIState.Back
+                            }
+                        },
                         modifierFront = Modifier,
                         modifierBack = Modifier.swipableCard(state = cardState,
                             onSwiped = { direction ->
@@ -363,7 +368,7 @@ fun Content(
                                                         SwipeDirection.RIGHT, card
                                                     )
                                                     currentColor = BackgroundColors.WRONG
-                                                    delay(800)
+                                                    delay(500)
                                                     currentColor = BackgroundColors.NORMAL
                                                 }
                                             }) {
@@ -388,7 +393,7 @@ fun Content(
                                                         SwipeDirection.LEFT, card
                                                     )
                                                     currentColor = BackgroundColors.CORRECT
-                                                    delay(800)
+                                                    delay(500)
                                                     currentColor = BackgroundColors.NORMAL
                                                 }
                                             }) {
