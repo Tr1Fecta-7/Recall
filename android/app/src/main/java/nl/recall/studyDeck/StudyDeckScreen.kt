@@ -200,20 +200,7 @@ fun Content(
     val scope = rememberCoroutineScope()
     LaunchedEffect(currentColor) {
         color.animateTo(
-            when (currentColor) {
-                BackgroundColors.NORMAL -> {
-                    BackgroundColors.NORMAL.color
-                }
-
-                BackgroundColors.CORRECT -> {
-                    BackgroundColors.CORRECT.color
-                }
-
-                BackgroundColors.WRONG -> {
-                    BackgroundColors.WRONG.color
-                }
-
-            },
+            targetValue = currentColor.color,
             animationSpec = tween(500)
         )
     }
