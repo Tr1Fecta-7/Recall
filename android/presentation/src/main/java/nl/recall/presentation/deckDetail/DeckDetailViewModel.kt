@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import nl.recall.domain.deck.DeleteDeck
@@ -30,14 +31,12 @@ class DeckDetailViewModel(
 
     fun observeDeck() {
         viewModelScope.launch(Dispatchers.IO) {
-            observeDeckById(args.id).collectLatest { deckWithCards ->
-                try {
-                    _state.value = UIState.LOADING
-                    _deck.value = deckWithCards
-                    _state.value = UIState.NORMAL
-                } catch (exception: Exception) {
-                    _state.value = UIState.ERROR
-                }
+            observeDeckById(args.id).catch {
+                _state.value = UIState.ERROR
+            }.collectLatest { deckWithCards ->
+                _state.value = UIState.LOADING
+                _deck.value = deckWithCards
+                _state.value = UIState.NORMAL
             }
         }
     }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import nl.recall.domain.deck.ObserveDeckById
@@ -44,21 +45,18 @@ class StudyDeckViewModel(
     fun observeDeckWithCards() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            observeDeckById.invoke(args.deckId).collectLatest {
-                try {
-                    _state.value = UIState.LOADING
-                    _deckWithCards.value = it
-                    if (_deckWithCards.value?.cards.isNullOrEmpty()) {
-                        _progressStep.value = (0.000f)
-                        _state.value = UIState.EMPTY
-                    } else {
-                        _state.value = UIState.NORMAL
-                        //Ask if this can be done better
-                        _progressStep.value = (1.000f / _deckWithCards.value?.cards?.size!!)
-                    }
-
-                } catch (exception: Exception) {
-                    _state.value = UIState.ERROR
+            observeDeckById(args.deckId).catch {
+                _state.value = UIState.ERROR
+            }.collectLatest {
+                _state.value = UIState.LOADING
+                _deckWithCards.value = it
+                if (_deckWithCards.value?.cards.isNullOrEmpty()) {
+                    _progressStep.value = (0.000f)
+                    _state.value = UIState.EMPTY
+                } else {
+                    _state.value = UIState.NORMAL
+                    //Ask if this can be done better
+                    _progressStep.value = (1.000f / _deckWithCards.value?.cards?.size!!)
                 }
             }
         }
