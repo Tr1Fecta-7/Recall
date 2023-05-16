@@ -79,7 +79,7 @@ fun StudyDeckScreen(
         parametersOf(StudyDeckViewModelArgs(deckId))
     })
 ) {
-
+    viewModel.observeDeckWithCards()
     val uiState by viewModel.state.collectAsState()
     val deckWithCards by viewModel.deckWithCards.collectAsState()
     val progress by viewModel.progress.collectAsState()

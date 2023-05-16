@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import nl.recall.domain.deck.GetCardsBySearchQuery
-import nl.recall.domain.deck.GetDeckById
 import nl.recall.domain.deck.model.Card
-import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.deckDetail.model.DeckDetailSearchScreenViewModelArgs
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel

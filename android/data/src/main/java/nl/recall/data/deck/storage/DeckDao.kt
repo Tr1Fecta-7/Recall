@@ -7,6 +7,7 @@ import androidx.room.MapInfo
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 import nl.recall.data.deck.models.DeckEntity
 import nl.recall.data.deck.models.DeckWithCardsEntity
 
@@ -14,7 +15,7 @@ import nl.recall.data.deck.models.DeckWithCardsEntity
 interface DeckDao {
     @Transaction
     @Query("SELECT * from deck where id = :id")
-    suspend fun getDeckById(id: Long): DeckWithCardsEntity?
+    fun observeDeckById(id: Long): Flow<DeckWithCardsEntity?>
 
     @Transaction
     @MapInfo(valueColumn = "count")

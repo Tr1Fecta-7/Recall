@@ -2,6 +2,8 @@ package nl.recall.data.deck
 
 
 import android.content.res.Resources.NotFoundException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import nl.recall.data.deck.mappers.DeckEntityMapper.toDomain
 import nl.recall.data.deck.mappers.DeckMapper
 import nl.recall.data.deck.mappers.DeckWithCardCountMapper.toDomain
@@ -17,8 +19,8 @@ import java.util.Date
 
 @Factory
 class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
-    override suspend fun getDeckById(id: Long): DeckWithCards {
-        return deckDao.getDeckById(id)?.toDomain() ?: throw NotFoundException()
+    override suspend fun observeDeckById(id: Long): Flow<DeckWithCards?> {
+        return deckDao.observeDeckById(id).map { it?.toDomain() } ?: throw NotFoundException()
     }
 
     override suspend fun getDeckWithCardCount(): Map<Deck, Int> {
