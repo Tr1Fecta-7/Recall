@@ -53,7 +53,7 @@ fun FlipCard(
                 shape = RoundedCornerShape(20.dp),
                 modifier = modifierFront
                     .fillMaxSize()
-                    .padding(bottom = 15.dp, start = 15.dp, end = 15.dp),
+                    .padding(bottom = 15.dp, start = 10.dp, end = 10.dp),
                 onClick = { onClick(cardFaceUIState) },
             ) {
                 front()
@@ -65,7 +65,7 @@ fun FlipCard(
                 shape = RoundedCornerShape(20.dp),
                 modifier = modifierBack
                     .fillMaxSize()
-                    .padding(bottom = 15.dp, start = 15.dp, end = 15.dp)
+                    .padding(bottom = 15.dp, start = 10.dp, end = 10.dp)
                     .graphicsLayer {
                         rotationY = 180f
                     },

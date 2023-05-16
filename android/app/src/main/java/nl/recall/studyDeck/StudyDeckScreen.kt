@@ -69,6 +69,7 @@ import nl.recall.presentation.studyDeck.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
 import nl.recall.studyDeck.model.BackgroundColors
 import nl.recall.studyDeck.model.CardFaceUIState
+import nl.recall.studyDeckFinished.StudyDeckFinishedScreen
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -88,8 +89,7 @@ fun StudyDeckScreen(
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
 
-    ContentScaffold(
-        title = deckWithCards?.deck?.title,
+    ContentScaffold(title = deckWithCards?.deck?.title,
         navigator = navigator,
         content = { paddingValues ->
             when (uiState) {
@@ -101,9 +101,9 @@ fun StudyDeckScreen(
                             progress = progress,
                             iterator = iterator,
                             viewModel = viewModel,
+                            navigator = navigator
                         )
                     }
-
                 }
 
                 UIState.ERROR -> {
@@ -190,6 +190,7 @@ fun Content(
     progress: Float,
     iterator: Int,
     viewModel: StudyDeckViewModel,
+    navigator: DestinationsNavigator
 ) {
     val animatedProgress = animateFloatAsState(
         targetValue = progress, animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
@@ -198,10 +199,10 @@ fun Content(
     var currentColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
+
     LaunchedEffect(currentColor) {
         color.animateTo(
-            targetValue = currentColor.color,
-            animationSpec = tween(500)
+            targetValue = currentColor.color, animationSpec = tween(500)
         )
     }
 
@@ -222,9 +223,7 @@ fun Content(
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(4.dp),
-                        text = stringResource(
+                        fontSize = 14.sp, modifier = Modifier.padding(4.dp), text = stringResource(
                             id = R.string.study_progression, iterator, deckWithCards.cards.size
                         )
                     )
@@ -237,6 +236,10 @@ fun Content(
                 .padding(24.dp)
                 .fillMaxSize()
         ) {
+
+            StudyDeckFinishedScreen(navigator = navigator)
+
+
             cards.forEachIndexed() { index, (card, cardState) ->
                 var cardFaceUIState by remember {
                     mutableStateOf(CardFaceUIState.Front)
@@ -259,19 +262,9 @@ fun Content(
                         if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
                             currentColor = BackgroundColors.NORMAL
                         }
-
-
                     }
-
-                    var elevation by remember {
-                        mutableStateOf(0)
-                    }
-                    if (index == iterator + 1) {
-                        elevation = 3
-                    }
-
                     FlipCard(
-                        elevation = elevation,
+                        elevation = if (index == iterator) 3 else 0,
                         cardFaceUIState = cardFaceUIState,
                         onClick = { cardFaceUIState = CardFaceUIState.Back },
                         modifierFront = Modifier,
