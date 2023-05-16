@@ -174,7 +174,7 @@ private fun Content(
             Column(
                 modifier = Modifier
                     .padding(it)
-                    .padding(20.dp)
+                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
                     .fillMaxSize()
             ) {
                 DeckDetailPreview(deckWithCards, onClick = {

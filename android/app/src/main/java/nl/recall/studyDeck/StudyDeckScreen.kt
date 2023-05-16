@@ -198,7 +198,7 @@ fun Content(
     val animatedProgress = animateFloatAsState(
         targetValue = progress, animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
-    val cards = deckWithCards.cards.reversed().map { it to rememberSwipeableCardState() }
+    val cards = ArrayList(deckWithCards.cards.reversed().map { it to rememberSwipeableCardState() })
     var currentColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
@@ -288,6 +288,8 @@ fun Content(
                                 } else {
                                     viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
                                 }
+                                cards.remove(Pair(card, cardState))
+
                             },
                             onSwipeCancel = {
                                 currentColor = BackgroundColors.NORMAL
@@ -367,6 +369,7 @@ fun Content(
                                                     viewModel.onSwipeCard(
                                                         SwipeDirection.RIGHT, card
                                                     )
+                                                    cards.remove(Pair(card, cardState))
                                                     currentColor = BackgroundColors.WRONG
                                                     delay(500)
                                                     currentColor = BackgroundColors.NORMAL
@@ -392,6 +395,8 @@ fun Content(
                                                     viewModel.onSwipeCard(
                                                         SwipeDirection.LEFT, card
                                                     )
+                                                    cards.remove(Pair(card, cardState))
+                                                    println(cards.size)
                                                     currentColor = BackgroundColors.CORRECT
                                                     delay(500)
                                                     currentColor = BackgroundColors.NORMAL

@@ -70,12 +70,13 @@ class StudyDeckViewModel(
                 } else {
                     updateDateCard(card.id, Date())
                 }
+                _progress.value += _progressStep.value
+                _iterator.value++
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }
 
-            _progress.value += _progressStep.value
-            _iterator.value++
+
         }
 
 
