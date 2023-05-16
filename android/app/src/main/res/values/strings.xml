@@ -40,4 +40,11 @@
     <string name="study_progression">%s / %s</string>
     <string name="create_deck_select_background_color">Select your background color</string>
     <string name="instructions_back_card_study_deck">Swipe the card to the right when you got the answer correct. Swipe to the left when you got it wrong. Or use the buttons below.</string>
+    <string name="completed">Completed!</string>
+    <string name="good_job">Good job on finishing your deck today</string>
+    <string name="streak_number">🔥 %d</string>
+    <string name="day_streak">Day streak</string>
+    <string name="back_to_overview">Back to overview</string>
+    <string name="shared_preferences_start_streak_day">startStreakDay</string>
+    <string name="shared_preferences_streak_file">streakFile</string>
 </resources>
