@@ -6,8 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import nl.recall.domain.deck.GetDeckById
+import nl.recall.domain.deck.ObserveDeckById
 import nl.recall.domain.deck.UpdateDeck
 import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.deckEdit.model.DeckEditViewModelArgs
@@ -18,7 +20,7 @@ import org.koin.core.annotation.InjectedParam
 @KoinViewModel
 class DeckEditViewModel(
     @InjectedParam private val args: DeckEditViewModelArgs,
-    private val getDeckById: GetDeckById,
+    private val observeDeckById: ObserveDeckById,
     private val updateDeck: UpdateDeck
 ) : ViewModel() {
 
@@ -26,19 +28,22 @@ class DeckEditViewModel(
     val state: StateFlow<UIState> = _state.asStateFlow()
 
     private val _deck = MutableStateFlow<Deck?>(null)
-    val deck: StateFlow<Deck?> by lazy {
-        fetchDeck(args.id)
-        _deck.asStateFlow()
-    }
+    val deck: StateFlow<Deck?> = _deck.asStateFlow()
 
     private val _updatedDeckBoolean = MutableStateFlow(false)
 
     val updatedDeckBoolean: StateFlow<Boolean> =_updatedDeckBoolean.asStateFlow()
 
-    private fun fetchDeck(id: Long) {
+    fun observeDeck() {
         viewModelScope.launch(Dispatchers.IO) {
-            _deck.value = getDeckById.invoke(id).deck
-            _state.value = UIState.NORMAL
+            observeDeckById(args.id).catch {
+                _state.value = UIState.ERROR
+            }.collectLatest {
+                if (it != null) {
+                    _deck.value = it.deck
+                    _state.value = UIState.NORMAL
+                }
+            }
         }
     }
 

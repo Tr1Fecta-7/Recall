@@ -59,7 +59,6 @@ import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.destinations.EditCardScreenDestination
 import nl.recall.destinations.StudyDeckScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
-import nl.recall.errorScreen.ErrorScreen
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
 import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
 import nl.recall.presentation.uiState.UIState
@@ -77,6 +76,7 @@ fun DeckDetailScreen(
         parametersOf(DeckDetailViewModelArgs(deckId))
     })
 ) {
+    viewModel.observeDeck()
     val uiState by viewModel.state.collectAsState()
     val deckWithCards by viewModel.deck.collectAsState()
     val isDeckDeleted by viewModel.isDeckDeleted.collectAsState()
@@ -157,6 +157,8 @@ private fun Content(
                     ) {
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
                             onClick = { navigator.navigate(DeckEditDestination(deckWithCards.deck.id)) })
+                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_publish_deck)) },
+                            onClick = { })
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_delete_deck)) },
                             onClick = { openDialog = true })
                     }
