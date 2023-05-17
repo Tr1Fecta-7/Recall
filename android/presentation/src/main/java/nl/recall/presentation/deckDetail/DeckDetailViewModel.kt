@@ -66,15 +66,17 @@ class DeckDetailViewModel(
 
     fun postDeck() {
         viewModelScope.launch(Dispatchers.IO) {
-            observeDeckById(args.id).catch {
-                // TODO: Handle error
-            }.collectLatest {
-                if (it != null) {
-                    publishDeck(it)
-                } else {
+            observeDeckById(args.id)
+                .catch {
                     // TODO: Handle error
                 }
-            }
+                .collectLatest {
+                    if (it != null) {
+                        publishDeck(it)
+                    } else {
+                        // TODO: Handle error
+                    }
+                }
         }
     }
 }
