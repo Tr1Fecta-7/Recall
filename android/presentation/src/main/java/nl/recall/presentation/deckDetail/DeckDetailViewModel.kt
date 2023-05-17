@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import nl.recall.domain.communityDeck.PublishDeck
 import nl.recall.domain.deck.DeleteDeck
 import nl.recall.domain.deck.ObserveDeckById
 import nl.recall.domain.deck.model.DeckWithCards
@@ -20,7 +21,10 @@ import org.koin.core.annotation.InjectedParam
 
 @KoinViewModel
 class DeckDetailViewModel(
-    @InjectedParam private val args: DeckDetailViewModelArgs, private val observeDeckById: ObserveDeckById, private val deleteDeck: DeleteDeck
+    @InjectedParam private val args: DeckDetailViewModelArgs,
+    private val observeDeckById: ObserveDeckById,
+    private val deleteDeck: DeleteDeck,
+    private val publishDeck: PublishDeck
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UIState.LOADING)
@@ -47,15 +51,29 @@ class DeckDetailViewModel(
         _isDeckDeleted.asStateFlow()
     }
 
-    fun deleteDeckById(deckWithCards: DeckWithCards){
+    fun deleteDeckById(deckWithCards: DeckWithCards) {
         viewModelScope.launch(Dispatchers.IO) {
-            try{
+            try {
                 _state.value = UIState.LOADING
                 _isDeckDeleted.value = deleteDeck(deckWithCards)
                 _state.value = UIState.NORMAL
-            } catch(exception: Exception){
+            } catch (exception: Exception) {
                 Log.e("ERROR IN DECKDETAILVIEWMODEL", exception.toString())
                 _state.value = UIState.ERROR
+            }
+        }
+    }
+
+    fun postDeck() {
+        viewModelScope.launch(Dispatchers.IO) {
+            observeDeckById(args.id).catch {
+                // TODO: Handle error
+            }.collectLatest {
+                if (it != null) {
+                    publishDeck(it)
+                } else {
+                    // TODO: Handle error
+                }
             }
         }
     }

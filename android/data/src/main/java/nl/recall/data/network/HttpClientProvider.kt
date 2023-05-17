@@ -39,6 +39,6 @@ class HttpClientProvider {
     }
 
     companion object {
-        private const val BASE_URL = "localhost:8080"
+        private const val BASE_URL = "10.0.2.2:8080"
     }
 }

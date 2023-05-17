@@ -158,7 +158,7 @@ private fun Content(
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
                             onClick = { navigator.navigate(DeckEditDestination(deckWithCards.deck.id)) })
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_publish_deck)) },
-                            onClick = { })
+                            onClick = { viewModel.postDeck() })
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_delete_deck)) },
                             onClick = { openDialog = true })
                     }

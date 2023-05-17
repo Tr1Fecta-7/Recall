@@ -16,6 +16,6 @@ class RemoteCommunityDeckRepository(
     }
 
     override suspend fun publishDeck(deck: Deck) {
-        TODO("Not yet implemented")
+        communityDeckService.publishDeck(deck)
     }
 }
