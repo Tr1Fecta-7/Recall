@@ -2,6 +2,8 @@ package nl.recall.deckDetail
 
 import DeckDetailPreview
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,6 +44,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -83,11 +88,16 @@ fun DeckDetailScreen(
 
     when (uiState) {
         UIState.NORMAL -> {
-            if(isDeckDeleted){
+            if (isDeckDeleted) {
                 navigator.navigate(DecksOverviewScreenDestination)
             } else {
                 deckWithCards?.let {
-                    Content(navigator = navigator, deckWithCards = it, navController = navController, viewModel = viewModel)
+                    Content(
+                        navigator = navigator,
+                        deckWithCards = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
                 }
             }
         }
@@ -129,7 +139,12 @@ private fun Content(
     var openDialog by remember { mutableStateOf(false) }
     val navigateToCreateCard: (Long) -> Unit =
         { navigator.navigate(CreateCardScreenDestination(it)) }
+    val publishDeckState by viewModel.publishDeckState.collectAsState()
+    val context = LocalContext.current
 
+    if (publishDeckState == UIState.ERROR) {
+        informUser(context, stringResource(id = R.string.publish_deck_error))
+    }
 
     Scaffold(
         topBar = {
@@ -157,8 +172,31 @@ private fun Content(
                     ) {
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
                             onClick = { navigator.navigate(DeckEditDestination(deckWithCards.deck.id)) })
-                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_publish_deck)) },
-                            onClick = { viewModel.postDeck() })
+                        DropdownMenuItem(
+                            trailingIcon = {
+                                if (publishDeckState == UIState.LOADING) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                        strokeWidth = 2.dp
+                                    )
+                                }
+                            },
+                            text = {
+                                Text(
+                                    text = stringResource(id = R.string.dropdown_menu_publish_deck),
+                                    color = if (publishDeckState == UIState.LOADING) {
+                                        AppTheme.neutral300
+                                    } else {
+                                        Color.Unspecified
+                                    }
+                                )
+                            },
+                            onClick = {
+                                if (publishDeckState != UIState.LOADING) {
+                                    viewModel.postDeck()
+                                }
+                            }
+                        )
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_delete_deck)) },
                             onClick = { openDialog = true })
                     }
@@ -285,4 +323,12 @@ private fun Content(
                 Icon(imageVector = Icons.Default.Add, contentDescription = "add card")
             }
         })
+}
+
+private fun informUser(context: Context, text: String) {
+    Toast.makeText(
+        context,
+        text,
+        Toast.LENGTH_SHORT
+    ).show()
 }

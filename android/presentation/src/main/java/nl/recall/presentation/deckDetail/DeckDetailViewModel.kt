@@ -30,6 +30,9 @@ class DeckDetailViewModel(
     private val _state = MutableStateFlow(UIState.LOADING)
     val state: StateFlow<UIState> = _state.asStateFlow()
 
+    private val _publishDeckState = MutableStateFlow(UIState.NORMAL)
+    val publishDeckState: StateFlow<UIState> = _publishDeckState.asStateFlow()
+
     private val _deck = MutableStateFlow<DeckWithCards?>(null)
     val deck: StateFlow<DeckWithCards?> = _deck.asStateFlow()
 
@@ -65,18 +68,25 @@ class DeckDetailViewModel(
     }
 
     fun postDeck() {
+        _publishDeckState.value = UIState.LOADING
+
         viewModelScope.launch(Dispatchers.IO) {
-            observeDeckById(args.id)
-                .catch {
-                    // TODO: Handle error
-                }
-                .collectLatest {
-                    if (it != null) {
-                        publishDeck(it)
-                    } else {
-                        // TODO: Handle error
+            try {
+                observeDeckById(args.id)
+                    .catch {
+                        _publishDeckState.value = UIState.ERROR
                     }
-                }
+                    .collectLatest {
+                        if (it != null) {
+                            publishDeck(it)
+                            _publishDeckState.value = UIState.NORMAL
+                        } else {
+                            _publishDeckState.value = UIState.ERROR
+                        }
+                    }
+            } catch (exception: Exception) {
+                _publishDeckState.value = UIState.ERROR
+            }
         }
     }
 }
