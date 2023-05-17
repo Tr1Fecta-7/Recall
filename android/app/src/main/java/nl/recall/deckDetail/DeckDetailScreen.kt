@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -178,6 +179,12 @@ private fun Content(
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(16.dp),
                                         strokeWidth = 2.dp
+                                    )
+                                } else if (publishDeckState == UIState.NORMAL) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        tint = AppTheme.primary500,
+                                        contentDescription = "successfully published"
                                     )
                                 }
                             },

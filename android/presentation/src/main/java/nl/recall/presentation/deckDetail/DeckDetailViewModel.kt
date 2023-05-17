@@ -30,7 +30,7 @@ class DeckDetailViewModel(
     private val _state = MutableStateFlow(UIState.LOADING)
     val state: StateFlow<UIState> = _state.asStateFlow()
 
-    private val _publishDeckState = MutableStateFlow(UIState.NORMAL)
+    private val _publishDeckState = MutableStateFlow(UIState.EMPTY)
     val publishDeckState: StateFlow<UIState> = _publishDeckState.asStateFlow()
 
     private val _deck = MutableStateFlow<DeckWithCards?>(null)
