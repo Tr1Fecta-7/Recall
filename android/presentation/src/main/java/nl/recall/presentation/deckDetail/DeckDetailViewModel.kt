@@ -85,6 +85,7 @@ class DeckDetailViewModel(
                         }
                     }
             } catch (exception: Exception) {
+                Log.e("Error", exception.stackTraceToString())
                 _publishDeckState.value = UIState.ERROR
             }
         }

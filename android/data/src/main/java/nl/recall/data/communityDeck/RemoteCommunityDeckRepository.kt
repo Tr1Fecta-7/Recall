@@ -3,7 +3,7 @@ package nl.recall.data.communityDeck
 import nl.recall.data.communityDeck.network.CommunityDeckService
 import nl.recall.domain.communityDeck.CommunityDeckRepository
 import nl.recall.domain.communityDeck.models.CommunityDeck
-import nl.recall.domain.deck.model.Deck
+import nl.recall.domain.deck.model.DeckWithCards
 import org.koin.core.annotation.Factory
 
 @Factory
@@ -15,7 +15,7 @@ class RemoteCommunityDeckRepository(
         return communityDeckService.getCommunityDecks()
     }
 
-    override suspend fun publishDeck(deck: Deck) {
-        communityDeckService.publishDeck(deck)
+    override suspend fun publishDeck(deckWithCards: DeckWithCards) {
+        communityDeckService.publishDeck(deckWithCards)
     }
 }
