@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexstyl.swipeablecard.Direction
 import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
+import com.alexstyl.swipeablecard.SwipeableCardState
 import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.ramcosta.composedestinations.annotation.Destination
@@ -63,6 +64,7 @@ import kotlinx.coroutines.launch
 import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
+import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.StudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
@@ -198,7 +200,11 @@ fun Content(
     val animatedProgress = animateFloatAsState(
         targetValue = progress, animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
-    val cards = ArrayList(deckWithCards.cards.reversed().map { it to rememberSwipeableCardState() })
+    val cards = ArrayList<Pair<Card, SwipeableCardState>>()
+    for (card in deckWithCards.cards) {
+        cards.add(Pair(card, rememberSwipeableCardState()))
+    }
+
     var currentColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
@@ -247,7 +253,7 @@ fun Content(
             }
 
 
-            cards.forEachIndexed() { index, (card, cardState) ->
+            cards.reversed().forEachIndexed() { index, (card, cardState) ->
                 var cardFaceUIState by remember {
                     mutableStateOf(CardFaceUIState.Front)
                 }
