@@ -209,6 +209,7 @@ fun Content(
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
 
+
     LaunchedEffect(currentColor) {
         color.animateTo(
             targetValue = currentColor.color, animationSpec = tween(500)
@@ -243,7 +244,8 @@ fun Content(
         Box(
             Modifier
                 .padding(24.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
+            propagateMinConstraints = false
         ) {
 
             this@Column.AnimatedVisibility(
@@ -258,26 +260,28 @@ fun Content(
                     mutableStateOf(CardFaceUIState.Front)
                 }
 
+                LaunchedEffect(cardState.offset.value.x) {
+                    if (cardState.offset.value.x < 0.0f) {
+                        currentColor = BackgroundColors.CORRECT
+                    }
+
+                    if (cardState.offset.value.x > 0.0f) {
+                        currentColor = BackgroundColors.WRONG
+                    }
+
+                    if (cardState.offset.value.x == 0.0f) {
+                        currentColor = BackgroundColors.NORMAL
+                    }
+
+                    if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
+                        currentColor = BackgroundColors.NORMAL
+                    }
+                }
+
                 val indexList = (index-deckWithCards.cards.size+1).absoluteValue
 
                 if (cardState.swipedDirection == null) {
-                    LaunchedEffect(cardState.offset.value.x) {
-                        if (cardState.offset.value.x < 0.0f) {
-                            currentColor = BackgroundColors.CORRECT
-                        }
 
-                        if (cardState.offset.value.x > 0.0f) {
-                            currentColor = BackgroundColors.WRONG
-                        }
-
-                        if (cardState.offset.value.x == 0.0f) {
-                            currentColor = BackgroundColors.NORMAL
-                        }
-
-                        if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
-                            currentColor = BackgroundColors.NORMAL
-                        }
-                    }
                     FlipCard(
                         elevation = if (indexList == iterator) 3 else 0,
                         cardFaceUIState = cardFaceUIState,
@@ -294,8 +298,6 @@ fun Content(
                                 } else {
                                     viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
                                 }
-                                cards.remove(Pair(card, cardState))
-
                             },
                             onSwipeCancel = {
                                 currentColor = BackgroundColors.NORMAL
@@ -375,7 +377,6 @@ fun Content(
                                                     viewModel.onSwipeCard(
                                                         SwipeDirection.RIGHT, card
                                                     )
-                                                    cards.remove(Pair(card, cardState))
                                                     currentColor = BackgroundColors.WRONG
                                                     delay(500)
                                                     currentColor = BackgroundColors.NORMAL
@@ -401,7 +402,6 @@ fun Content(
                                                     viewModel.onSwipeCard(
                                                         SwipeDirection.LEFT, card
                                                     )
-                                                    cards.remove(Pair(card, cardState))
                                                     println(cards.size)
                                                     currentColor = BackgroundColors.CORRECT
                                                     delay(500)

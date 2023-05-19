@@ -40,8 +40,6 @@ class StudyDeckViewModel(
     private val _iterator = MutableStateFlow(0)
     val iterator: StateFlow<Int> = _iterator.asStateFlow()
 
-    private val _progressStep = MutableStateFlow(0.0000f)
-
     fun observeDeckWithCards() {
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -51,12 +49,9 @@ class StudyDeckViewModel(
                 _state.value = UIState.LOADING
                 _deckWithCards.value = it
                 if (_deckWithCards.value?.cards.isNullOrEmpty()) {
-                    _progressStep.value = (0.000f)
                     _state.value = UIState.EMPTY
                 } else {
                     _state.value = UIState.NORMAL
-                    //Ask if this can be done better
-                    _progressStep.value = (1.000f / _deckWithCards.value?.cards?.size!!)
                 }
             }
         }
@@ -70,8 +65,10 @@ class StudyDeckViewModel(
                 } else {
                     updateDateCard(card.id, Date())
                 }
-                _progress.value += _progressStep.value
                 _iterator.value++
+                _deckWithCards.value?.let {
+                    _progress.value = ((iterator.value.toFloat() / it.cards.size.toFloat()))
+                }
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }
