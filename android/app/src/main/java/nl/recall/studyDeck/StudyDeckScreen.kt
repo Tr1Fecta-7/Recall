@@ -293,11 +293,14 @@ fun Content(
                         modifierFront = Modifier,
                         modifierBack = Modifier.swipableCard(state = cardState,
                             onSwiped = { direction ->
-                                if (direction == Direction.Left) {
-                                    viewModel.onSwipeCard(SwipeDirection.LEFT, card)
-                                } else {
-                                    viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
+                                scope.launch(Dispatchers.Unconfined) {
+                                    if (direction == Direction.Left) {
+                                        viewModel.onSwipeCard(SwipeDirection.LEFT, card)
+                                    } else {
+                                        viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
+                                    }
                                 }
+
                             },
                             onSwipeCancel = {
                                 currentColor = BackgroundColors.NORMAL
@@ -372,7 +375,7 @@ fun Content(
                                                 containerColor = AppTheme.red300
                                             ),
                                             onClick = {
-                                                scope.launch(Dispatchers.Main) {
+                                                scope.launch(Dispatchers.Unconfined) {
                                                     cardState.swipe(Direction.Right)
                                                     viewModel.onSwipeCard(
                                                         SwipeDirection.RIGHT, card

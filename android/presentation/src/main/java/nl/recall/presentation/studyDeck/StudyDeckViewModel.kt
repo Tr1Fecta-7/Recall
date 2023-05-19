@@ -33,7 +33,6 @@ class StudyDeckViewModel(
     private val _deckWithCards = MutableStateFlow<DeckWithCards?>(null)
     val deckWithCards: StateFlow<DeckWithCards?> = _deckWithCards.asStateFlow()
 
-
     private val _progress = MutableStateFlow(0.0000f)
     val progress: StateFlow<Float> = _progress.asStateFlow()
 
@@ -65,18 +64,14 @@ class StudyDeckViewModel(
                 } else {
                     updateDateCard(card.id, Date())
                 }
-                _iterator.value++
-                _deckWithCards.value?.let {
-                    _progress.value = ((iterator.value.toFloat() / it.cards.size.toFloat()))
-                }
+
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }
-
-
         }
-
-
+        _iterator.value++
+        _deckWithCards.value?.let {
+            _progress.value = ((iterator.value.toFloat() / it.cards.size.toFloat()))
+        }
     }
-
 }
