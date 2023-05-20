@@ -23,6 +23,10 @@ class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
         return deckDao.observeDeckById(id).map { it?.toDomain() } ?: throw NotFoundException()
     }
 
+    override suspend fun getDeckById(id: Long): DeckWithCards {
+        return deckDao.getDeckById(id)?.toDomain() ?: throw NotFoundException()
+    }
+
     override suspend fun getDeckWithCardCount(): Map<Deck, Int> {
         return deckDao.getDecksWithCardCount().toDomain()
     }

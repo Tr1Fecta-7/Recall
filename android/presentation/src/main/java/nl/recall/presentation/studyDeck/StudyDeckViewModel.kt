@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import nl.recall.domain.deck.GetDeckById
 import nl.recall.domain.deck.ObserveDeckById
 import nl.recall.domain.deck.UpdateDateCard
 import nl.recall.domain.deck.model.Card
@@ -24,6 +25,7 @@ import java.util.Date
 class StudyDeckViewModel(
     @InjectedParam private val args: StudyDeckViewModelArgs,
     private val observeDeckById: ObserveDeckById,
+    private val getDeckById: GetDeckById,
     private val updateDateCard: UpdateDateCard
 ) : ViewModel() {
 
@@ -42,16 +44,16 @@ class StudyDeckViewModel(
     fun observeDeckWithCards() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            observeDeckById(args.deckId).catch {
-                _state.value = UIState.ERROR
-            }.collectLatest {
+            try {
                 _state.value = UIState.LOADING
-                _deckWithCards.value = it
+                _deckWithCards.value = getDeckById(args.deckId)
                 if (_deckWithCards.value?.cards.isNullOrEmpty()) {
                     _state.value = UIState.EMPTY
                 } else {
                     _state.value = UIState.NORMAL
                 }
+            } catch (exception:Exception) {
+                _state.value = UIState.ERROR
             }
         }
     }
