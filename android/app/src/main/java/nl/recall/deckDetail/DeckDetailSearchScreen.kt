@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,14 +44,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import nl.recall.R
 import nl.recall.components.ImageMessage
@@ -65,7 +73,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Destination
 @Composable
 fun DeckDetailSearchScreen(
@@ -80,9 +88,10 @@ fun DeckDetailSearchScreen(
     var searchQuery by remember {
         mutableStateOf(TextFieldValue(""))
     }
-
     val navigateToCard: (Long) -> Unit =
         { navigator.navigate(EditCardScreenDestination(clickedCardId = it, deckId = deckId)) }
+    val focusRequester = remember { FocusRequester() }
+
 
 
 
@@ -104,6 +113,8 @@ fun DeckDetailSearchScreen(
         },
         containerColor = AppTheme.neutral50,
         content = { paddingValues ->
+
+
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -111,7 +122,11 @@ fun DeckDetailSearchScreen(
             ) {
                 TextField(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = 8.dp)
+                    .focusRequester(focusRequester)
+                    .onPlaced {
+                        focusRequester.requestFocus()
+                    },
                     value = searchQuery,
                     placeholder = {
                         Text(
@@ -213,7 +228,11 @@ fun SearchResults(cards: List<Card>, onClick: (Long) -> (Unit)) {
                     }
                 }
 
-                AnimatedVisibility(visibleState = state, enter = slideInVertically(), exit = fadeOut()) {
+                AnimatedVisibility(
+                    visibleState = state,
+                    enter = slideInVertically(),
+                    exit = fadeOut()
+                ) {
                     Card(
                         onClick = { onClick(card.id) },
                         shape = RoundedCornerShape(12.dp),

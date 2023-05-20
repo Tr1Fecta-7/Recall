@@ -317,7 +317,6 @@ fun Content(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 25.sp
                                 )
-
                                 Row(
                                     Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center
