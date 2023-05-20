@@ -1,5 +1,9 @@
 package nl.recall.deckDetail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -198,36 +202,45 @@ fun SearchResults(cards: List<Card>, onClick: (Long) -> (Unit)) {
         items(
             items = cards,
             itemContent = { card ->
-                Card(
-                    onClick = { onClick(card.id) },
-                    shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(1.dp, AppTheme.neutral200),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
+
+                val state = remember {
+                    MutableTransitionState(false).apply {
+                        targetState = true
+                    }
+                }
+
+                AnimatedVisibility(visibleState = state, enter = fadeIn(), exit = fadeOut()) {
+                    Card(
+                        onClick = { onClick(card.id) },
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, AppTheme.neutral200),
                         modifier = Modifier
-                            .background(AppTheme.white)
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .background(AppTheme.white)
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .fillMaxWidth()
                         ) {
-                            Text(
-                                text = card.front,
-                                color = AppTheme.neutral800,
-                                style = MaterialTheme.typography.titleMedium,
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Text(
+                                    text = card.front,
+                                    color = AppTheme.neutral800,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_chevron_right_24),
+                                contentDescription = "arrow right",
+                                tint = AppTheme.neutral800
                             )
                         }
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_chevron_right_24),
-                            contentDescription = "arrow right",
-                            tint = AppTheme.neutral800
-                        )
                     }
                 }
             }

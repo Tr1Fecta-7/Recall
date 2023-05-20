@@ -9,8 +9,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -58,6 +60,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.AlertWindow
 import nl.recall.components.BottomNav
+import nl.recall.components.ImageMessage
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.destinations.DeckEditDestination
@@ -104,10 +107,16 @@ fun DeckDetailScreen(
         }
 
         UIState.ERROR -> {
-//            ErrorScreen(
-//
-//                errorText = R.string.get_deck_error
-//            )
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ImageMessage(
+                    painter = painterResource(id = R.drawable.error_image),
+                    text = stringResource(id = R.string.no_deck_found)
+                )
+            }
         }
 
         UIState.LOADING -> {
@@ -234,8 +243,7 @@ private fun Content(
 
                 if (deckWithCards.cards.isNotEmpty()) {
                     Card(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .fillMaxWidth(),
                         colors = CardDefaults.cardColors(
                             containerColor = AppTheme.neutral200,
                         ),
@@ -261,9 +269,11 @@ private fun Content(
 
 
                 LazyColumn(
-                    modifier = Modifier.padding(top = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
+                    item {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
                     items(items = deckWithCards.cards, itemContent = {
                         Card(
                             onClick = {
