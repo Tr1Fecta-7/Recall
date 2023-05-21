@@ -4,6 +4,11 @@ import DeckDetailPreview
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -151,7 +156,11 @@ private fun Content(
         { navigator.navigate(CreateCardScreenDestination(it)) }
     val publishDeckState by viewModel.publishDeckState.collectAsState()
     val context = LocalContext.current
-
+    val state = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
     if (publishDeckState == UIState.ERROR) {
         informUser(context, stringResource(id = R.string.publish_deck_error))
     }
@@ -266,51 +275,61 @@ private fun Content(
                         }
                     }
                 }
-
-
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
                     }
-                    items(items = deckWithCards.cards, itemContent = {
-                        Card(
-                            onClick = {
-                                navigator.navigate(
-                                    EditCardScreenDestination(
-                                        clickedCardId = it.id,
-                                        deckId = it.deckId
-                                    )
+                    itemsIndexed(items = deckWithCards.cards, itemContent = { index, card ->
+
+                        AnimatedVisibility(
+                            visibleState = state,
+                            enter = slideInVertically(
+                                initialOffsetY = { it + 20 },
+                                animationSpec = tween(
+                                    durationMillis = (index * 100)
                                 )
-                            },
-                            shape = RoundedCornerShape(12.dp),
-                            border = BorderStroke(1.dp, AppTheme.neutral200),
-                            modifier = Modifier.fillMaxWidth()
+                            ),
+                            exit = fadeOut()
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier
-                                    .background(AppTheme.white)
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                                    .fillMaxWidth()
+                            Card(
+                                onClick = {
+                                    navigator.navigate(
+                                        EditCardScreenDestination(
+                                            clickedCardId = card.id,
+                                            deckId = card.deckId
+                                        )
+                                    )
+                                },
+                                shape = RoundedCornerShape(12.dp),
+                                border = BorderStroke(1.dp, AppTheme.neutral200),
+                                modifier = Modifier.fillMaxWidth()
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .background(AppTheme.white)
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        .fillMaxWidth()
                                 ) {
-                                    Text(
-                                        text = it.front,
-                                        color = AppTheme.neutral800,
-                                        style = MaterialTheme.typography.titleMedium,
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    ) {
+                                        Text(
+                                            text = card.front,
+                                            color = AppTheme.neutral800,
+                                            style = MaterialTheme.typography.titleMedium,
+                                        )
+                                    }
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_chevron_right_24),
+                                        contentDescription = "arrow right",
+                                        tint = AppTheme.neutral800
                                     )
                                 }
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_chevron_right_24),
-                                    contentDescription = "arrow right",
-                                    tint = AppTheme.neutral800
-                                )
                             }
                         }
                     })

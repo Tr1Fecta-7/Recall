@@ -97,88 +97,78 @@ fun DeckDetailSearchScreen(
 
 
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = AppTheme.neutral50
-                ),
-                title = {
-                    Text(text = stringResource(id = R.string.card_searchbar_title))
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-                    }
-                },
-            )
-        },
-        containerColor = AppTheme.neutral50,
-        content = { paddingValues ->
+    Scaffold(topBar = {
+        TopAppBar(
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = AppTheme.neutral50
+            ),
+            title = {
+                Text(text = stringResource(id = R.string.card_searchbar_title))
+            },
+            navigationIcon = {
+                IconButton(onClick = { navigator.popBackStack() }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+                }
+            },
+        )
+    }, containerColor = AppTheme.neutral50, content = { paddingValues ->
 
 
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .padding(horizontal = 20.dp)
-            ) {
-                TextField(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-                    .focusRequester(focusRequester)
-                    .onPlaced {
-                        focusRequester.requestFocus()
-                    },
-                    value = searchQuery,
-                    placeholder = {
-                        Text(
-                            text = stringResource(R.string.search_bar_card_hint),
-                            color = AppTheme.neutral500
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(horizontal = 20.dp)
+        ) {
+            TextField(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+                .focusRequester(focusRequester)
+                .onPlaced {
+                    focusRequester.requestFocus()
+                }, value = searchQuery, placeholder = {
+                Text(
+                    text = stringResource(R.string.search_bar_card_hint),
+                    color = AppTheme.neutral500
+                )
+            }, colors = TextFieldDefaults.textFieldColors(
+                containerColor = AppTheme.neutral200,
+                cursorColor = Color.Black,
+                disabledLabelColor = AppTheme.white,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ), onValueChange = {
+                searchQuery = it
+                viewModel.searchDecks(it.text)
+            }, shape = RoundedCornerShape(35.dp), singleLine = true, trailingIcon = {
+                if (searchQuery.text.isNotEmpty()) {
+                    IconButton(onClick = {
+                        searchQuery = TextFieldValue(String())
+                        viewModel.searchDecks(searchQuery.text)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = "clear textfield"
                         )
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = AppTheme.neutral200,
-                        cursorColor = Color.Black,
-                        disabledLabelColor = AppTheme.white,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    onValueChange = {
-                        searchQuery = it
-                        viewModel.searchDecks(it.text)
-                    },
-                    shape = RoundedCornerShape(35.dp),
-                    singleLine = true,
-                    trailingIcon = {
-                        if (searchQuery.text.isNotEmpty()) {
-                            IconButton(onClick = {
-                                searchQuery = TextFieldValue(String())
-                                viewModel.searchDecks(searchQuery.text)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = "clear textfield"
-                                )
-                            }
-                        } else {
-                            IconButton(modifier = Modifier.padding(end = 6.dp),
-                                onClick = { viewModel.searchDecks(searchQuery.text) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "search"
-                                )
-                            }
-                        }
-                    })
-
-                when (uiState) {
-                    UIState.NORMAL -> {
-                        SearchResults(cards, onClick = {
-                            navigateToCard(it)
-                        })
                     }
+                } else {
+                    IconButton(modifier = Modifier.padding(end = 6.dp),
+                        onClick = { viewModel.searchDecks(searchQuery.text) }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "search"
+                        )
+                    }
+                }
+            })
 
-                    UIState.ERROR -> {
+            when (uiState) {
+                UIState.NORMAL -> {
+                    SearchResults(cards, onClick = {
+                        navigateToCard(it)
+                    })
+                }
+
+                UIState.ERROR -> {
 //                        ErrorScreen(
 ////                            titleText = stringResource(id = R.string.deck_detail_title_placeholder),
 ////                            errorText = stringResource(
@@ -186,28 +176,28 @@ fun DeckDetailSearchScreen(
 ////                            ),
 ////                            navigator
 //                        )
-                    }
+                }
 
-                    UIState.LOADING -> {
-                        Column(
-                            Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                UIState.LOADING -> {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
                     }
+                }
 
-                    UIState.EMPTY -> {
-                        ImageMessage(
-                            painter = painterResource(id = R.drawable.no_decks_found),
-                            text = stringResource(id = R.string.no_cards_found)
-                        )
+                UIState.EMPTY -> {
+                    ImageMessage(
+                        painter = painterResource(id = R.drawable.no_decks_found),
+                        text = stringResource(id = R.string.no_cards_found)
+                    )
 
-                    }
                 }
             }
         }
+    }
 
 
     )
@@ -221,59 +211,52 @@ fun SearchResults(cards: List<Card>, onClick: (Long) -> (Unit)) {
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-        itemsIndexed(
-            items = cards,
-            itemContent = { index, card ->
-                val state = remember {
-                    MutableTransitionState(false).apply {
-                        targetState = true
-                    }
+        itemsIndexed(items = cards, itemContent = { index, card ->
+            val state = remember {
+                MutableTransitionState(false).apply {
+                    targetState = true
                 }
+            }
 
-                AnimatedVisibility(
-                    visibleState = state,
-                    enter = slideInVertically(
-                        initialOffsetY = { it + 20 },
-                        animationSpec = tween(
-                            durationMillis = (index * 100)
-                        )
-                    ),
-                    exit = fadeOut()
+            AnimatedVisibility(
+                visibleState = state, enter = slideInVertically(
+                    initialOffsetY = { it + 20 }, animationSpec = tween(
+                        durationMillis = (index * 100)
+                    )
+                ), exit = fadeOut()
+            ) {
+                Card(
+                    onClick = { onClick(card.id) },
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, AppTheme.neutral200),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Card(
-                        onClick = { onClick(card.id) },
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, AppTheme.neutral200),
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
+                            .background(AppTheme.white)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .background(AppTheme.white)
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .fillMaxWidth()
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                Text(
-                                    text = card.front,
-                                    color = AppTheme.neutral800,
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                            }
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_chevron_right_24),
-                                contentDescription = "arrow right",
-                                tint = AppTheme.neutral800
+                            Text(
+                                text = card.front,
+                                color = AppTheme.neutral800,
+                                style = MaterialTheme.typography.titleMedium,
                             )
                         }
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_chevron_right_24),
+                            contentDescription = "arrow right",
+                            tint = AppTheme.neutral800
+                        )
                     }
                 }
             }
-        )
+        })
     }
 }
