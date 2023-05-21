@@ -52,9 +52,10 @@ dependencies {
     implementation("io.ktor:ktor-client-okhttp:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-serialization:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-logging-jvm:${Versions.KTOR}")
+    implementation("io.ktor:ktor-client-content-negotiation:${Versions.KTOR}")
 
     // Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:${Versions.KTOR}")
 
     // Room Database
     ksp("androidx.room:room-compiler:${Versions.ROOM}")

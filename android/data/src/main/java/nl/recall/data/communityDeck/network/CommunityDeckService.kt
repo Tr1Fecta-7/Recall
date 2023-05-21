@@ -1,7 +1,9 @@
 package nl.recall.data.communityDeck.network
 
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import nl.recall.data.communityDeck.mappers.CommunityCardMapper.toRequest
@@ -14,17 +16,19 @@ import org.koin.core.annotation.Factory
 @Factory
 class CommunityDeckService(private val httpClientProvider: HttpClientProvider) {
     suspend fun getCommunityDecks(): List<CommunityDeck> {
-        return httpClientProvider.client.get("/api/v1/deck")
+        return httpClientProvider.client.get("/api/v1/deck").body()
     }
 
     suspend fun publishDeck(deckWithCards: DeckWithCards) {
-        return httpClientProvider.client.post("api/v1/deck") {
+        httpClientProvider.client.post("/api/v1/deck") {
             contentType(ContentType.Application.Json)
-            body = CommunityDeckRequest(
-                title = deckWithCards.deck.title,
-                icon = deckWithCards.deck.icon,
-                color = deckWithCards.deck.color,
-                cards = deckWithCards.cards.toRequest()
+            setBody(
+                CommunityDeckRequest(
+                    title = deckWithCards.deck.title,
+                    icon = deckWithCards.deck.icon,
+                    color = deckWithCards.deck.color,
+                    cards = deckWithCards.cards.toRequest()
+                )
             )
         }
     }
