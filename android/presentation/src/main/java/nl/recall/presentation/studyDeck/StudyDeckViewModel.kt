@@ -73,7 +73,7 @@ class StudyDeckViewModel(
         }
         _iterator.value++
         _deckWithCards.value?.let {
-            _progress.value = ((iterator.value.toFloat() / it.cards.size.toFloat()))
+            _progress.value = (iterator.value.toFloat() / it.cards.size.toFloat())
         }
     }
 }

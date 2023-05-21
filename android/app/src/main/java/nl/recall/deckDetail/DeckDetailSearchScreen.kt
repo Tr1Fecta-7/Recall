@@ -2,6 +2,7 @@ package nl.recall.deckDetail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -11,6 +12,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -216,12 +218,12 @@ fun DeckDetailSearchScreen(
 @Composable
 fun SearchResults(cards: List<Card>, onClick: (Long) -> (Unit)) {
     LazyColumn(
-        modifier = Modifier.padding(top = 10.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        items(
+        item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
+        itemsIndexed(
             items = cards,
-            itemContent = { card ->
+            itemContent = { index, card ->
                 val state = remember {
                     MutableTransitionState(false).apply {
                         targetState = true
@@ -230,7 +232,12 @@ fun SearchResults(cards: List<Card>, onClick: (Long) -> (Unit)) {
 
                 AnimatedVisibility(
                     visibleState = state,
-                    enter = slideInVertically(),
+                    enter = slideInVertically(
+                        initialOffsetY = { it + 20 },
+                        animationSpec = tween(
+                            durationMillis = (index * 100)
+                        )
+                    ),
                     exit = fadeOut()
                 ) {
                     Card(
