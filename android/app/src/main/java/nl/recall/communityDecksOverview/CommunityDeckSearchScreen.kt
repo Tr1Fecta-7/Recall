@@ -1,4 +1,4 @@
-package nl.recall.communityDeckOverview
+package nl.recall.communityDecksOverview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,7 +47,6 @@ import nl.recall.R
 import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
 import nl.recall.components.communityDeck.CommunityDeckPreview
-import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.presentation.communityDeckOverview.CommunityDeckViewModel
 import nl.recall.presentation.uiState.UIState
