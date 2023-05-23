@@ -29,11 +29,13 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.theme.AppTheme
 import nl.recall.theme.md_theme_light_primary
+import java.util.Calendar
+import java.util.Calendar.DAY_OF_YEAR
 
 @Composable
 fun StudyDeckFinishedScreen(navigator: DestinationsNavigator){
     val context = LocalContext.current
-    checkStreak(context)
+    val currentStreak: Int = CheckStreak(context)
 
     Column(
         modifier = Modifier
@@ -111,8 +113,25 @@ fun StudyDeckFinishedScreen(navigator: DestinationsNavigator){
 }
 
 @Composable
-private fun checkStreak(context: Context){
+private fun CheckStreak(context: Context): Int{
     val sharedPreferences = context.applicationContext.getSharedPreferences(stringResource(id = R.string.shared_preferences_streak_file), Context.MODE_PRIVATE)
+    val edit = sharedPreferences.edit()
+    val calendar = Calendar.getInstance()
+    val currentDay: Int = calendar.get(DAY_OF_YEAR)
+    val lastStreakDay = sharedPreferences.getInt(stringResource(id = R.string.shared_preferences_last_streak_day), 0)
+    val currentStreakDay = sharedPreferences.getInt(stringResource(id = R.string.shared_preferences_current_streak), 0)
+    if(currentStreakDay == currentDay) return currentStreakDay
+
+    return if (lastStreakDay == currentStreakDay - 1){
+        edit.putInt(stringResource( id= R.string.shared_preferences_current_streak), currentStreakDay + 1)
+        edit.putInt(stringResource(id = R.string.shared_preferences_last_streak_day), currentDay)
+        currentStreakDay+1
+    } else {
+        edit.putInt(stringResource(id = R.string.shared_preferences_last_streak_day), currentDay)
+        edit.putInt(stringResource(id = R.string.shared_preferences_current_streak), 1)
+        1
+    }
 //    val edit = sharedPreferences.edit()
 //    edit.putString(stringResource(id = R.string.shared_preferences_start_streak_day))
+
 }

@@ -48,4 +48,6 @@
     <string name="back_to_overview">Back to overview</string>
     <string name="shared_preferences_start_streak_day">startStreakDay</string>
     <string name="shared_preferences_streak_file">streakFile</string>
+    <string name="shared_preferences_last_streak_day">lastStreakDay</string>
+    <string name="shared_preferences_current_streak">currentStreak</string>
 </resources>
