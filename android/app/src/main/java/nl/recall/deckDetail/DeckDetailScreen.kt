@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -196,7 +198,7 @@ fun DeckDetailScreen(
                             Column(
                                 modifier = Modifier
                                     .padding(it)
-                                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+                                    .padding(start = 20.dp, end = 20.dp)
                                     .fillMaxSize()
                             ) {
                                 Content(
@@ -275,67 +277,70 @@ private fun Content(
         }
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-
-
-        DeckDetailPreview(
-            deckWithCards = deckWithCards,
-            title = stringResource(id = R.string.start_smart_learning_text),
-            icon = painterResource(id = R.drawable.cards_icon),
-            cardCount = deckWithCards.cards.stream().filter{it.dueDate <= Date() }.count(),
-            onClick = {
-                navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
-            }
-        )
-
-        DeckDetailPreview(
-            deckWithCards = deckWithCards,
-            title = stringResource(id = R.string.start_learning_text),
-            icon = painterResource(id = R.drawable.repeat_study_icon),
-            cardCount = deckWithCards.cards.size.toLong(),
-            onClick = {
-                navigator.navigate(RepeatStudyDeckScreenDestination(deckWithCards.deck.id))
-            }
-        )
-
-        Text(
-            text = stringResource(id = R.string.cards_title),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        if (deckWithCards.cards.isNotEmpty()) {
-            Card(modifier = Modifier
-                .fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = AppTheme.neutral200,
-                ),
-                shape = RoundedCornerShape(35.dp),
-                onClick = {
-                    navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
-                }) {
-                Row(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(R.string.search_bar_card_hint),
-                        color = AppTheme.neutral500
-                    )
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-                }
-            }
-        }
-    }
     LazyColumn(
+        Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         item {
+            Column(
+                Modifier.padding(top = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+
+
+                DeckDetailPreview(
+                    deckWithCards = deckWithCards,
+                    title = stringResource(id = R.string.start_smart_learning_text),
+                    icon = painterResource(id = R.drawable.cards_icon),
+                    cardCount = deckWithCards.cards.stream().filter { it.dueDate <= Date() }
+                        .count(),
+                    onClick = {
+                        navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
+                    }
+                )
+
+                DeckDetailPreview(
+                    deckWithCards = deckWithCards,
+                    title = stringResource(id = R.string.start_learning_text),
+                    icon = painterResource(id = R.drawable.repeat_study_icon),
+                    cardCount = deckWithCards.cards.size.toLong(),
+                    onClick = {
+                        navigator.navigate(RepeatStudyDeckScreenDestination(deckWithCards.deck.id))
+                    }
+                )
+
+                Text(
+                    text = stringResource(id = R.string.cards_title),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                if (deckWithCards.cards.isNotEmpty()) {
+                    Card(modifier = Modifier
+                        .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = AppTheme.neutral200,
+                        ),
+                        shape = RoundedCornerShape(35.dp),
+                        onClick = {
+                            navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
+                        }) {
+                        Row(
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.search_bar_card_hint),
+                                color = AppTheme.neutral500
+                            )
+                            Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+                        }
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(10.dp))
         }
         itemsIndexed(items = deckWithCards.cards, itemContent = { index, card ->
@@ -389,7 +394,9 @@ private fun Content(
                     }
                 }
             }
+
         })
+
     }
 
 
