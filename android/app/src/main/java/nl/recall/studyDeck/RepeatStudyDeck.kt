@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexstyl.swipeablecard.Direction
 import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
+import com.alexstyl.swipeablecard.SwipeableCardState
 import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.ramcosta.composedestinations.annotation.Destination
@@ -62,7 +63,10 @@ import kotlinx.coroutines.launch
 import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
+import nl.recall.destinations.DeckDetailScreenDestination
+import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
+import nl.recall.presentation.studyDeck.RepeatStudyDeckViewModel
 import nl.recall.presentation.studyDeck.StudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
 import nl.recall.presentation.studyDeck.model.SwipeDirection
@@ -77,10 +81,10 @@ import kotlin.math.absoluteValue
 
 @Destination
 @Composable
-fun StudyDeckScreen(
+fun RepeatStudyDeckScreen(
     deckId: Long,
     navigator: DestinationsNavigator,
-    viewModel: StudyDeckViewModel = koinViewModel(parameters = {
+    viewModel: RepeatStudyDeckViewModel = koinViewModel(parameters = {
         parametersOf(StudyDeckViewModelArgs(deckId))
     })
 ) {
@@ -190,21 +194,22 @@ private fun Content(
     deckWithCards: DeckWithCards,
     progress: Float,
     iterator: Int,
-    viewModel: StudyDeckViewModel,
+    viewModel: RepeatStudyDeckViewModel,
     navigator: DestinationsNavigator
 ) {
     val animatedProgress = animateFloatAsState(
         targetValue = progress, animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
     val cards = deckWithCards.cards.map { it to rememberSwipeableCardState() }
-    var currentBackgroundColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
+
+    var currentColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
 
 
-    LaunchedEffect(currentBackgroundColor) {
+    LaunchedEffect(currentColor) {
         color.animateTo(
-            targetValue = currentBackgroundColor.color, animationSpec = tween(500)
+            targetValue = currentColor.color, animationSpec = tween(500)
         )
     }
 
@@ -247,30 +252,30 @@ private fun Content(
             }
 
 
-            cards.reversed().forEachIndexed() { index, (card, cardState) ->
+            cards.forEachIndexed() { index, (card, cardState) ->
                 var cardFaceUIState by remember {
                     mutableStateOf(CardFaceUIState.Front)
                 }
 
                 LaunchedEffect(cardState.offset.value.x) {
                     if (cardState.offset.value.x < 0.0f) {
-                        currentBackgroundColor = BackgroundColors.CORRECT
+                        currentColor = BackgroundColors.CORRECT
                     }
 
                     if (cardState.offset.value.x > 0.0f) {
-                        currentBackgroundColor = BackgroundColors.WRONG
+                        currentColor = BackgroundColors.WRONG
                     }
 
                     if (cardState.offset.value.x == 0.0f) {
-                        currentBackgroundColor = BackgroundColors.NORMAL
+                        currentColor = BackgroundColors.NORMAL
                     }
 
                     if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
-                        currentBackgroundColor = BackgroundColors.NORMAL
+                        currentColor = BackgroundColors.NORMAL
                     }
                 }
 
-                val indexList = (index-deckWithCards.cards.size+1).absoluteValue
+                val indexList = (index - deckWithCards.cards.size + 1).absoluteValue
 
                 if (cardState.swipedDirection == null) {
 
@@ -284,18 +289,13 @@ private fun Content(
                         },
                         modifierFront = Modifier,
                         modifierBack = Modifier.swipableCard(state = cardState,
-                            onSwiped = { direction ->
+                            onSwiped = {
                                 scope.launch(Dispatchers.Unconfined) {
-                                    if (direction == Direction.Left) {
-                                        viewModel.onSwipeCard(SwipeDirection.LEFT, card)
-                                    } else {
-                                        viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
-                                    }
+                                    viewModel.onSwipeCard()
                                 }
-
                             },
                             onSwipeCancel = {
-                                currentBackgroundColor = BackgroundColors.NORMAL
+                                currentColor = BackgroundColors.NORMAL
                             }),
                         front = {
                             Column(
@@ -368,12 +368,10 @@ private fun Content(
                                             onClick = {
                                                 scope.launch(Dispatchers.Unconfined) {
                                                     cardState.swipe(Direction.Right)
-                                                    viewModel.onSwipeCard(
-                                                        SwipeDirection.RIGHT, card
-                                                    )
-                                                    currentBackgroundColor = BackgroundColors.WRONG
+                                                    viewModel.onSwipeCard()
+                                                    currentColor = BackgroundColors.WRONG
                                                     delay(500)
-                                                    currentBackgroundColor = BackgroundColors.NORMAL
+                                                    currentColor = BackgroundColors.NORMAL
                                                 }
                                             }) {
                                             Icon(
@@ -393,13 +391,11 @@ private fun Content(
                                             onClick = {
                                                 scope.launch(Dispatchers.Unconfined) {
                                                     cardState.swipe(Direction.Left)
-                                                    viewModel.onSwipeCard(
-                                                        SwipeDirection.LEFT, card
-                                                    )
+                                                    viewModel.onSwipeCard()
                                                     println(cards.size)
-                                                    currentBackgroundColor = BackgroundColors.CORRECT
+                                                    currentColor = BackgroundColors.CORRECT
                                                     delay(500)
-                                                    currentBackgroundColor = BackgroundColors.NORMAL
+                                                    currentColor = BackgroundColors.NORMAL
                                                 }
                                             }) {
                                             Icon(

@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -71,6 +73,7 @@ import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.destinations.DeckEditDestination
 import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.destinations.EditCardScreenDestination
+import nl.recall.destinations.RepeatStudyDeckScreenDestination
 import nl.recall.destinations.StudyDeckScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
@@ -79,6 +82,7 @@ import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.util.Date
 
 @Destination
 @Composable
@@ -194,7 +198,7 @@ fun DeckDetailScreen(
                             Column(
                                 modifier = Modifier
                                     .padding(it)
-                                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+                                    .padding(start = 20.dp, end = 20.dp)
                                     .fillMaxSize()
                             ) {
                                 Content(
@@ -237,7 +241,10 @@ fun DeckDetailScreen(
                 }
 
                 UIState.EMPTY -> {
-
+                    ImageMessage(
+                        painter = painterResource(id = R.drawable.no_decks_found),
+                        text = stringResource(id = R.string.no_deck_found)
+                    )
                 }
             }
         },
@@ -270,46 +277,70 @@ private fun Content(
         }
     }
 
-
-    DeckDetailPreview(deckWithCards, onClick = {
-        navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
-    })
-    Text(
-        modifier = Modifier.padding(top = 15.dp, bottom = 10.dp),
-        text = stringResource(id = R.string.cards_title),
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold
-    )
-
-    if (deckWithCards.cards.isNotEmpty()) {
-        Card(modifier = Modifier
-            .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = AppTheme.neutral200,
-            ),
-            shape = RoundedCornerShape(35.dp),
-            onClick = {
-                navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
-            }) {
-            Row(
-                modifier = Modifier
-                    .padding(15.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.search_bar_card_hint),
-                    color = AppTheme.neutral500
-                )
-                Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-            }
-        }
-    }
     LazyColumn(
+        Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         item {
+            Column(
+                Modifier.padding(top = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+
+
+                DeckDetailPreview(
+                    deckWithCards = deckWithCards,
+                    title = stringResource(id = R.string.start_smart_learning_text),
+                    icon = painterResource(id = R.drawable.cards_icon),
+                    cardCount = deckWithCards.cards.stream().filter { it.dueDate <= Date() }
+                        .count(),
+                    onClick = {
+                        navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
+                    }
+                )
+
+                DeckDetailPreview(
+                    deckWithCards = deckWithCards,
+                    title = stringResource(id = R.string.start_learning_text),
+                    icon = painterResource(id = R.drawable.repeat_study_icon),
+                    cardCount = deckWithCards.cards.size.toLong(),
+                    onClick = {
+                        navigator.navigate(RepeatStudyDeckScreenDestination(deckWithCards.deck.id))
+                    }
+                )
+
+                Text(
+                    text = stringResource(id = R.string.cards_title),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                if (deckWithCards.cards.isNotEmpty()) {
+                    Card(modifier = Modifier
+                        .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = AppTheme.neutral200,
+                        ),
+                        shape = RoundedCornerShape(35.dp),
+                        onClick = {
+                            navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
+                        }) {
+                        Row(
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.search_bar_card_hint),
+                                color = AppTheme.neutral500
+                            )
+                            Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+                        }
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(10.dp))
         }
         itemsIndexed(items = deckWithCards.cards, itemContent = { index, card ->
@@ -317,9 +348,9 @@ private fun Content(
             AnimatedVisibility(
                 visibleState = state,
                 enter = slideInVertically(
-                    initialOffsetY = { it + 20 },
+                    initialOffsetY = { offset -> offset + 20 },
                     animationSpec = tween(
-                        durationMillis = (index * 100)
+                        durationMillis = (index * 105)
                     )
                 ),
                 exit = fadeOut()
@@ -363,8 +394,11 @@ private fun Content(
                     }
                 }
             }
+
         })
+
     }
+
 
     AlertWindow(
         title = stringResource(id = R.string.dialog_delete_deck_title),

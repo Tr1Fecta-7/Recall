@@ -7,6 +7,8 @@
     <string name="create_deck_select_icon">Select your icon</string>
     <string name="dialog_delete_deck_title">Delete deck</string>
     <string name="dialog_delete_deck_text">Are you sure you want to delete this deck?</string>
+    <string name="dialog_delete_card_title">Delete card</string>
+    <string name="dialog_delete_card_text">Are you sure you want to delete this card?</string>
     <string name="delete_text">Delete</string>
     <string name="create_card_title">Create card</string>
     <string name="create_card_front_text_field">Front</string>
@@ -54,4 +56,5 @@
     <string name="shared_preferences_last_streak_day">lastStreakDay</string>
     <string name="shared_preferences_current_streak">currentStreak</string>
     <string name="deck_name_title">Deck name</string>
+    <string name="start_smart_learning_text">Start Smart Learning</string>
 </resources>
