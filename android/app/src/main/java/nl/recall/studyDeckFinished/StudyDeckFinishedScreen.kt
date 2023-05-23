@@ -94,7 +94,7 @@ fun StudyDeckFinishedScreen(navigator: DestinationsNavigator){
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = String.format(stringResource(id = R.string.streak_number), 1))
+            Text(text = String.format(stringResource(id = R.string.streak_number), currentStreak))
             Text(text = stringResource(id = R.string.day_streak))
         }
         Column(modifier = Modifier.padding(20.dp)) {
