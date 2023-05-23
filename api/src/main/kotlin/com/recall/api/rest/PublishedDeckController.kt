@@ -21,10 +21,18 @@ class PublishedDeckController(
 	@Autowired val publishedCardRepository: PublishedCardRepository
 ) {
 	@GetMapping
-	fun getAllDecks(): ResponseEntity<List<PublishedDeck>> {
-		return ResponseEntity.ok(
-			publishedDeckRepository.findAll()
-		)
+	fun getAllDecks(
+		@RequestParam("title") title: Optional<String>
+	): ResponseEntity<List<PublishedDeck>> {
+		return if (title.isPresent) {
+			ResponseEntity.ok(
+				publishedDeckRepository.findAllByTitleContainingIgnoreCase(title.get())
+			)
+		} else {
+			ResponseEntity.ok(
+				publishedDeckRepository.findAll()
+			)
+		}
 	}
 
 	@PostMapping
