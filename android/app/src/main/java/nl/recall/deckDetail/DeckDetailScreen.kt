@@ -80,6 +80,7 @@ import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.util.Date
 
 @Destination
 @Composable
@@ -280,6 +281,7 @@ private fun Content(
             deckWithCards = deckWithCards,
             title = stringResource(id = R.string.start_smart_learning_text),
             icon = painterResource(id = R.drawable.cards_icon),
+            cardCount = deckWithCards.cards.stream().filter{it.dueDate <= Date() }.count(),
             onClick = {
                 navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
             }
@@ -288,7 +290,8 @@ private fun Content(
         DeckDetailPreview(
             deckWithCards = deckWithCards,
             title = stringResource(id = R.string.start_learning_text),
-            icon = painterResource(id = R.drawable.repeat_cards_icon),
+            icon = painterResource(id = R.drawable.repeat_study_icon),
+            cardCount = deckWithCards.cards.size.toLong(),
             onClick = {
                 navigator.navigate(RepeatStudyDeckScreenDestination(deckWithCards.deck.id))
             }

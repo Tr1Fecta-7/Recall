@@ -25,9 +25,10 @@ import androidx.compose.ui.unit.dp
 import nl.recall.R
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.theme.AppTheme
+import java.util.Date
 
 @Composable
-fun DeckDetailPreview(deckWithCards: DeckWithCards, onClick: (Long) -> (Unit), title: String, icon: Painter) {
+fun DeckDetailPreview(deckWithCards: DeckWithCards, onClick: (Long) -> (Unit), title: String, icon: Painter, cardCount: Long) {
     Card(
         enabled = deckWithCards.cards.isNotEmpty(),
         onClick = { onClick(deckWithCards.deck.id) },
@@ -70,7 +71,7 @@ fun DeckDetailPreview(deckWithCards: DeckWithCards, onClick: (Long) -> (Unit), t
                     Text(
                         text = stringResource(
                             id = R.string.amount_of_cards_in_deck,
-                            deckWithCards.cards.size
+                            cardCount
                         ),
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppTheme.neutral400
