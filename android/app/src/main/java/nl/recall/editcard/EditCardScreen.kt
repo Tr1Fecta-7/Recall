@@ -136,7 +136,12 @@ fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues,
                 CircularProgressIndicator()
             }
         }
-        else -> {}
+        UIState.EMPTY -> {
+
+        }
+        UIState.ERROR -> {
+
+        }
     }
 
 
