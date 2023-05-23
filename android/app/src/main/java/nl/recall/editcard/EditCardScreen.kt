@@ -69,12 +69,13 @@ fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues,
     val card = viewModel.card.collectAsState().value
     val uiState: UIState by viewModel.state.collectAsState()
     val updatedCardInDatabase = viewModel.updatedCardBoolean.collectAsState().value;
+    val deletedCardInDatabase = viewModel.deletedCardBoolean.collectAsState().value;
 
 
     when(uiState) {
         UIState.NORMAL -> {
             card?.let {
-                if (updatedCardInDatabase) {
+                if (updatedCardInDatabase || deletedCardInDatabase) {
                     navigator.popBackStack()
                 }
 
