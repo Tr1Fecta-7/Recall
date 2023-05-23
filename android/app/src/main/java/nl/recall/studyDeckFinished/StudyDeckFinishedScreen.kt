@@ -35,7 +35,7 @@ import java.util.Calendar.DAY_OF_YEAR
 @Composable
 fun StudyDeckFinishedScreen(navigator: DestinationsNavigator){
     val context = LocalContext.current
-    val currentStreak: Int = CheckStreak(context)
+    val currentStreak: Int = checkStreak(context)
 
     Column(
         modifier = Modifier
@@ -113,7 +113,7 @@ fun StudyDeckFinishedScreen(navigator: DestinationsNavigator){
 }
 
 @Composable
-private fun CheckStreak(context: Context): Int{
+private fun checkStreak(context: Context): Int{
     val sharedPreferences = context.applicationContext.getSharedPreferences(stringResource(id = R.string.shared_preferences_streak_file), Context.MODE_PRIVATE)
     val edit = sharedPreferences.edit()
     val calendar = Calendar.getInstance()
@@ -122,15 +122,18 @@ private fun CheckStreak(context: Context): Int{
     val currentStreakDay = sharedPreferences.getInt(stringResource(id = R.string.shared_preferences_current_streak), 0)
     if(currentStreakDay == currentDay) return currentStreakDay
 
-    return if (lastStreakDay == currentStreakDay - 1){
+    val streak =  if (lastStreakDay == currentStreakDay - 1){
         edit.putInt(stringResource( id= R.string.shared_preferences_current_streak), currentStreakDay + 1)
         edit.putInt(stringResource(id = R.string.shared_preferences_last_streak_day), currentDay)
         currentStreakDay+1
+
     } else {
         edit.putInt(stringResource(id = R.string.shared_preferences_last_streak_day), currentDay)
         edit.putInt(stringResource(id = R.string.shared_preferences_current_streak), 1)
         1
     }
+    edit.apply()
+    return streak
 //    val edit = sharedPreferences.edit()
 //    edit.putString(stringResource(id = R.string.shared_preferences_start_streak_day))
 
