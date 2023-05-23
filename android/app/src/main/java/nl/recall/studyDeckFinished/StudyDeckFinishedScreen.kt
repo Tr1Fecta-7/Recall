@@ -99,7 +99,7 @@ fun StudyDeckFinishedScreen(navigator: DestinationsNavigator){
         }
         Column(modifier = Modifier.padding(20.dp)) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navigator.popBackStack() },
                 modifier = Modifier
                     .width(300.dp)
                     .height(40.dp),
