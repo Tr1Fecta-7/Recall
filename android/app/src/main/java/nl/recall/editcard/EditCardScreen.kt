@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,6 +19,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,6 +29,7 @@ import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.AlertWindow
 import nl.recall.components.BottomNav
 import nl.recall.components.card.CardPreview
 import nl.recall.createcard.MainContent
@@ -41,6 +47,12 @@ import java.util.Date
 @Composable
 fun EditCardScreen(navController: NavController, navigator: DestinationsNavigator,
                    clickedCardId: Long, deckId: Long) {
+    val viewModel: EditCardViewModel = koinViewModel(parameters = {
+        parametersOf(EditCardViewModelArgs(deckId = deckId, cardId = clickedCardId))
+    })
+    var openDialog by remember { mutableStateOf(false) }
+    var closeDialog: () -> Unit = { openDialog = false }
+
     Scaffold(
         containerColor = AppTheme.neutral50,
         topBar = {
@@ -52,25 +64,29 @@ fun EditCardScreen(navController: NavController, navigator: DestinationsNavigato
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
                     }
                 },
+                actions = {
+                    IconButton(onClick = {
+                        openDialog = true
+                    }) {
+                        Icon(imageVector = Icons.Default.Delete, contentDescription = "deleteCard")
+                    }
+                }
             )
         },
         bottomBar = { BottomNav(navController = navController) },
-        content = { MainContent(navigator = navigator, it, clickedCardId, deckId) }
+        content = { MainContent(navigator = navigator, it, viewModel, deckId, openDialog, closeDialog) }
     )
 }
 
 @Composable
 fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues,
-                clickedCardId: Long, deckId: Long) {
-    val viewModel: EditCardViewModel = koinViewModel(parameters = {
-        parametersOf(EditCardViewModelArgs(deckId = deckId, cardId = clickedCardId))
-    })
-
+                viewModel: EditCardViewModel, deckId: Long, openDialog: Boolean,
+                closeDialog: () -> (Unit)
+) {
     val card = viewModel.card.collectAsState().value
     val uiState: UIState by viewModel.state.collectAsState()
     val updatedCardInDatabase = viewModel.updatedCardBoolean.collectAsState().value;
     val deletedCardInDatabase = viewModel.deletedCardBoolean.collectAsState().value;
-
 
     when(uiState) {
         UIState.NORMAL -> {
@@ -96,6 +112,18 @@ fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues,
                         )
                     )
                 })
+
+                AlertWindow(
+                    title = stringResource(id = R.string.dialog_delete_card_title),
+                    subText = stringResource(id = R.string.dialog_delete_card_text),
+                    confirmText = stringResource(id = R.string.delete_text),
+                    confirmTextColor = AppTheme.red700,
+                    openDialog = openDialog,
+                    onCloseDialog = { closeDialog() },
+                    onPressConfirm = {
+                        viewModel.deleteCardInDatabase(deckId = deckId, cardId = card.id)
+                    }
+                )
             }
         }
 
