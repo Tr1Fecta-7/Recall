@@ -52,4 +52,5 @@
     <string name="no_deck_found">No deck found</string>
     <string name="shared_preferences_last_streak_day">lastStreakDay</string>
     <string name="shared_preferences_current_streak">currentStreak</string>
+    <string name="deck_name_title">Deck name</string>
 </resources>
