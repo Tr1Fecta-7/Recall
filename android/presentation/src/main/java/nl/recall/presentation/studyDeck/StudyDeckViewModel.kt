@@ -34,6 +34,10 @@ class StudyDeckViewModel(
         _deckWithCards.asStateFlow()
     }
 
+    private val _wrongCards = MutableStateFlow<ArrayList<Card>>(arrayListOf())
+    val wrongCards: StateFlow<ArrayList<Card>> = _wrongCards.asStateFlow()
+
+
     private val _progress = MutableStateFlow(0.0000f)
     val progress: StateFlow<Float> = _progress.asStateFlow()
 
@@ -62,8 +66,10 @@ class StudyDeckViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 if (direction == SwipeDirection.LEFT) {
+
                     updateDateCard(card.id, Date())
                 } else {
+                    wrongCards.value.add(card)
                     updateDateCard(card.id, Date())
                 }
 
@@ -74,7 +80,28 @@ class StudyDeckViewModel(
 
         _iterator.value++
         _deckWithCards.value?.let {
-            _progress.value = (iterator.value.toFloat() / it.cards.size.toFloat())
+            _progress.value = (iterator.value.toFloat() / (it.cards.size.toFloat() + wrongCards.value.size))
+        }
+    }
+    fun onSwipeWrongCard(direction: SwipeDirection, card: Card) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                if (direction == SwipeDirection.LEFT) {
+                    wrongCards.value.remove(card)
+                    wrongCards.value.add(card)
+                    updateDateCard(card.id, Date())
+                } else {
+                    wrongCards.value.remove(card)
+                    updateDateCard(card.id, Date())
+                }
+
+            } catch (exception: Exception) {
+                _state.value = UIState.ERROR
+            }
+        }
+        _iterator.value++
+        _deckWithCards.value?.let {
+            _progress.value = (iterator.value.toFloat() / (it.cards.size.toFloat() + wrongCards.value.size))
         }
     }
 }

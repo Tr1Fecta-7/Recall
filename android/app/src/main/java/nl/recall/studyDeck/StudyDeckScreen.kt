@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
-import nl.recall.destinations.StudyDeckFinishedScreenDestination
+import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.StudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
@@ -87,6 +87,7 @@ fun StudyDeckScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
     val deckWithCards by viewModel.deckWithCards.collectAsState()
+    val incorrectCards by viewModel.wrongCards.collectAsState()
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
 
@@ -103,7 +104,8 @@ fun StudyDeckScreen(
                             progress = progress,
                             iterator = iterator,
                             viewModel = viewModel,
-                            navigator = navigator
+                            navigator = navigator,
+                            incorrectCards = incorrectCards
                         )
                     }
                 }
@@ -189,6 +191,7 @@ private fun ContentScaffold(
 private fun Content(
     paddingValues: PaddingValues,
     deckWithCards: DeckWithCards,
+    incorrectCards: ArrayList<Card>,
     progress: Float,
     iterator: Int,
     viewModel: StudyDeckViewModel,
@@ -198,6 +201,7 @@ private fun Content(
         targetValue = progress, animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
     val cards = deckWithCards.cards.map { it to rememberSwipeableCardState() }
+    var wrongCards = incorrectCards.map { it to rememberSwipeableCardState() }
     var currentBackgroundColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
@@ -227,7 +231,7 @@ private fun Content(
                 ) {
                     Text(
                         fontSize = 14.sp, modifier = Modifier.padding(4.dp), text = stringResource(
-                            id = R.string.study_progression, iterator, deckWithCards.cards.size
+                            id = R.string.study_progression, iterator, deckWithCards.cards.size + wrongCards.size
                         )
                     )
                 }
@@ -241,10 +245,175 @@ private fun Content(
             propagateMinConstraints = false
         ) {
 
-            LaunchedEffect(key1 = progress){
-                if(progress == 1.0f) {
-                    navigator.popBackStack()
-                    navigator.navigate(StudyDeckFinishedScreenDestination(title = deckWithCards.deck.title, deckWithCards.cards.size))
+            this@Column.AnimatedVisibility(
+                visible = (iterator >= deckWithCards.cards.size), enter = fadeIn(), exit = fadeOut()
+            ) {
+                wrongCards.reversed().forEachIndexed() { index, (card, cardState) ->
+                    var cardFaceUIState by remember {
+                        mutableStateOf(CardFaceUIState.Front)
+                    }
+
+                    LaunchedEffect(cardState.offset.value.x) {
+                        if (cardState.offset.value.x < 0.0f) {
+                            currentBackgroundColor = BackgroundColors.CORRECT
+                        }
+
+                        if (cardState.offset.value.x > 0.0f) {
+                            currentBackgroundColor = BackgroundColors.WRONG
+                        }
+
+                        if (cardState.offset.value.x == 0.0f) {
+                            currentBackgroundColor = BackgroundColors.NORMAL
+                        }
+
+                        if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
+                            currentBackgroundColor = BackgroundColors.NORMAL
+                        }
+                    }
+
+                    val indexList = ((index-wrongCards.size+1).absoluteValue)+ deckWithCards.cards.size
+
+                    if (cardState.swipedDirection == null) {
+
+                        FlipCard(
+                            elevation = if (indexList == iterator) 3 else 0,
+                            cardFaceUIState = cardFaceUIState,
+                            onClick = {
+                                    cardFaceUIState = CardFaceUIState.Back
+                            },
+                            modifierFront = Modifier,
+                            modifierBack = Modifier.swipableCard(state = cardState,
+                                onSwiped = { direction ->
+                                    scope.launch(Dispatchers.Unconfined) {
+//                                        delay(500)
+                                        if (direction == Direction.Left) {
+                                            viewModel.onSwipeCard(SwipeDirection.LEFT, card)
+                                        } else {
+                                            viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
+                                        }
+                                    }
+
+                                },
+                                onSwipeCancel = {
+                                    currentBackgroundColor = BackgroundColors.NORMAL
+                                }),
+                            front = {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(30.dp)
+                                        .fillMaxSize(),
+                                    verticalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = card.front,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 25.sp
+                                    )
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.click_to_rotate),
+                                            fontSize = 10.sp,
+                                            lineHeight = 12.sp,
+                                        )
+                                    }
+                                }
+                            },
+                            back = {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(30.dp)
+                                        .fillMaxSize(),
+                                    verticalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+
+                                    ) {
+                                        Text(
+                                            text = card.front,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 25.sp
+                                        )
+                                        Text(
+                                            text = card.back,
+                                            fontWeight = FontWeight.Light,
+                                            fontSize = 25.sp
+                                        )
+                                    }
+
+
+
+                                    Column(
+                                        Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Text(
+                                            fontSize = 10.sp,
+                                            lineHeight = 12.sp,
+                                            text = stringResource(id = R.string.instructions_back_card_study_deck)
+                                        )
+
+                                        Row(
+                                            Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceAround
+                                        ) {
+                                            Button(modifier = Modifier.size(50.dp),
+                                                shape = CircleShape,
+                                                contentPadding = PaddingValues(0.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = AppTheme.red300
+                                                ),
+                                                onClick = {
+                                                    scope.launch(Dispatchers.Unconfined) {
+                                                        cardState.swipe(Direction.Right)
+                                                        viewModel.onSwipeCard(
+                                                            SwipeDirection.RIGHT, card
+                                                        )
+                                                        currentBackgroundColor = BackgroundColors.WRONG
+                                                        delay(500)
+                                                        currentBackgroundColor = BackgroundColors.NORMAL
+                                                    }
+                                                }) {
+                                                Icon(
+                                                    tint = AppTheme.red700,
+                                                    imageVector = Icons.Default.Close,
+                                                    contentDescription = "wrong"
+                                                )
+                                            }
+                                            Button(
+
+                                                modifier = Modifier.size(50.dp),
+                                                shape = CircleShape,
+                                                contentPadding = PaddingValues(0.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = AppTheme.primary300
+                                                ),
+                                                onClick = {
+                                                    scope.launch(Dispatchers.Unconfined) {
+                                                        cardState.swipe(Direction.Left)
+                                                        viewModel.onSwipeCard(
+                                                            SwipeDirection.LEFT, card
+                                                        )
+                                                        println(cards.size)
+                                                        currentBackgroundColor = BackgroundColors.CORRECT
+                                                        delay(500)
+                                                        currentBackgroundColor = BackgroundColors.NORMAL
+                                                    }
+                                                }) {
+                                                Icon(
+                                                    tint = AppTheme.primary700,
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = "correct"
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                        )
+                    }
                 }
             }
 
