@@ -94,73 +94,13 @@ fun DeckDetailScreen(
     val uiState by viewModel.state.collectAsState()
     val deckWithCards by viewModel.deck.collectAsState()
     val isDeckDeleted by viewModel.isDeckDeleted.collectAsState()
-
-    when (uiState) {
-        UIState.NORMAL -> {
-            if (isDeckDeleted) {
-                navigator.navigate(DecksOverviewScreenDestination)
-            } else {
-                deckWithCards?.let {
-                    Content(
-                        navigator = navigator,
-                        deckWithCards = it,
-                        navController = navController,
-                        viewModel = viewModel
-                    )
-                }
-            }
-        }
-
-        UIState.ERROR -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                ImageMessage(
-                    painter = painterResource(id = R.drawable.error_image),
-                    text = stringResource(id = R.string.no_deck_found)
-                )
-            }
-        }
-
-        UIState.LOADING -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-
-        UIState.EMPTY -> {
-
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-private fun Content(
-    navController: NavController,
-    navigator: DestinationsNavigator,
-    deckWithCards: DeckWithCards,
-    viewModel: DeckDetailViewModel
-) {
     var expandedMoreVert by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
     val navigateToCreateCard: (Long) -> Unit =
         { navigator.navigate(CreateCardScreenDestination(it)) }
     val publishDeckState by viewModel.publishDeckState.collectAsState()
     val context = LocalContext.current
-    val state = remember {
-        MutableTransitionState(false).apply {
-            targetState = true
-        }
-    }
+
     if (publishDeckState == UIState.ERROR) {
         informUser(context, stringResource(id = R.string.publish_deck_error))
     }
@@ -172,14 +112,19 @@ private fun Content(
                     containerColor = AppTheme.neutral50
                 ), title = {
                     Text(
-                        text = deckWithCards.deck.title
+                        text = deckWithCards?.deck?.title
+                            ?: stringResource(id = R.string.deck_name_title)
                     )
                 }, navigationIcon = {
                     IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
                     }
                 }, actions = {
-                    IconButton(onClick = { expandedMoreVert = !expandedMoreVert }) {
+                    IconButton(onClick = {
+                        if (uiState == UIState.NORMAL) {
+                            expandedMoreVert = !expandedMoreVert
+                        }
+                    }) {
                         Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
                     }
                     DropdownMenu(
@@ -190,7 +135,13 @@ private fun Content(
                             .width(180.dp),
                     ) {
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
-                            onClick = { navigator.navigate(DeckEditDestination(deckWithCards.deck.id)) })
+                            onClick = {
+                                navigator.navigate(
+                                    DeckEditDestination(
+                                        deckWithCards?.deck?.id ?: 0L
+                                    )
+                                )
+                            })
                         DropdownMenuItem(
                             trailingIcon = {
                                 if (publishDeckState == UIState.LOADING) {
@@ -234,125 +185,69 @@ private fun Content(
         containerColor = AppTheme.neutral50,
 
         content = {
-            Column(
-                modifier = Modifier
-                    .padding(it)
-                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
-                    .fillMaxSize()
-            ) {
-                DeckDetailPreview(deckWithCards, onClick = {
-                    navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
-                })
-                Text(
-                    modifier = Modifier.padding(top = 15.dp, bottom = 10.dp),
-                    text = stringResource(id = R.string.cards_title),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                if (deckWithCards.cards.isNotEmpty()) {
-                    Card(modifier = Modifier
-                        .fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = AppTheme.neutral200,
-                        ),
-                        shape = RoundedCornerShape(35.dp),
-                        onClick = {
-                            navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
-                        }) {
-                        Row(
-                            modifier = Modifier
-                                .padding(15.dp)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = stringResource(R.string.search_bar_card_hint),
-                                color = AppTheme.neutral500
-                            )
-                            Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-                        }
-                    }
-                }
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
-                ) {
-                    item {
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
-                    itemsIndexed(items = deckWithCards.cards, itemContent = { index, card ->
-
-                        AnimatedVisibility(
-                            visibleState = state,
-                            enter = slideInVertically(
-                                initialOffsetY = { it + 20 },
-                                animationSpec = tween(
-                                    durationMillis = (index * 100)
-                                )
-                            ),
-                            exit = fadeOut()
-                        ) {
-                            Card(
-                                onClick = {
-                                    navigator.navigate(
-                                        EditCardScreenDestination(
-                                            clickedCardId = card.id,
-                                            deckId = card.deckId
-                                        )
-                                    )
-                                },
-                                shape = RoundedCornerShape(12.dp),
-                                border = BorderStroke(1.dp, AppTheme.neutral200),
-                                modifier = Modifier.fillMaxWidth()
+            when (uiState) {
+                UIState.NORMAL -> {
+                    if (isDeckDeleted) {
+                        navigator.navigate(DecksOverviewScreenDestination)
+                    } else {
+                        deckWithCards?.let { deck ->
+                            Column(
+                                modifier = Modifier
+                                    .padding(it)
+                                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+                                    .fillMaxSize()
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier
-                                        .background(AppTheme.white)
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        .fillMaxWidth()
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    ) {
-                                        Text(
-                                            text = card.front,
-                                            color = AppTheme.neutral800,
-                                            style = MaterialTheme.typography.titleMedium,
-                                        )
+                                Content(
+                                    deckWithCards = deck,
+                                    navigator = navigator,
+                                    viewModel = viewModel,
+                                    openDialog = openDialog,
+                                    closeDialog = {
+                                        openDialog = it
+                                        expandedMoreVert = it
                                     }
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.baseline_chevron_right_24),
-                                        contentDescription = "arrow right",
-                                        tint = AppTheme.neutral800
-                                    )
-                                }
+                                )
                             }
+
                         }
-                    })
+                    }
                 }
 
-                AlertWindow(
-                    title = stringResource(id = R.string.dialog_delete_deck_title),
-                    subText = stringResource(id = R.string.dialog_delete_deck_text),
-                    confirmText = stringResource(id = R.string.delete_text),
-                    confirmTextColor = AppTheme.red700,
-                    openDialog, onCloseDialog = {
-                        openDialog = false
-                        expandedMoreVert = false
-                    },
-                    onPressConfirm = {
-                        viewModel.deleteDeckById(deckWithCards)
+                UIState.ERROR -> {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        ImageMessage(
+                            painter = painterResource(id = R.drawable.error_image),
+                            text = stringResource(id = R.string.no_deck_found)
+                        )
                     }
-                )
-            }
+                }
 
-        }, floatingActionButton = {
+                UIState.LOADING -> {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                UIState.EMPTY -> {
+
+                }
+            }
+        },
+        floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToCreateCard(deckWithCards.deck.id) },
+                onClick = {
+                    if (uiState == UIState.NORMAL) {
+                        navigateToCreateCard(deckWithCards?.deck?.id ?: 0L)
+                    }
+                },
                 contentColor = AppTheme.primary900,
                 containerColor = AppTheme.primary300
             ) {
@@ -360,6 +255,132 @@ private fun Content(
             }
         })
 }
+
+@Composable
+private fun Content(
+    deckWithCards: DeckWithCards,
+    navigator: DestinationsNavigator,
+    viewModel: DeckDetailViewModel,
+    openDialog: Boolean,
+    closeDialog: (Boolean) -> (Unit)
+) {
+    val state = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
+
+
+    DeckDetailPreview(deckWithCards, onClick = {
+        navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
+    })
+    Text(
+        modifier = Modifier.padding(top = 15.dp, bottom = 10.dp),
+        text = stringResource(id = R.string.cards_title),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold
+    )
+
+    if (deckWithCards.cards.isNotEmpty()) {
+        Card(modifier = Modifier
+            .fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = AppTheme.neutral200,
+            ),
+            shape = RoundedCornerShape(35.dp),
+            onClick = {
+                navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
+            }) {
+            Row(
+                modifier = Modifier
+                    .padding(15.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.search_bar_card_hint),
+                    color = AppTheme.neutral500
+                )
+                Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+            }
+        }
+    }
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+        itemsIndexed(items = deckWithCards.cards, itemContent = { index, card ->
+
+            AnimatedVisibility(
+                visibleState = state,
+                enter = slideInVertically(
+                    initialOffsetY = { it + 20 },
+                    animationSpec = tween(
+                        durationMillis = (index * 100)
+                    )
+                ),
+                exit = fadeOut()
+            ) {
+                Card(
+                    onClick = {
+                        navigator.navigate(
+                            EditCardScreenDestination(
+                                clickedCardId = card.id,
+                                deckId = card.deckId
+                            )
+                        )
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, AppTheme.neutral200),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .background(AppTheme.white)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            Text(
+                                text = card.front,
+                                color = AppTheme.neutral800,
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_chevron_right_24),
+                            contentDescription = "arrow right",
+                            tint = AppTheme.neutral800
+                        )
+                    }
+                }
+            }
+        })
+    }
+
+    AlertWindow(
+        title = stringResource(id = R.string.dialog_delete_deck_title),
+        subText = stringResource(id = R.string.dialog_delete_deck_text),
+        confirmText = stringResource(id = R.string.delete_text),
+        confirmTextColor = AppTheme.red700,
+        openDialog = openDialog,
+        onCloseDialog = {
+            closeDialog(false)
+        },
+        onPressConfirm = {
+            viewModel.deleteDeckById(deckWithCards)
+        }
+    )
+}
+
 
 private fun informUser(context: Context, text: String) {
     Toast.makeText(
