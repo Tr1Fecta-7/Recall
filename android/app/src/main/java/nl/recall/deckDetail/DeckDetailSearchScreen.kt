@@ -1,15 +1,21 @@
 package nl.recall.deckDetail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -26,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,7 +41,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -47,7 +55,6 @@ import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.destinations.EditCardScreenDestination
 import nl.recall.domain.deck.model.Card
-import nl.recall.errorScreen.ErrorScreen
 import nl.recall.presentation.deckDetail.DeckDetailSearchScreenViewModel
 import nl.recall.presentation.deckDetail.model.DeckDetailSearchScreenViewModelArgs
 import nl.recall.presentation.uiState.UIState
@@ -71,88 +78,85 @@ fun DeckDetailSearchScreen(
     var searchQuery by remember {
         mutableStateOf(TextFieldValue(""))
     }
-
     val navigateToCard: (Long) -> Unit =
         { navigator.navigate(EditCardScreenDestination(clickedCardId = it, deckId = deckId)) }
+    val focusRequester = remember { FocusRequester() }
 
 
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = AppTheme.neutral50
-                ),
-                title = {
-                    Text(text = stringResource(id = R.string.card_searchbar_title))
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-                    }
-                },
-            )
-        },
-        containerColor = AppTheme.neutral50,
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .padding(horizontal = 20.dp)
-            ) {
-                TextField(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                    value = searchQuery,
-                    placeholder = {
-                        Text(
-                            text = stringResource(R.string.search_bar_card_hint),
-                            color = AppTheme.neutral500
+
+    Scaffold(topBar = {
+        TopAppBar(
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = AppTheme.neutral50
+            ),
+            title = {
+                Text(text = stringResource(id = R.string.card_searchbar_title))
+            },
+            navigationIcon = {
+                IconButton(onClick = { navigator.popBackStack() }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+                }
+            },
+        )
+    }, containerColor = AppTheme.neutral50, content = { paddingValues ->
+
+
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(horizontal = 20.dp)
+        ) {
+            TextField(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+                .focusRequester(focusRequester)
+                .onPlaced {
+                    focusRequester.requestFocus()
+                }, value = searchQuery, placeholder = {
+                Text(
+                    text = stringResource(R.string.search_bar_card_hint),
+                    color = AppTheme.neutral500
+                )
+            }, colors = TextFieldDefaults.textFieldColors(
+                containerColor = AppTheme.neutral200,
+                cursorColor = Color.Black,
+                disabledLabelColor = AppTheme.white,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ), onValueChange = {
+                searchQuery = it
+                viewModel.searchDecks(it.text)
+            }, shape = RoundedCornerShape(35.dp), singleLine = true, trailingIcon = {
+                if (searchQuery.text.isNotEmpty()) {
+                    IconButton(onClick = {
+                        searchQuery = TextFieldValue(String())
+                        viewModel.searchDecks(searchQuery.text)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = "clear text field"
                         )
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = AppTheme.neutral200,
-                        cursorColor = Color.Black,
-                        disabledLabelColor = AppTheme.white,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    onValueChange = {
-                        searchQuery = it
-                        viewModel.searchDecks(it.text)
-                    },
-                    shape = RoundedCornerShape(35.dp),
-                    singleLine = true,
-                    trailingIcon = {
-                        if (searchQuery.text.isNotEmpty()) {
-                            IconButton(onClick = {
-                                searchQuery = TextFieldValue(String())
-                                viewModel.searchDecks(searchQuery.text)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    contentDescription = "clear textfield"
-                                )
-                            }
-                        } else {
-                            IconButton(modifier = Modifier.padding(end = 6.dp),
-                                onClick = { viewModel.searchDecks(searchQuery.text) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "search"
-                                )
-                            }
-                        }
-                    })
-
-                when (uiState) {
-                    UIState.NORMAL -> {
-                        SearchResults(cards, onClick = {
-                            navigateToCard(it)
-                        })
                     }
+                } else {
+                    IconButton(modifier = Modifier.padding(end = 6.dp),
+                        onClick = { viewModel.searchDecks(searchQuery.text) }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "search"
+                        )
+                    }
+                }
+            })
 
-                    UIState.ERROR -> {
+            when (uiState) {
+                UIState.NORMAL -> {
+                    SearchResults(cards, onClick = {
+                        navigateToCard(it)
+                    })
+                }
+
+                UIState.ERROR -> {
 //                        ErrorScreen(
 ////                            titleText = stringResource(id = R.string.deck_detail_title_placeholder),
 ////                            errorText = stringResource(
@@ -160,28 +164,28 @@ fun DeckDetailSearchScreen(
 ////                            ),
 ////                            navigator
 //                        )
-                    }
+                }
 
-                    UIState.LOADING -> {
-                        Column(
-                            Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                UIState.LOADING -> {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
                     }
+                }
 
-                    UIState.EMPTY -> {
-                        ImageMessage(
-                            painter = painterResource(id = R.drawable.no_decks_found),
-                            text = stringResource(id = R.string.no_cards_found)
-                        )
+                UIState.EMPTY -> {
+                    ImageMessage(
+                        painter = painterResource(id = R.drawable.no_decks_found),
+                        text = stringResource(id = R.string.no_cards_found)
+                    )
 
-                    }
                 }
             }
         }
+    }
 
 
     )
@@ -192,18 +196,28 @@ fun DeckDetailSearchScreen(
 @Composable
 fun SearchResults(cards: List<Card>, onClick: (Long) -> (Unit)) {
     LazyColumn(
-        modifier = Modifier.padding(top = 10.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        items(
-            items = cards,
-            itemContent = { card ->
+        item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
+        itemsIndexed(items = cards, itemContent = { index, card ->
+            val state = remember {
+                MutableTransitionState(false).apply {
+                    targetState = true
+                }
+            }
+
+            AnimatedVisibility(
+                visibleState = state, enter = slideInVertically(
+                    initialOffsetY = { it + 20 }, animationSpec = tween(
+                        durationMillis = (index * 100)
+                    )
+                ), exit = fadeOut()
+            ) {
                 Card(
                     onClick = { onClick(card.id) },
                     shape = RoundedCornerShape(12.dp),
                     border = BorderStroke(1.dp, AppTheme.neutral200),
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -231,6 +245,6 @@ fun SearchResults(cards: List<Card>, onClick: (Long) -> (Unit)) {
                     }
                 }
             }
-        )
+        })
     }
 }

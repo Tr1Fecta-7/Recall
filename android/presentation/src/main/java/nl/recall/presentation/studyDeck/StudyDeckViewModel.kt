@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import nl.recall.domain.deck.GetDeckById
 import nl.recall.domain.deck.ObserveDeckById
 import nl.recall.domain.deck.UpdateDateCard
 import nl.recall.domain.deck.model.Card
@@ -24,6 +25,7 @@ import java.util.Date
 class StudyDeckViewModel(
     @InjectedParam private val args: StudyDeckViewModelArgs,
     private val observeDeckById: ObserveDeckById,
+    private val getDeckById: GetDeckById,
     private val updateDateCard: UpdateDateCard
 ) : ViewModel() {
 
@@ -33,31 +35,25 @@ class StudyDeckViewModel(
     private val _deckWithCards = MutableStateFlow<DeckWithCards?>(null)
     val deckWithCards: StateFlow<DeckWithCards?> = _deckWithCards.asStateFlow()
 
-
     private val _progress = MutableStateFlow(0.0000f)
     val progress: StateFlow<Float> = _progress.asStateFlow()
 
     private val _iterator = MutableStateFlow(0)
     val iterator: StateFlow<Int> = _iterator.asStateFlow()
 
-    private val _progressStep = MutableStateFlow(0.0000f)
-
     fun observeDeckWithCards() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            observeDeckById(args.deckId).catch {
-                _state.value = UIState.ERROR
-            }.collectLatest {
+            try {
                 _state.value = UIState.LOADING
-                _deckWithCards.value = it
+                _deckWithCards.value = getDeckById(args.deckId)
                 if (_deckWithCards.value?.cards.isNullOrEmpty()) {
-                    _progressStep.value = (0.000f)
                     _state.value = UIState.EMPTY
                 } else {
                     _state.value = UIState.NORMAL
-                    //Ask if this can be done better
-                    _progressStep.value = (1.000f / _deckWithCards.value?.cards?.size!!)
                 }
+            } catch (exception:Exception) {
+                _state.value = UIState.ERROR
             }
         }
     }
@@ -70,15 +66,14 @@ class StudyDeckViewModel(
                 } else {
                     updateDateCard(card.id, Date())
                 }
+
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }
-
-            _progress.value += _progressStep.value
-            _iterator.value++
         }
-
-
+        _iterator.value++
+        _deckWithCards.value?.let {
+            _progress.value = (iterator.value.toFloat() / it.cards.size.toFloat())
+        }
     }
-
 }

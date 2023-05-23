@@ -46,8 +46,7 @@ object Versions {
     const val ANDROID_JUNIT5 = "1.8.2.1"
 
     // Networking
-    const val KTOR = "1.6.7"
-    const val KOTLIN_SERIALIZATION = "1.3.1"
+    const val KTOR = "2.0.0"
 
     // Compose
     const val COMPOSE = "1.4.1"

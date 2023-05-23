@@ -4,11 +4,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.engine.okhttp.OkHttpConfig
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
-import io.ktor.client.features.json.Json as JsonFeature
 
 @Single
 class HttpClientProvider {
@@ -21,7 +21,13 @@ class HttpClientProvider {
 
     private fun HttpClientConfig<OkHttpConfig>.installDefaults() {
         installBaseUrl()
-        installJsonSerializer()
+        install(ContentNegotiation) {
+            json(Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            })
+        }
     }
 
     private fun HttpClientConfig<*>.installBaseUrl() = defaultRequest {
@@ -30,15 +36,7 @@ class HttpClientProvider {
         }
     }
 
-    private fun HttpClientConfig<*>.installJsonSerializer() = JsonFeature {
-        serializer = KotlinxSerializer(Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        })
-    }
-
     companion object {
-        private const val BASE_URL = "localhost:8080"
+        private const val BASE_URL = "10.0.2.2:8080"
     }
 }

@@ -1,10 +1,10 @@
 package nl.recall.domain.communityDeck
 
 import nl.recall.domain.communityDeck.models.CommunityDeck
-import nl.recall.domain.deck.model.Deck
+import nl.recall.domain.deck.model.DeckWithCards
 
 interface CommunityDeckRepository {
     suspend fun getAllCommunityDecks(): List<CommunityDeck>
 
-    suspend fun publishDeck(deck: Deck)
+    suspend fun publishDeck(deckWithCards: DeckWithCards)
 }

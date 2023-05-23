@@ -2,21 +2,32 @@ package nl.recall.deckDetail
 
 import DeckDetailPreview
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -41,6 +52,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +65,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.AlertWindow
 import nl.recall.components.BottomNav
+import nl.recall.components.ImageMessage
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.destinations.DeckEditDestination
@@ -83,20 +97,31 @@ fun DeckDetailScreen(
 
     when (uiState) {
         UIState.NORMAL -> {
-            if(isDeckDeleted){
+            if (isDeckDeleted) {
                 navigator.navigate(DecksOverviewScreenDestination)
             } else {
                 deckWithCards?.let {
-                    Content(navigator = navigator, deckWithCards = it, navController = navController, viewModel = viewModel)
+                    Content(
+                        navigator = navigator,
+                        deckWithCards = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
                 }
             }
         }
 
         UIState.ERROR -> {
-//            ErrorScreen(
-//
-//                errorText = R.string.get_deck_error
-//            )
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ImageMessage(
+                    painter = painterResource(id = R.drawable.error_image),
+                    text = stringResource(id = R.string.no_deck_found)
+                )
+            }
         }
 
         UIState.LOADING -> {
@@ -129,7 +154,16 @@ private fun Content(
     var openDialog by remember { mutableStateOf(false) }
     val navigateToCreateCard: (Long) -> Unit =
         { navigator.navigate(CreateCardScreenDestination(it)) }
-
+    val publishDeckState by viewModel.publishDeckState.collectAsState()
+    val context = LocalContext.current
+    val state = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
+    if (publishDeckState == UIState.ERROR) {
+        informUser(context, stringResource(id = R.string.publish_deck_error))
+    }
 
     Scaffold(
         topBar = {
@@ -157,8 +191,37 @@ private fun Content(
                     ) {
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_edit_deck)) },
                             onClick = { navigator.navigate(DeckEditDestination(deckWithCards.deck.id)) })
-                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_publish_deck)) },
-                            onClick = { })
+                        DropdownMenuItem(
+                            trailingIcon = {
+                                if (publishDeckState == UIState.LOADING) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                        strokeWidth = 2.dp
+                                    )
+                                } else if (publishDeckState == UIState.NORMAL) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        tint = AppTheme.primary500,
+                                        contentDescription = "successfully published"
+                                    )
+                                }
+                            },
+                            text = {
+                                Text(
+                                    text = stringResource(id = R.string.dropdown_menu_publish_deck),
+                                    color = if (publishDeckState == UIState.LOADING) {
+                                        AppTheme.neutral300
+                                    } else {
+                                        Color.Unspecified
+                                    }
+                                )
+                            },
+                            onClick = {
+                                if (publishDeckState != UIState.LOADING) {
+                                    viewModel.postDeck()
+                                }
+                            }
+                        )
                         DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_delete_deck)) },
                             onClick = { openDialog = true })
                     }
@@ -174,7 +237,7 @@ private fun Content(
             Column(
                 modifier = Modifier
                     .padding(it)
-                    .padding(20.dp)
+                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
                     .fillMaxSize()
             ) {
                 DeckDetailPreview(deckWithCards, onClick = {
@@ -189,8 +252,7 @@ private fun Content(
 
                 if (deckWithCards.cards.isNotEmpty()) {
                     Card(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .fillMaxWidth(),
                         colors = CardDefaults.cardColors(
                             containerColor = AppTheme.neutral200,
                         ),
@@ -213,49 +275,61 @@ private fun Content(
                         }
                     }
                 }
-
-
                 LazyColumn(
-                    modifier = Modifier.padding(top = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    items(items = deckWithCards.cards, itemContent = {
-                        Card(
-                            onClick = {
-                                navigator.navigate(
-                                    EditCardScreenDestination(
-                                        clickedCardId = it.id,
-                                        deckId = it.deckId
-                                    )
+                    item {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    itemsIndexed(items = deckWithCards.cards, itemContent = { index, card ->
+
+                        AnimatedVisibility(
+                            visibleState = state,
+                            enter = slideInVertically(
+                                initialOffsetY = { it + 20 },
+                                animationSpec = tween(
+                                    durationMillis = (index * 100)
                                 )
-                            },
-                            shape = RoundedCornerShape(12.dp),
-                            border = BorderStroke(1.dp, AppTheme.neutral200),
-                            modifier = Modifier.fillMaxWidth()
+                            ),
+                            exit = fadeOut()
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier
-                                    .background(AppTheme.white)
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                                    .fillMaxWidth()
+                            Card(
+                                onClick = {
+                                    navigator.navigate(
+                                        EditCardScreenDestination(
+                                            clickedCardId = card.id,
+                                            deckId = card.deckId
+                                        )
+                                    )
+                                },
+                                shape = RoundedCornerShape(12.dp),
+                                border = BorderStroke(1.dp, AppTheme.neutral200),
+                                modifier = Modifier.fillMaxWidth()
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .background(AppTheme.white)
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        .fillMaxWidth()
                                 ) {
-                                    Text(
-                                        text = it.front,
-                                        color = AppTheme.neutral800,
-                                        style = MaterialTheme.typography.titleMedium,
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    ) {
+                                        Text(
+                                            text = card.front,
+                                            color = AppTheme.neutral800,
+                                            style = MaterialTheme.typography.titleMedium,
+                                        )
+                                    }
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_chevron_right_24),
+                                        contentDescription = "arrow right",
+                                        tint = AppTheme.neutral800
                                     )
                                 }
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_chevron_right_24),
-                                    contentDescription = "arrow right",
-                                    tint = AppTheme.neutral800
-                                )
                             }
                         }
                     })
@@ -285,4 +359,12 @@ private fun Content(
                 Icon(imageVector = Icons.Default.Add, contentDescription = "add card")
             }
         })
+}
+
+private fun informUser(context: Context, text: String) {
+    Toast.makeText(
+        context,
+        text,
+        Toast.LENGTH_SHORT
+    ).show()
 }
