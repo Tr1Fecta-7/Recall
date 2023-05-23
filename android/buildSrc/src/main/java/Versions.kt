@@ -64,4 +64,7 @@ object Versions {
 
     //Tinder card
     const val TINDER_CARD = "0.1.0"
+
+    //Konfetti
+    const val KONFETTI = "2.0.2"
 }

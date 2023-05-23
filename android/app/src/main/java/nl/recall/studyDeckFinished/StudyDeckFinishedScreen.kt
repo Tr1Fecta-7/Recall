@@ -44,11 +44,16 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 import nl.recall.R
 import nl.recall.theme.AppTheme
 import nl.recall.theme.md_theme_light_primary
 import java.util.Calendar
 import java.util.Calendar.DAY_OF_YEAR
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -65,6 +70,15 @@ fun StudyDeckFinishedScreen(navigator: DestinationsNavigator) {
         delay(1000)
         currentStreak = checkStreak(context = context)
     }
+    KonfettiView(
+        parties = listOf(
+            Party(
+                emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(50),
+                position = Position.Relative(0.5, 0.0)
+            )
+        ),
+        modifier = Modifier.fillMaxSize(),
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()

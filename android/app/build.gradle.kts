@@ -107,4 +107,6 @@ dependencies {
 
     //Compose Tinder Card
     implementation ("com.alexstyl.swipeablecard:swipeablecard:${Versions.TINDER_CARD}")
+
+    implementation ("nl.dionsegijn:konfetti-compose:${Versions.KONFETTI}")
 }
