@@ -317,7 +317,7 @@ private fun Content(
             AnimatedVisibility(
                 visibleState = state,
                 enter = slideInVertically(
-                    initialOffsetY = { index + 20 },
+                    initialOffsetY = {offset -> offset + 20 },
                     animationSpec = tween(
                         durationMillis = (index * 105)
                     )
