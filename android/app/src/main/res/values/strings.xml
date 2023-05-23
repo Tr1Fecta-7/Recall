@@ -43,7 +43,8 @@
     <string name="dropdown_menu_publish_deck">Publish deck</string>
     <string name="completed">Completed!</string>
     <string name="good_job">Good job on finishing your deck today</string>
-    <string name="streak_number">🔥 %d</string>
+    <string name="fire_emoji">🔥</string>
+    <string name="streak_number"> %d</string>
     <string name="day_streak">Day streak</string>
     <string name="back_to_overview">Back to overview</string>
     <string name="shared_preferences_start_streak_day">startStreakDay</string>
