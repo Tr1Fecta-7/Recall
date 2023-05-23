@@ -122,11 +122,10 @@ private fun checkStreak(context: Context): Int{
     val currentStreakDay = sharedPreferences.getInt(stringResource(id = R.string.shared_preferences_current_streak), 0)
     if(currentStreakDay == currentDay) return currentStreakDay
 
-    val streak =  if (lastStreakDay == currentStreakDay - 1){
+    val streak =  if (lastStreakDay == currentDay - 1){
         edit.putInt(stringResource( id= R.string.shared_preferences_current_streak), currentStreakDay + 1)
         edit.putInt(stringResource(id = R.string.shared_preferences_last_streak_day), currentDay)
         currentStreakDay+1
-
     } else {
         edit.putInt(stringResource(id = R.string.shared_preferences_last_streak_day), currentDay)
         edit.putInt(stringResource(id = R.string.shared_preferences_current_streak), 1)
