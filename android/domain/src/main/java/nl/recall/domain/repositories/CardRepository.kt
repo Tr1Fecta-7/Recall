@@ -14,4 +14,6 @@ interface CardRepository {
     suspend fun updateCard(card: Card): Boolean
 
     suspend fun updateDateCard(id: Long, date: Date): Boolean
+
+    suspend fun deleteCardById(deckId: Long, cardId: Long): Boolean
 }

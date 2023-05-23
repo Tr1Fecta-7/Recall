@@ -31,4 +31,8 @@ interface CardDao {
     @Transaction
     @Query("UPDATE card SET due_date = :date WHERE id = :id")
     suspend fun updateDateCard(id: Long, date: Date): Int
+
+    @Transaction
+    @Query("DELETE FROM card where deck_id = :deckId AND card.id = :cardId")
+    suspend fun deleteCardById(deckId: Long, cardId: Long): Int
 }
