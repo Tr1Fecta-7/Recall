@@ -50,4 +50,9 @@
     <string name="shared_preferences_streak_file">streakFile</string>
     <string name="publish_deck_error">A publishing error occurred</string>
     <string name="no_deck_found">No deck found</string>
+    <string name="community_deck_overview_title">Community</string>
+    <string name="community_deck_overview_subtitle">See what others are learning!</string>
+    <string name="search_bar_community_hint">Search decks online</string>
+    <string name="most_downloaded_title">Most downloaded 🔥</string>
+    <string name="community_searchbar_title">Search community decks</string>
 </resources>
