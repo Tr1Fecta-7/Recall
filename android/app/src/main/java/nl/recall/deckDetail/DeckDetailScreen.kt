@@ -239,7 +239,10 @@ fun DeckDetailScreen(
                 }
 
                 UIState.EMPTY -> {
-
+                    ImageMessage(
+                        painter = painterResource(id = R.drawable.no_decks_found),
+                        text = stringResource(id = R.string.no_deck_found)
+                    )
                 }
             }
         },
