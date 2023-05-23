@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import nl.recall.domain.communityDeck.PublishDeck
 import nl.recall.domain.deck.DeleteDeck
+import nl.recall.domain.deck.GetDeckById
 import nl.recall.domain.deck.ObserveDeckById
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.deckDetail.model.DeckDetailViewModelArgs
@@ -23,6 +24,7 @@ import org.koin.core.annotation.InjectedParam
 class DeckDetailViewModel(
     @InjectedParam private val args: DeckDetailViewModelArgs,
     private val observeDeckById: ObserveDeckById,
+    private val getDeckById: GetDeckById,
     private val deleteDeck: DeleteDeck,
     private val publishDeck: PublishDeck
 ) : ViewModel() {
@@ -72,18 +74,9 @@ class DeckDetailViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                observeDeckById(args.id)
-                    .catch {
-                        _publishDeckState.value = UIState.ERROR
-                    }
-                    .collectLatest {
-                        if (it != null) {
-                            publishDeck(it)
-                            _publishDeckState.value = UIState.NORMAL
-                        } else {
-                            _publishDeckState.value = UIState.ERROR
-                        }
-                    }
+                val deck = getDeckById(args.id)
+                publishDeck(deck)
+                _publishDeckState.value = UIState.NORMAL
             } catch (exception: Exception) {
                 Log.e("Error", exception.stackTraceToString())
                 _publishDeckState.value = UIState.ERROR
