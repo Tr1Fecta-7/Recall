@@ -25,6 +25,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.BottomNav
 import nl.recall.components.card.CardPreview
+import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.domain.models.CardPreviewData
 import nl.recall.presentation.createCard.CreateCardViewModel
 import nl.recall.presentation.uiState.UIState
@@ -49,12 +50,12 @@ fun CreateCardScreen(navController: NavController, navigator: DestinationsNaviga
             )
         },
         bottomBar = { BottomNav(navController = navController) },
-        content = { MainContent(navigator = navigator, it, deckId = deckId) }
+        content = { MainContent(navController = navController, navigator = navigator, it, deckId = deckId) }
     )
 }
 
 @Composable
-fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues, deckId: Long) {
+fun MainContent(navController: NavController, navigator: DestinationsNavigator, paddingValues: PaddingValues, deckId: Long) {
     val viewModel: CreateCardViewModel = koinViewModel()
 
     val uiState: UIState by viewModel.state.collectAsState()
@@ -63,7 +64,8 @@ fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues, 
     when (uiState) {
         UIState.NORMAL -> {
             if (savedCardInDatabase) {
-                navigator.popBackStack()
+                navController.popBackStack()
+                navController.navigate(CreateCardScreenDestination(deckId).route)
                 return
             }
 
@@ -86,7 +88,10 @@ fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues, 
                 CircularProgressIndicator()
             }
         }
-        else -> {
+        UIState.ERROR -> {
+
+        }
+        UIState.EMPTY -> {
 
         }
     }
