@@ -71,6 +71,7 @@ import nl.recall.destinations.DeckDetailSearchScreenDestination
 import nl.recall.destinations.DeckEditDestination
 import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.destinations.EditCardScreenDestination
+import nl.recall.destinations.RepeatStudyDeckScreenDestination
 import nl.recall.destinations.StudyDeckScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.deckDetail.DeckDetailViewModel
@@ -270,39 +271,58 @@ private fun Content(
         }
     }
 
+    Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
 
-    DeckDetailPreview(deckWithCards, onClick = {
-        navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
-    })
-    Text(
-        modifier = Modifier.padding(top = 15.dp, bottom = 10.dp),
-        text = stringResource(id = R.string.cards_title),
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold
-    )
 
-    if (deckWithCards.cards.isNotEmpty()) {
-        Card(modifier = Modifier
-            .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = AppTheme.neutral200,
-            ),
-            shape = RoundedCornerShape(35.dp),
+        DeckDetailPreview(
+            deckWithCards = deckWithCards,
+            title = stringResource(id = R.string.start_smart_learning_text),
+            icon = painterResource(id = R.drawable.cards_icon),
             onClick = {
-                navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
-            }) {
-            Row(
-                modifier = Modifier
-                    .padding(15.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.search_bar_card_hint),
-                    color = AppTheme.neutral500
-                )
-                Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+                navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
+            }
+        )
+
+        DeckDetailPreview(
+            deckWithCards = deckWithCards,
+            title = stringResource(id = R.string.start_learning_text),
+            icon = painterResource(id = R.drawable.repeat_cards_icon),
+            onClick = {
+                navigator.navigate(RepeatStudyDeckScreenDestination(deckWithCards.deck.id))
+            }
+        )
+
+        Text(
+            text = stringResource(id = R.string.cards_title),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        if (deckWithCards.cards.isNotEmpty()) {
+            Card(modifier = Modifier
+                .fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = AppTheme.neutral200,
+                ),
+                shape = RoundedCornerShape(35.dp),
+                onClick = {
+                    navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
+                }) {
+                Row(
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(R.string.search_bar_card_hint),
+                        color = AppTheme.neutral500
+                    )
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+                }
             }
         }
     }
@@ -317,7 +337,7 @@ private fun Content(
             AnimatedVisibility(
                 visibleState = state,
                 enter = slideInVertically(
-                    initialOffsetY = {offset -> offset + 20 },
+                    initialOffsetY = { offset -> offset + 20 },
                     animationSpec = tween(
                         durationMillis = (index * 105)
                     )
@@ -365,6 +385,7 @@ private fun Content(
             }
         })
     }
+
 
     AlertWindow(
         title = stringResource(id = R.string.dialog_delete_deck_title),

@@ -55,4 +55,5 @@
     <string name="shared_preferences_last_streak_day">lastStreakDay</string>
     <string name="shared_preferences_current_streak">currentStreak</string>
     <string name="deck_name_title">Deck name</string>
+    <string name="start_smart_learning_text">Start Smart Learning</string>
 </resources>

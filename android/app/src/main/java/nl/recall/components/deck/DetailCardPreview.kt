@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +27,7 @@ import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.theme.AppTheme
 
 @Composable
-fun DeckDetailPreview(deckWithCards: DeckWithCards, onClick: (Long) -> (Unit)) {
+fun DeckDetailPreview(deckWithCards: DeckWithCards, onClick: (Long) -> (Unit), title: String, icon: Painter) {
     Card(
         enabled = deckWithCards.cards.isNotEmpty(),
         onClick = { onClick(deckWithCards.deck.id) },
@@ -54,14 +55,14 @@ fun DeckDetailPreview(deckWithCards: DeckWithCards, onClick: (Long) -> (Unit)) {
                         .size(40.dp)
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.cards_icon),
+                        painter = icon,
                         contentDescription = "cards icon"
                     )
                 }
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        text = stringResource(id = R.string.start_learning_text),
+                        text = title,
                         color = AppTheme.neutral800,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
