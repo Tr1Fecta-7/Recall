@@ -1,4 +1,4 @@
-package nl.recall.components.deck
+package nl.recall.components.communityDeck
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -22,83 +22,63 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import nl.recall.R
-import nl.recall.domain.deck.model.Deck
-import nl.recall.theme.AndroidAppTheme
+import nl.recall.domain.communityDeck.models.CommunityDeck
 import nl.recall.theme.AppTheme
-import java.util.Date
 
 @Composable
-fun DeckPreview(deck: Deck, cardCount: Int, onClick: () -> Unit) {
-    Card(
-        onClick = { onClick() },
-        shape = RoundedCornerShape(18.dp),
-        border = BorderStroke(1.dp, AppTheme.neutral200),
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .background(AppTheme.white)
-                .padding(horizontal = 16.dp, vertical = 18.dp)
-                .fillMaxWidth()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color(deck.color.toColorInt()))
-                ) {
-                    Text(deck.icon)
-                }
+fun CommunityDeckPreview(communityDeck: CommunityDeck, onClick: () -> Unit) {
+	Card(
+		onClick = { onClick() },
+		shape = RoundedCornerShape(18.dp),
+		border = BorderStroke(1.dp, AppTheme.neutral200),
+		modifier = Modifier
+			.fillMaxWidth()
+	) {
+		Row(
+			verticalAlignment = Alignment.CenterVertically,
+			horizontalArrangement = Arrangement.SpaceBetween,
+			modifier = Modifier
+				.background(AppTheme.white)
+				.padding(horizontal = 16.dp, vertical = 18.dp)
+				.fillMaxWidth()
+		) {
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.spacedBy(16.dp),
+			) {
+				Column(
+					horizontalAlignment = Alignment.CenterHorizontally,
+					verticalArrangement = Arrangement.Center,
+					modifier = Modifier
+						.size(40.dp)
+						.clip(CircleShape)
+						.background(Color(communityDeck.color.toColorInt()))
+				) {
+					Text(communityDeck.icon)
+				}
 
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        deck.title,
-                        color = AppTheme.neutral800,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        stringResource(id = R.string.deck_card_count).format(cardCount),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = AppTheme.neutral400
-                    )
-                }
-            }
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_chevron_right_24),
-                contentDescription = "arrow right",
-                tint = AppTheme.neutral800
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun Preview() {
-    val deck = Deck(
-        id = 0,
-        title = "Mandarin HSK 1",
-        creationDate = Date(),
-        icon = "🇨🇳",
-        color = "#FFEAEA"
-    )
-    val cardCount = 256
-
-    AndroidAppTheme {
-        DeckPreview(deck, cardCount, onClick = {})
-    }
+				Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+					Text(
+						communityDeck.title,
+						color = AppTheme.neutral800,
+						style = MaterialTheme.typography.titleMedium,
+						fontWeight = FontWeight.Bold
+					)
+					Text(
+						stringResource(id = R.string.deck_card_count).format(communityDeck.cards.size),
+						style = MaterialTheme.typography.bodyMedium,
+						color = AppTheme.neutral400
+					)
+				}
+			}
+			Icon(
+				painter = painterResource(id = R.drawable.baseline_chevron_right_24),
+				contentDescription = "arrow right",
+				tint = AppTheme.neutral800
+			)
+		}
+	}
 }

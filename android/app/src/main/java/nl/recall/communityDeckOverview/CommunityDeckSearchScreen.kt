@@ -46,6 +46,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
+import nl.recall.components.communityDeck.CommunityDeckPreview
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.presentation.communityDeckOverview.CommunityDeckViewModel
@@ -73,9 +74,9 @@ fun CommunityDeckSearchScreen(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(decks.entries.toList()) { entry ->
-                        DeckPreview(entry.key, cardCount = entry.value, onClick = {
-                            navigator.navigate(DeckDetailScreenDestination(deckId = entry.key.id))
+                    items(decks) { deck ->
+                        CommunityDeckPreview(deck, onClick = {
+                            navigator.navigate(DeckDetailScreenDestination(deckId = deck.id))
                         })
                     }
                 }

@@ -7,21 +7,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import nl.recall.domain.deck.model.Deck
+import nl.recall.domain.communityDeck.GetCommunityDecks
+import nl.recall.domain.communityDeck.models.CommunityDeck
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class CommunityDeckViewModel(
-
+	private val getCommunityDecks: GetCommunityDecks
 ): ViewModel() {
 	private val _state = MutableStateFlow(UIState.LOADING)
 	val state: StateFlow<UIState> by lazy {
 		_state.asStateFlow()
 	}
 
-	private val _decks = MutableStateFlow<Map<Deck, Int>>(emptyMap())
-	val decks: StateFlow<Map<Deck, Int>> by lazy {
+	private val _decks = MutableStateFlow<List<CommunityDeck>>(emptyList())
+	val decks: StateFlow<List<CommunityDeck>> by lazy {
 		fetchDecks()
 		_decks.asStateFlow()
 	}
@@ -30,7 +31,7 @@ class CommunityDeckViewModel(
 		_state.value = UIState.LOADING
 
 		viewModelScope.launch(Dispatchers.IO) {
-			// _decks.value = getDecksWithCardCount()
+			_decks.value = getCommunityDecks()
 
 			if (_decks.value.isEmpty()) {
 				_state.value = UIState.EMPTY
@@ -44,11 +45,11 @@ class CommunityDeckViewModel(
 		_state.value = UIState.LOADING
 
 		viewModelScope.launch(Dispatchers.IO) {
-			// if (title.isEmpty()) {
-			// 	_decks.value = getDecksWithCardCount()
-			// } else {
-			// 	_decks.value = searchDecksWithCardCount(title)
-			// }
+			if (title.isEmpty()) {
+				_decks.value = getCommunityDecks()
+			} else {
+				_decks.value = getCommunityDecks(title)
+			}
 
 			if (_decks.value.isEmpty()) {
 				_state.value = UIState.EMPTY
