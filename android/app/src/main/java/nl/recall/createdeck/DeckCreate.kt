@@ -85,63 +85,66 @@ private fun MainContent(
             deck?.let {
 
                 if (savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
+                else {
+                    var deckColor by remember {
+                        mutableStateOf(deck.color)
+                    }
 
-                var deckColor by remember {
-                    mutableStateOf(deck.color)
+                    var showAlert by remember {
+                        mutableStateOf(false)
+                    }
+
+                    var deckTitleTextField by remember {
+                        mutableStateOf(TextFieldValue(deck.title))
+                    }
+                    var emojiTextfield by remember {
+                        mutableStateOf(TextFieldValue(deck.icon))
+                    }
+                    var validationTitle by remember {
+                        mutableStateOf(false)
+                    }
+
+                    var validationEmoji by remember {
+                        // stardart emoji present, thus onload always true
+                        mutableStateOf(true)
+                    }
+
+                    DeckFrontEndComponent(
+                        paddingValues = paddingValues,
+                        onSubmitDeck = {
+                            viewModel.saveDeckToDatabase(
+                                title = deckTitleTextField.text,
+                                creationDate = Date(),
+                                icon = emojiTextfield.text,
+                                color = deckColor
+                            )
+                        },
+                        showAlert = showAlert,
+                        toggleAlert = { showAlert = !showAlert },
+                        preSelectedColor = deck.color,
+                        onSetColor = { color -> deckColor = color },
+                        deckTitleTextField = deckTitleTextField,
+                        onDeckTextFieldValueChange = { text ->
+                            deckTitleTextField = text
+                            validationTitle = text.text.isNotBlank()
+                        },
+                        deckColor = deckColor,
+                        emojiTextfield = emojiTextfield,
+                        onEmojiTextFieldValueChange = { text ->
+                            if (text.text.length <= 2) {
+                                emojiTextfield = text
+                                validationEmoji = emojiTextfield.text.isNotBlank()
+                            } else {
+                                validationEmoji = false
+                            }
+                        },
+                        validationTitle = validationTitle,
+                        validationEmoji = validationEmoji,
+                        submitButtonText = stringResource(id = R.string.create_deck_title)
+                    )
                 }
 
-                var showAlert by remember {
-                    mutableStateOf(false)
-                }
 
-                var deckTitleTextField by remember {
-                    mutableStateOf(TextFieldValue(deck.title))
-                }
-                var emojiTextfield by remember {
-                    mutableStateOf(TextFieldValue(deck.icon))
-                }
-                var validationTitle by remember {
-                    mutableStateOf(false)
-                }
-
-                var validationEmoji by remember {
-                    // stardart emoji present, thus onload always true
-                    mutableStateOf(true)
-                }
-
-                DeckFrontEndComponent(
-                    paddingValues = paddingValues,
-                    onSubmitDeck = {
-                        viewModel.saveDeckToDatabase(
-                            title = deckTitleTextField.text,
-                            creationDate = Date(),
-                            icon = emojiTextfield.text,
-                            color = deckColor
-                        )
-                    },
-                    showAlert = showAlert,
-                    toggleAlert = { showAlert = !showAlert },
-                    preSelectedColor = deck.color,
-                    onSetColor = { color -> deckColor = color },
-                    deckTitleTextField = deckTitleTextField,
-                    onDeckTextFieldValueChange = { text ->
-                        deckTitleTextField = text
-                        validationTitle = text.text.isNotBlank()
-                    },
-                    deckColor = deckColor,
-                    emojiTextfield = emojiTextfield,
-                    onEmojiTextFieldValueChange = { text ->
-                        if (text.text.length <= 2) {
-                            emojiTextfield = text
-                            validationEmoji = emojiTextfield.text.isNotBlank()
-                        } else {
-                            validationEmoji = false
-                        }
-                    },
-                    validationTitle = validationTitle,
-                    validationEmoji = validationEmoji,
-                    submitButtonText = stringResource(id = R.string.create_deck_title)
-                )
             }
         }
 
