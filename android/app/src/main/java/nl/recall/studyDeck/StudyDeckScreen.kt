@@ -92,6 +92,7 @@ fun StudyDeckScreen(
     val uiState by viewModel.state.collectAsState()
     val deckWithCards by viewModel.deckWithCards.collectAsState()
     val currentCard by viewModel.currentCard.collectAsState()
+    val nextCard by viewModel.nextCard.collectAsState()
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
 
@@ -105,6 +106,7 @@ fun StudyDeckScreen(
                         Content(
                             paddingValues = paddingValues,
                             currentCard = card,
+                            nextCard = nextCard,
                             progress = progress,
                             iterator = iterator,
                             viewModel = viewModel,
@@ -189,11 +191,12 @@ private fun ContentScaffold(
     })
 }
 
-@OptIn(ExperimentalSwipeableCardApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalSwipeableCardApi::class)
 @Composable
 private fun Content(
     paddingValues: PaddingValues,
     currentCard: Card,
+    nextCard: Card?,
     progress: Float,
     iterator: Int,
     viewModel: StudyDeckViewModel,
@@ -208,14 +211,10 @@ private fun Content(
     var visibility by remember {
         mutableStateOf(true)
     }
-    var resetSate by remember {
-        mutableStateOf(false)
-    }
     var currentBackgroundColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
     var cardState = rememberSwipeableCardState()
-    var offset = 0
 
 
 
@@ -226,13 +225,11 @@ private fun Content(
     }
 
 
-    if (visibility) {
+    if (visibility && !(progress >= 1.0)) {
         cardState = rememberSwipeableCardState()
     }
 
     LaunchedEffect(currentCard.id) {
-        delay(500)
-
         if (!visibility) {
             visibility = !visibility
         }
@@ -270,39 +267,43 @@ private fun Content(
                 .padding(24.dp)
                 .fillMaxSize(),
         ) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = AppTheme.white),
-                elevation = CardDefaults.cardElevation(3.dp),
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 45.dp, start = 10.dp, end = 10.dp)
-            ) {
-                Column(
+            if (nextCard != null) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = AppTheme.white),
+                    elevation = CardDefaults.cardElevation(3.dp),
+                    shape = RoundedCornerShape(20.dp),
                     modifier = Modifier
-                        .padding(30.dp)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceBetween
+                        .fillMaxSize()
+                        .padding(bottom = 45.dp, start = 10.dp, end = 10.dp)
                 ) {
-                    Text(
-                        text = currentCard.front,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 25.sp
-                    )
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                    Column(
+                        modifier = Modifier
+                            .padding(30.dp)
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = stringResource(id = R.string.click_to_rotate),
-                            fontSize = 10.sp,
-                            lineHeight = 12.sp,
+                            text = nextCard.front,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 25.sp
                         )
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.click_to_rotate),
+                                fontSize = 10.sp,
+                                lineHeight = 12.sp,
+                            )
+                        }
                     }
                 }
             }
-            this@Column.AnimatedVisibility(visible = visibility, enter = fadeIn(tween(200)), exit = fadeOut(tween(0))) {
 
+
+//            this@Column.AnimatedVisibility(visible = visibility, enter = fadeIn(tween(200)), exit = fadeOut(tween(0))) {
+            if (visibility) {
                 FlipCard(
                     cardFaceUIState = cardFaceUIState,
                     modifierBack = Modifier.swipableCard(
@@ -310,11 +311,13 @@ private fun Content(
                         onSwiped = {
                             scope.launch {
                                 cardFaceUIState = CardFaceUIState.Front
-                                delay(30)
+//                                delay(30)
                                 visibility = false
                                 viewModel.onSwipeCard(
                                     SwipeDirection.RIGHT, currentCard
                                 )
+                                delay(100)
+                                viewModel.getNextCard()
 
                             }
 
@@ -323,7 +326,7 @@ private fun Content(
                         blockedDirections = listOf(Direction.Down, Direction.Up)
                     ),
                     onClick = { cardFaceUIState = CardFaceUIState.Back },
-                    elevation = 3,
+                    elevation = 0,
                     front = {
                         Column(
                             modifier = Modifier

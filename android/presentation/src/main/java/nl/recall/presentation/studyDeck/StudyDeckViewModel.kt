@@ -3,6 +3,7 @@ package nl.recall.presentation.studyDeck
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,8 +48,9 @@ class StudyDeckViewModel(
     private val _currentCard = MutableStateFlow<Card?>(null)
     val currentCard: StateFlow<Card?> = _currentCard.asStateFlow()
 
-    private val _currentCardState = MutableStateFlow<Card?>(null)
-    val currentCardState: StateFlow<Card?> = _currentCardState.asStateFlow()
+    private val _nextCard = MutableStateFlow<Card?>(null)
+    val nextCard: StateFlow<Card?> = _nextCard.asStateFlow()
+
 
     private fun getDeckWithCards() {
         _state.value = UIState.LOADING
@@ -66,8 +68,15 @@ class StudyDeckViewModel(
 
                     _state.value = UIState.NORMAL
                 }
-            } catch (exception:Exception) {
+            } catch (exception: Exception) {
                 _state.value = UIState.ERROR
+            }
+            _deckWithCards.value?.let {
+                if (iterator.value + 1 < it.cards.size) {
+                    _nextCard.value = it.cards[iterator.value + 1]
+                } else {
+                    _nextCard.value = null
+                }
             }
         }
     }
@@ -93,9 +102,20 @@ class StudyDeckViewModel(
             _progress.value =
                 (iterator.value.toFloat() / it.cards.size.toFloat())
             if (iterator.value < it.cards.size) {
-                _currentCard.value= it.cards[iterator.value]
+                _currentCard.value = it.cards[iterator.value]
             }
+        }
+    }
 
+    fun getNextCard() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _deckWithCards.value?.let {
+                if (iterator.value + 1 < it.cards.size) {
+                    _nextCard.value = it.cards[iterator.value + 1]
+                } else {
+                    _nextCard.value = null
+                }
+            }
         }
     }
 }
