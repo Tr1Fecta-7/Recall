@@ -98,8 +98,7 @@ fun StudyDeckScreen(
     val iterator by viewModel.iterator.collectAsState()
     val deckSize by viewModel.deckSize.collectAsState()
 
-    ContentScaffold(
-        title = deckWithCards?.deck?.title,
+    ContentScaffold(title = deckWithCards?.deck?.title,
         navigator = navigator,
         content = { paddingValues ->
             when (uiState) {
@@ -218,16 +217,18 @@ private fun Content(
     var currentBackgroundColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
-//    var cardState = rememberSwipeableCardState()
-    var cardStates = ArrayList<SwipeableCardState>()
+    val cardStates = ArrayList<SwipeableCardState>()
 
-    for(i in 0..deckSize) {
+    for (i in 0..deckSize) {
+        cardStates.add(rememberSwipeableCardState())
+    }
+
+    if (cardStates.size != deckSize) {
         cardStates.add(rememberSwipeableCardState())
     }
 
 
     LaunchedEffect(cardStates[iterator].offset.value.x) {
-        println("boe")
         if (cardStates[iterator].offset.value.x < 0.0f) {
             currentBackgroundColor = BackgroundColors.CORRECT
         }
@@ -244,10 +245,6 @@ private fun Content(
             currentBackgroundColor = BackgroundColors.NORMAL
         }
     }
-
-//    if (visibility && !(progress >= 1.0)) {
-//        cardState = rememberSwipeableCardState()
-//    }
 
 
     LaunchedEffect(currentBackgroundColor) {
@@ -317,13 +314,10 @@ private fun Content(
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = nextCard.front,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 25.sp
+                            text = nextCard.front, fontWeight = FontWeight.Bold, fontSize = 25.sp
                         )
                         Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                            Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = stringResource(id = R.string.click_to_rotate),
@@ -338,11 +332,9 @@ private fun Content(
 
 //            this@Column.AnimatedVisibility(visible = visibility, enter = fadeIn(tween(200)), exit = fadeOut(tween(0))) {
             if (visibility) {
-                FlipCard(
-                    cardFaceUIState = cardFaceUIState,
+                FlipCard(cardFaceUIState = cardFaceUIState,
                     modifierBack = Modifier.swipableCard(
-                        cardStates[iterator],
-                        onSwiped = {
+                        cardStates[iterator], onSwiped = {
                             scope.launch {
                                 cardFaceUIState = CardFaceUIState.Front
                                 visibility = false
@@ -351,16 +343,11 @@ private fun Content(
                                 )
                                 delay(100)
                                 viewModel.getNextCard()
-
                             }
-
-
-                        },
-                        blockedDirections = listOf(Direction.Down, Direction.Up)
+                        }, blockedDirections = listOf(Direction.Down, Direction.Up)
                     ),
                     onClick = { cardFaceUIState = CardFaceUIState.Back },
-                    elevation =
-                    if (deckSize - 1 == iterator) {
+                    elevation = if (deckSize - 1 == iterator) {
                         3
                     } else {
                         0
@@ -378,8 +365,7 @@ private fun Content(
                                 fontSize = 25.sp
                             )
                             Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
+                                Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.click_to_rotate),
@@ -431,12 +417,12 @@ private fun Content(
                                             containerColor = AppTheme.red300
                                         ),
                                         onClick = {
-                                            scope.launch(Dispatchers.Unconfined) {
+                                            scope.launch() {
                                                 cardStates[iterator].swipe(Direction.Right)
                                                 cardFaceUIState = CardFaceUIState.Front
                                                 visibility = false
                                                 viewModel.onSwipeCard(
-                                                    SwipeDirection.RIGHT, currentCard
+                                                    SwipeDirection.LEFT, currentCard
                                                 )
                                                 delay(100)
                                                 viewModel.getNextCard()
@@ -483,8 +469,7 @@ private fun Content(
                                 }
                             }
                         }
-                    }
-                )
+                    })
             }
         }
     }

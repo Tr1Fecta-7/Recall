@@ -89,7 +89,6 @@ class StudyDeckViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 if (direction == SwipeDirection.LEFT) {
-
                     updateDateCard(card.id, Date())
                 } else {
                     wrongCards.value.add(card)
