@@ -44,6 +44,12 @@ class StudyDeckViewModel(
     private val _iterator = MutableStateFlow(0)
     val iterator: StateFlow<Int> = _iterator.asStateFlow()
 
+    private val _currentCard = MutableStateFlow<Card?>(null)
+    val currentCard: StateFlow<Card?> = _currentCard.asStateFlow()
+
+    private val _currentCardState = MutableStateFlow<Card?>(null)
+    val currentCardState: StateFlow<Card?> = _currentCardState.asStateFlow()
+
     private fun getDeckWithCards() {
         _state.value = UIState.LOADING
 
@@ -54,6 +60,10 @@ class StudyDeckViewModel(
                 if (_deckWithCards.value?.cards.isNullOrEmpty()) {
                     _state.value = UIState.EMPTY
                 } else {
+                    deckWithCards?.value?.let {
+                        _currentCard.value = it.cards[iterator.value]
+                    }
+
                     _state.value = UIState.NORMAL
                 }
             } catch (exception:Exception) {
@@ -73,27 +83,6 @@ class StudyDeckViewModel(
                     updateDateCard(card.id, Date())
                 }
 
-            } catch (exception: Exception) {
-                _state.value = UIState.ERROR
-            }
-        }
-
-        _iterator.value++
-        _deckWithCards.value?.let {
-            _progress.value = (iterator.value.toFloat() / (it.cards.size.toFloat() + wrongCards.value.size))
-        }
-    }
-    fun onSwipeWrongCard(direction: SwipeDirection, card: Card) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                if (direction == SwipeDirection.LEFT) {
-                    wrongCards.value.remove(card)
-                    wrongCards.value.add(card)
-                    updateDateCard(card.id, Date())
-                } else {
-                    wrongCards.value.remove(card)
-                    updateDateCard(card.id, Date())
-                }
 
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
@@ -101,7 +90,12 @@ class StudyDeckViewModel(
         }
         _iterator.value++
         _deckWithCards.value?.let {
-            _progress.value = (iterator.value.toFloat() / (it.cards.size.toFloat() + wrongCards.value.size))
+            _progress.value =
+                (iterator.value.toFloat() / it.cards.size.toFloat())
+            if (iterator.value < it.cards.size) {
+                _currentCard.value= it.cards[iterator.value]
+            }
+
         }
     }
 }
