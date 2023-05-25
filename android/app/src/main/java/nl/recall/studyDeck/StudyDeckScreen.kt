@@ -218,31 +218,36 @@ private fun Content(
     var currentBackgroundColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
-    var cardState = rememberSwipeableCardState()
+//    var cardState = rememberSwipeableCardState()
+    var cardStates = ArrayList<SwipeableCardState>()
+
+    for(i in 0..deckSize) {
+        cardStates.add(rememberSwipeableCardState())
+    }
 
 
-    LaunchedEffect(cardState.offset.value.x) {
+    LaunchedEffect(cardStates[iterator].offset.value.x) {
         println("boe")
-        if (cardState.offset.value.x < 0.0f) {
+        if (cardStates[iterator].offset.value.x < 0.0f) {
             currentBackgroundColor = BackgroundColors.CORRECT
         }
 
-        if (cardState.offset.value.x > 0.0f) {
+        if (cardStates[iterator].offset.value.x > 0.0f) {
             currentBackgroundColor = BackgroundColors.WRONG
         }
 
-        if (cardState.offset.value.x == 0.0f) {
+        if (cardStates[iterator].offset.value.x == 0.0f) {
             currentBackgroundColor = BackgroundColors.NORMAL
         }
 
-        if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
+        if (cardStates[iterator].swipedDirection == Direction.Left || cardStates[iterator].swipedDirection == Direction.Right) {
             currentBackgroundColor = BackgroundColors.NORMAL
         }
     }
 
-    if (visibility && !(progress >= 1.0)) {
-        cardState = rememberSwipeableCardState()
-    }
+//    if (visibility && !(progress >= 1.0)) {
+//        cardState = rememberSwipeableCardState()
+//    }
 
 
     LaunchedEffect(currentBackgroundColor) {
@@ -336,7 +341,7 @@ private fun Content(
                 FlipCard(
                     cardFaceUIState = cardFaceUIState,
                     modifierBack = Modifier.swipableCard(
-                        cardState,
+                        cardStates[iterator],
                         onSwiped = {
                             scope.launch {
                                 cardFaceUIState = CardFaceUIState.Front
@@ -427,7 +432,7 @@ private fun Content(
                                         ),
                                         onClick = {
                                             scope.launch(Dispatchers.Unconfined) {
-                                                cardState.swipe(Direction.Right)
+                                                cardStates[iterator].swipe(Direction.Right)
                                                 cardFaceUIState = CardFaceUIState.Front
                                                 visibility = false
                                                 viewModel.onSwipeCard(
@@ -456,7 +461,7 @@ private fun Content(
                                         ),
                                         onClick = {
                                             scope.launch(Dispatchers.Unconfined) {
-                                                cardState.swipe(Direction.Left)
+                                                cardStates[iterator].swipe(Direction.Left)
                                                 cardFaceUIState = CardFaceUIState.Front
                                                 visibility = false
                                                 viewModel.onSwipeCard(
