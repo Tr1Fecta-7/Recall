@@ -76,6 +76,7 @@ import nl.recall.presentation.studyDeck.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
 import nl.recall.studyDeck.model.BackgroundColors
 import nl.recall.studyDeck.model.CardFaceUIState
+import nl.recall.studyDeckFinished.StudyDeckFinishedScreen
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -95,6 +96,7 @@ fun StudyDeckScreen(
     val nextCard by viewModel.nextCard.collectAsState()
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
+    val deckSize by viewModel.deckSize.collectAsState()
 
     ContentScaffold(
         title = deckWithCards?.deck?.title,
@@ -110,7 +112,8 @@ fun StudyDeckScreen(
                             progress = progress,
                             iterator = iterator,
                             viewModel = viewModel,
-                            navigator = navigator
+                            navigator = navigator,
+                            deckSize = deckSize
                         )
                     }
                 }
@@ -200,7 +203,8 @@ private fun Content(
     progress: Float,
     iterator: Int,
     viewModel: StudyDeckViewModel,
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    deckSize : Int
 ) {
     var cardFaceUIState by remember {
         mutableStateOf(CardFaceUIState.Front)
@@ -217,6 +221,29 @@ private fun Content(
     var cardState = rememberSwipeableCardState()
 
 
+    LaunchedEffect(cardState.offset.value.x) {
+        println("boe")
+        if (cardState.offset.value.x < 0.0f) {
+            currentBackgroundColor = BackgroundColors.CORRECT
+        }
+
+        if (cardState.offset.value.x > 0.0f) {
+            currentBackgroundColor = BackgroundColors.WRONG
+        }
+
+        if (cardState.offset.value.x == 0.0f) {
+            currentBackgroundColor = BackgroundColors.NORMAL
+        }
+
+        if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
+            currentBackgroundColor = BackgroundColors.NORMAL
+        }
+    }
+
+    if (visibility && !(progress >= 1.0)) {
+        cardState = rememberSwipeableCardState()
+    }
+
 
     LaunchedEffect(currentBackgroundColor) {
         color.animateTo(
@@ -225,11 +252,8 @@ private fun Content(
     }
 
 
-    if (visibility && !(progress >= 1.0)) {
-        cardState = rememberSwipeableCardState()
-    }
 
-    LaunchedEffect(currentCard.id) {
+    LaunchedEffect(currentCard) {
         if (!visibility) {
             visibility = !visibility
         }
@@ -255,7 +279,7 @@ private fun Content(
                 ) {
                     Text(
                         fontSize = 14.sp, modifier = Modifier.padding(4.dp), text = stringResource(
-                            id = R.string.study_progression, iterator, 9
+                            id = R.string.study_progression, iterator, deckSize
                         )
                     )
                 }
@@ -267,6 +291,11 @@ private fun Content(
                 .padding(24.dp)
                 .fillMaxSize(),
         ) {
+            this@Column.AnimatedVisibility(
+                visible = (progress >= 1.0f), enter = fadeIn(), exit = fadeOut()
+            ) {
+                StudyDeckFinishedScreen(navigator = navigator)
+            }
             if (nextCard != null) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = AppTheme.white),
@@ -311,7 +340,6 @@ private fun Content(
                         onSwiped = {
                             scope.launch {
                                 cardFaceUIState = CardFaceUIState.Front
-//                                delay(30)
                                 visibility = false
                                 viewModel.onSwipeCard(
                                     SwipeDirection.RIGHT, currentCard

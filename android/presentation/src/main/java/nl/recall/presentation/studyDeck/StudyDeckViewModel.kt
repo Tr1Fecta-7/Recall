@@ -45,6 +45,9 @@ class StudyDeckViewModel(
     private val _iterator = MutableStateFlow(0)
     val iterator: StateFlow<Int> = _iterator.asStateFlow()
 
+    private val _deckSize = MutableStateFlow(0)
+    val deckSize: StateFlow<Int> = _deckSize.asStateFlow()
+
     private val _currentCard = MutableStateFlow<Card?>(null)
     val currentCard: StateFlow<Card?> = _currentCard.asStateFlow()
 
@@ -64,6 +67,7 @@ class StudyDeckViewModel(
                 } else {
                     deckWithCards?.value?.let {
                         _currentCard.value = it.cards[iterator.value]
+                        _deckSize.value = it.cards.size
                     }
 
                     _state.value = UIState.NORMAL
