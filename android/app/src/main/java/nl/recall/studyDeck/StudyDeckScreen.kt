@@ -204,7 +204,7 @@ private fun Content(
     iterator: Int,
     viewModel: StudyDeckViewModel,
     navigator: DestinationsNavigator,
-    deckSize : Int
+    deckSize: Int
 ) {
     var cardFaceUIState by remember {
         mutableStateOf(CardFaceUIState.Front)
@@ -354,7 +354,12 @@ private fun Content(
                         blockedDirections = listOf(Direction.Down, Direction.Up)
                     ),
                     onClick = { cardFaceUIState = CardFaceUIState.Back },
-                    elevation = 0,
+                    elevation =
+                    if (deckSize - 1 == iterator) {
+                        3
+                    } else {
+                        0
+                    },
                     front = {
                         Column(
                             modifier = Modifier
@@ -423,11 +428,13 @@ private fun Content(
                                         onClick = {
                                             scope.launch(Dispatchers.Unconfined) {
                                                 cardState.swipe(Direction.Right)
+                                                cardFaceUIState = CardFaceUIState.Front
+                                                visibility = false
                                                 viewModel.onSwipeCard(
                                                     SwipeDirection.RIGHT, currentCard
                                                 )
-                                                visibility = false
-                                                cardFaceUIState = CardFaceUIState.Front
+                                                delay(100)
+                                                viewModel.getNextCard()
                                                 currentBackgroundColor = BackgroundColors.WRONG
                                                 delay(500)
                                                 currentBackgroundColor = BackgroundColors.NORMAL
@@ -450,11 +457,13 @@ private fun Content(
                                         onClick = {
                                             scope.launch(Dispatchers.Unconfined) {
                                                 cardState.swipe(Direction.Left)
-                                                viewModel.onSwipeCard(
-                                                    SwipeDirection.LEFT, currentCard
-                                                )
-                                                visibility = false
                                                 cardFaceUIState = CardFaceUIState.Front
+                                                visibility = false
+                                                viewModel.onSwipeCard(
+                                                    SwipeDirection.RIGHT, currentCard
+                                                )
+                                                delay(100)
+                                                viewModel.getNextCard()
                                                 currentBackgroundColor = BackgroundColors.CORRECT
                                                 delay(500)
                                                 currentBackgroundColor = BackgroundColors.NORMAL
