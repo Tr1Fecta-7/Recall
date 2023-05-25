@@ -334,13 +334,19 @@ private fun Content(
             if (visibility) {
                 FlipCard(cardFaceUIState = cardFaceUIState,
                     modifierBack = Modifier.swipableCard(
-                        cardStates[iterator], onSwiped = {
+                        cardStates[iterator], onSwiped = {direction->
                             scope.launch {
                                 cardFaceUIState = CardFaceUIState.Front
                                 visibility = false
-                                viewModel.onSwipeCard(
-                                    SwipeDirection.RIGHT, currentCard
-                                )
+                                if(direction.equals(Direction.Left)) {
+                                    viewModel.onSwipeCard(
+                                        SwipeDirection.LEFT, currentCard
+                                    )
+                                } else {
+                                    viewModel.onSwipeCard(
+                                        SwipeDirection.RIGHT, currentCard
+                                    )
+                                }
                                 delay(100)
                                 viewModel.getNextCard()
                             }
