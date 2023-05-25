@@ -23,7 +23,6 @@ import nl.recall.theme.AppTheme
 
 @Composable
 fun FlipCard(
-    offset: Int = 0,
     cardFaceUIState: CardFaceUIState,
     onClick: (CardFaceUIState) -> Unit,
     modifierFront: Modifier = Modifier,
@@ -62,8 +61,7 @@ fun FlipCard(
                 shape = RoundedCornerShape(20.dp),
                 modifier = modifierFront
                     .fillMaxSize()
-                    .padding(bottom = 45.dp, start = 10.dp, end = 10.dp)
-                    .offset(y = offset.dp),
+                    .padding(bottom = 45.dp, start = 10.dp, end = 10.dp),
                 onClick = { onClick(cardFaceUIState) },
             ) {
                 front()
@@ -76,7 +74,6 @@ fun FlipCard(
                 modifier = modifierBack
                     .fillMaxSize()
                     .padding(bottom = 45.dp, start = 10.dp, end = 10.dp)
-                    .offset(y = offset.dp)
                     .graphicsLayer {
                         rotationY = 180f
                     },
