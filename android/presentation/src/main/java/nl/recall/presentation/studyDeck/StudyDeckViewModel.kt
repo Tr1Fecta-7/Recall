@@ -25,7 +25,7 @@ class StudyDeckViewModel(
     private val updateDateCard: UpdateDateCard
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UIState.EMPTY)
+    private val _state = MutableStateFlow(UIState.LOADING)
     val state: StateFlow<UIState> = _state.asStateFlow()
 
     private val _deckWithCards = MutableStateFlow<DeckWithCards?>(null)
@@ -41,10 +41,11 @@ class StudyDeckViewModel(
     val iterator: StateFlow<Int> = _iterator.asStateFlow()
 
     private fun getDeckWithCards() {
+        _state.value = UIState.LOADING
+
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
-                _state.value = UIState.LOADING
                 _deckWithCards.value = getDeckById(args.deckId)
                 if (_deckWithCards.value?.cards.isNullOrEmpty()) {
                     _state.value = UIState.EMPTY
@@ -70,6 +71,7 @@ class StudyDeckViewModel(
                 _state.value = UIState.ERROR
             }
         }
+
         _iterator.value++
         _deckWithCards.value?.let {
             _progress.value = (iterator.value.toFloat() / it.cards.size.toFloat())
