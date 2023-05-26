@@ -16,11 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nl.recall.R
 import nl.recall.theme.AppTheme
 
 @Composable
@@ -28,7 +26,7 @@ fun CommunityDeckDetailStat(
 	title: String,
 	count: Int,
 	icon: Painter,
-	modifier: Modifier
+	modifier: Modifier,
 ) {
 	Row(
 		modifier = modifier
