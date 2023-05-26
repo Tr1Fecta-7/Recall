@@ -147,7 +147,7 @@ private fun Content(
 			targetState = true
 		}
 	}
-	var isDialogOpen by remember { mutableStateOf(true) }
+	var isDialogOpen by remember { mutableStateOf(false) }
 
 	Scaffold(
 		topBar = {
