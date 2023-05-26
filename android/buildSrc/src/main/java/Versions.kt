@@ -67,4 +67,6 @@ object Versions {
 
     //Konfetti
     const val KONFETTI = "2.0.2"
+
+    const val PAGER_INDICATOR = "0.30.1"
 }

@@ -109,4 +109,7 @@ dependencies {
     implementation ("com.alexstyl.swipeablecard:swipeablecard:${Versions.TINDER_CARD}")
 
     implementation ("nl.dionsegijn:konfetti-compose:${Versions.KONFETTI}")
+
+    // Pager indicators
+    implementation("com.google.accompanist:accompanist-pager-indicators:${Versions.PAGER_INDICATOR}")
 }
