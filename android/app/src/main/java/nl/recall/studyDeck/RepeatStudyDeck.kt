@@ -2,10 +2,13 @@ package nl.recall.studyDeck
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -64,6 +67,7 @@ import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
 import nl.recall.destinations.DeckDetailScreenDestination
+import nl.recall.destinations.StudyDeckFinishedScreenDestination
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.RepeatStudyDeckViewModel
@@ -221,6 +225,13 @@ private fun Content(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             LinearProgressIndicator(progress = animatedProgress, Modifier.fillMaxWidth())
+
+            LaunchedEffect(key1 = progress){
+                if(progress == 1.0f) {
+                    navigator.popBackStack()
+                    navigator.navigate(StudyDeckFinishedScreenDestination(title = deckWithCards.deck.title, deckWithCards.cards.size))
+                }
+            }
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -234,6 +245,7 @@ private fun Content(
                             id = R.string.study_progression, iterator, deckWithCards.cards.size
                         )
                     )
+                    Text(text = "joe")
                 }
             }
 
@@ -244,14 +256,6 @@ private fun Content(
                 .fillMaxSize(),
             propagateMinConstraints = false
         ) {
-
-            this@Column.AnimatedVisibility(
-                visible = (progress == 1.0f), enter = fadeIn(), exit = fadeOut()
-            ) {
-                StudyDeckFinishedScreen(navigator = navigator)
-            }
-
-
             cards.forEachIndexed() { index, (card, cardState) ->
                 var cardFaceUIState by remember {
                     mutableStateOf(CardFaceUIState.Front)

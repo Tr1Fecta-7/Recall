@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
+import nl.recall.destinations.StudyDeckFinishedScreenDestination
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.StudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
@@ -240,10 +241,11 @@ private fun Content(
             propagateMinConstraints = false
         ) {
 
-            this@Column.AnimatedVisibility(
-                visible = (progress == 1.0f), enter = fadeIn(), exit = fadeOut()
-            ) {
-                StudyDeckFinishedScreen(navigator = navigator)
+            LaunchedEffect(key1 = progress){
+                if(progress == 1.0f) {
+                    navigator.popBackStack()
+                    navigator.navigate(StudyDeckFinishedScreenDestination(title = deckWithCards.deck.title, deckWithCards.cards.size))
+                }
             }
 
 
