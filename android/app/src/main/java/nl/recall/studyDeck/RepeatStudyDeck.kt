@@ -262,25 +262,22 @@ private fun Content(
                 }
 
                 LaunchedEffect(cardState.offset.value.x) {
-                    when {
-                        (cardState.offset.value.x < 0.0f) -> {
-                            currentColor = BackgroundColors.CORRECT
-                        }
-
-                        (cardState.offset.value.x > 0.0f) -> {
-                            currentColor = BackgroundColors.WRONG
-                        }
-
-                        (cardState.offset.value.x == 0.0f) -> {
-                            currentColor = BackgroundColors.NORMAL
-                        }
-
-                        (cardState.swipedDirection == Direction.Left
-                                || cardState.swipedDirection == Direction.Right) -> {
-                            currentColor = BackgroundColors.NORMAL
-                        }
+                    if (cardState.offset.value.x < 0.0f) {
+                        currentColor = BackgroundColors.CORRECT
                     }
 
+                    if (cardState.offset.value.x > 0.0f) {
+                        currentColor = BackgroundColors.WRONG
+                    }
+
+                    if (cardState.offset.value.x == 0.0f) {
+                        currentColor = BackgroundColors.NORMAL
+                    }
+
+                    if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
+                        currentColor = BackgroundColors.NORMAL
+                    }
+                    
 
                 }
 
