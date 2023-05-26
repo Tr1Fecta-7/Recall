@@ -6,6 +6,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import nl.recall.data.communityDeck.mappers.CommunityCardMapper.toRequest
 import nl.recall.data.communityDeck.network.request.CommunityDeckRequest
 import nl.recall.data.communityDeck.network.response.CommunityDeckResponse
@@ -40,5 +41,13 @@ class CommunityDeckService(private val httpClientProvider: HttpClientProvider) {
                 )
             )
         }
+    }
+
+    suspend fun getCommunityDeckById(id: Long): CommunityDeckResponse {
+        return httpClientProvider.client.get("/api/v1/deck/card") {
+            url {
+                encodedPath = id.toString()
+            }
+        }.body()
     }
 }

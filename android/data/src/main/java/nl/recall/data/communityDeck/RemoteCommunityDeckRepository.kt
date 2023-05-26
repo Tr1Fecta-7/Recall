@@ -24,4 +24,8 @@ class RemoteCommunityDeckRepository(
     override suspend fun publishDeck(deckWithCards: DeckWithCards) {
         communityDeckService.publishDeck(deckWithCards)
     }
+
+    override suspend fun getCommunityDeckById(id: Long): CommunityDeck {
+        return communityDeckService.getCommunityDeckById(id).toDomain()
+    }
 }

@@ -9,4 +9,6 @@ interface CommunityDeckRepository {
     suspend fun getAllCommunityDecks(title: String): List<CommunityDeck>
 
     suspend fun publishDeck(deckWithCards: DeckWithCards)
+
+    suspend fun getCommunityDeckById(id: Long): CommunityDeck
 }
