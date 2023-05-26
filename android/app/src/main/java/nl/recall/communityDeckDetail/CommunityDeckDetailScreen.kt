@@ -39,7 +39,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,10 +54,10 @@ import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
+import nl.recall.components.AlertWindow
 import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
 import nl.recall.components.communityDeck.CommunityDeckDetailStat
-import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.domain.communityDeck.models.CommunityDeck
 import nl.recall.presentation.communityDeckDetail.CommunityDeckDetailViewModel
 import nl.recall.presentation.communityDeckDetail.model.CommunityDeckDetailViewModelArgs
@@ -76,7 +78,15 @@ fun CommunityDeckDetailScreen(
 ) {
 	viewModel.getDeckById()
 	val uiState by viewModel.state.collectAsState()
+	val importState by viewModel.importState.collectAsState()
 	val communityDeck by viewModel.communityDeck.collectAsState()
+	val context = LocalContext.current
+
+	when (importState) {
+		UIState.NORMAL -> informUser(context, stringResource(R.string.deck_import_success))
+		UIState.ERROR -> informUser(context, stringResource(R.string.deck_import_error))
+		UIState.EMPTY, UIState.LOADING -> {}
+	}
 
 	when (uiState) {
 		UIState.NORMAL -> {
@@ -132,14 +142,12 @@ private fun Content(
 	communityDeck: CommunityDeck,
 	viewModel: CommunityDeckDetailViewModel,
 ) {
-	val navigateToCreateCard: (Long) -> Unit =
-		{ navigator.navigate(CreateCardScreenDestination(it)) }
-	val context = LocalContext.current
 	val state = remember {
 		MutableTransitionState(false).apply {
 			targetState = true
 		}
 	}
+	var isDialogOpen by remember { mutableStateOf(true) }
 
 	Scaffold(
 		topBar = {
@@ -156,11 +164,11 @@ private fun Content(
 					}
 				}
 			)
-		}, bottomBar = {
+		},
+		bottomBar = {
 			BottomNav(navController = navController)
 		},
 		containerColor = AppTheme.neutral50,
-
 		content = {
 			Column(
 				modifier = Modifier
@@ -168,6 +176,21 @@ private fun Content(
 					.padding(top = 20.dp, start = 20.dp, end = 20.dp)
 					.fillMaxSize()
 			) {
+				AlertWindow(
+					title = stringResource(R.string.import_deck_alert_title),
+					subText = stringResource(R.string.import_deck_alert_subtext),
+					confirmText = stringResource(R.string.import_deck_alert_confirmation),
+					confirmTextColor = AppTheme.primary500,
+					openDialog = isDialogOpen,
+					onCloseDialog = {
+						isDialogOpen = false
+					},
+					onPressConfirm = {
+						viewModel.importCommunityDeck(communityDeck)
+						isDialogOpen = false
+					}
+				)
+
 				Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 					CommunityDeckDetailStat(
 						title = stringResource(id = R.string.community_deck_downloads_title),
@@ -284,9 +307,10 @@ private fun Content(
 					}
 				}
 			}
-		}, floatingActionButton = {
+		},
+		floatingActionButton = {
 			FloatingActionButton(
-				onClick = { navigateToCreateCard(communityDeck.id) },
+				onClick = { isDialogOpen = true },
 				contentColor = AppTheme.primary900,
 				containerColor = AppTheme.primary300
 			) {

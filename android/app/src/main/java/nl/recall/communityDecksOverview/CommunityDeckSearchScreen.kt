@@ -47,6 +47,7 @@ import nl.recall.R
 import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
 import nl.recall.components.communityDeck.CommunityDeckPreview
+import nl.recall.destinations.CommunityDeckDetailScreenDestination
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.presentation.communityDeckOverview.CommunityDeckViewModel
 import nl.recall.presentation.uiState.UIState
@@ -75,7 +76,7 @@ fun CommunityDeckSearchScreen(
                 ) {
                     items(decks) { deck ->
                         CommunityDeckPreview(deck, onClick = {
-                            navigator.navigate(DeckDetailScreenDestination(deckId = deck.id))
+                            navigator.navigate(CommunityDeckDetailScreenDestination(deckId = deck.id))
                         })
                     }
                 }

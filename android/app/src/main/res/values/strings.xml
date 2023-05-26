@@ -57,4 +57,9 @@
     <string name="community_searchbar_title">Search community decks</string>
     <string name="community_deck_downloads_title">Downloads</string>
     <string name="community_deck_cards_title">Cards</string>
+    <string name="deck_import_error">Couldn\'t import deck</string>
+    <string name="deck_import_success">Imported deck!</string>
+    <string name="import_deck_alert_title">Import deck</string>
+    <string name="import_deck_alert_subtext">Do you want to save \'French GL 6\' to your own collection?</string>
+    <string name="import_deck_alert_confirmation">Yes!</string>
 </resources>
