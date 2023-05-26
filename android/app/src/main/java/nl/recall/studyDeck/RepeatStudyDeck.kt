@@ -277,7 +277,7 @@ private fun Content(
                     if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
                         currentColor = BackgroundColors.NORMAL
                     }
-                    
+
 
                 }
 

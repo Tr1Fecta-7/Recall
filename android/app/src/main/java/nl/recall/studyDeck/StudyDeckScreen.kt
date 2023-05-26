@@ -99,7 +99,8 @@ fun StudyDeckScreen(
     val deckSize by viewModel.deckSize.collectAsState()
     val nextCardAvailability by viewModel.nextCardAvailability.collectAsState()
 
-    ContentScaffold(title = deckWithCards?.deck?.title,
+    ContentScaffold(title = deckWithCards?.deck?.title
+        ?: stringResource(id = R.string.deck_detail_title_placeholder),
         navigator = navigator,
         content = { paddingValues ->
             when (uiState) {
@@ -171,7 +172,9 @@ fun StudyDeckScreen(
 
 @Composable
 private fun ContentScaffold(
-    navigator: DestinationsNavigator, content: @Composable ((PaddingValues) -> Unit), title: String?
+    navigator: DestinationsNavigator,
+    content: @Composable ((PaddingValues) -> Unit),
+    title: String
 ) {
     Scaffold(topBar = {
         TopAppBar(
@@ -180,7 +183,7 @@ private fun ContentScaffold(
             ),
             title = {
                 Text(
-                    text = title ?: stringResource(id = R.string.deck_detail_title_placeholder)
+                    text = title
                 )
             },
             navigationIcon = {
@@ -214,9 +217,6 @@ private fun Content(
     val animatedProgress = animateFloatAsState(
         targetValue = progress, animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
-//    var visibility by remember {
-//        mutableStateOf(true)
-//    }
     var currentBackgroundColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
@@ -241,7 +241,7 @@ private fun Content(
                 currentBackgroundColor = BackgroundColors.WRONG
             }
 
-            (cardStates[iterator].offset.value.x == 0.0f || cardStates[iterator].swipedDirection!= null) -> {
+            (cardStates[iterator].offset.value.x == 0.0f || cardStates[iterator].swipedDirection != null) -> {
                 currentBackgroundColor = BackgroundColors.NORMAL
             }
         }
@@ -333,7 +333,6 @@ private fun Content(
                             cardStates[iterator], onSwiped = { direction ->
                                 scope.launch {
                                     cardFaceUIState = CardFaceUIState.Front
-//                                    visibility = false
                                     if (direction.equals(Direction.Left)) {
                                         viewModel.onSwipeCard(
                                             SwipeDirection.LEFT, currentCard

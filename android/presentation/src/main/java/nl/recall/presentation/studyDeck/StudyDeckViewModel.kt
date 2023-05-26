@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import nl.recall.domain.deck.GetDeckWithCardsWithCorrectDueDate
 import nl.recall.domain.deck.UpdateCard
+import nl.recall.domain.deck.UpdateCardWithNewDate
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
@@ -24,6 +25,7 @@ import kotlin.streams.toList
 class StudyDeckViewModel(
     @InjectedParam private val args: StudyDeckViewModelArgs,
     private val getDeckById: GetDeckWithCardsWithCorrectDueDate,
+    private val updateCardWithNewDate: UpdateCardWithNewDate,
     private val updateCard: UpdateCard
 ) : ViewModel() {
 
@@ -59,7 +61,6 @@ class StudyDeckViewModel(
 
     private fun getDeckWithCards() {
         _state.value = UIState.LOADING
-
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
@@ -93,43 +94,36 @@ class StudyDeckViewModel(
             _nextCardAvailability.value = false
             try {
                 if (direction == SwipeDirection.LEFT) {
-                    var dt = Date()
-                    val c = Calendar.getInstance()
-                    c.time = dt
-                    c.add(Calendar.DATE, (card.successStreak + 1).toInt())
-                    dt = c.time
-                    updateCard(
+                    updateCardWithNewDate(
                         Card(
-                            card.id,
-                            card.front,
-                            card.back,
-                            dt,
-                            card.deckId,
-                            (card.successStreak + 1)
+                            id = card.id,
+                            front = card.front,
+                            back = card.back,
+                            dueDate = card.dueDate,
+                            deckId = card.deckId,
+                            successStreak = (card.successStreak + 1)
                         )
                     )
                 } else {
                     val newCard =
                         Card(
-                            card.id,
-                            card.front,
-                            card.back,
-                            Date(),
-                            card.deckId,
-                            (card.successStreak + 1)
+                            id = card.id,
+                            front = card.front,
+                            back = card.back,
+                            dueDate = Date(),
+                            deckId = card.deckId,
+                            successStreak = 0
                         )
-
                     _cards.value.add(newCard)
                     updateCard(newCard)
                     _deckSize.value = _cards.value.size
                 }
-
-
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }
             _iterator.value++
             _progress.value = (iterator.value.toFloat() / _cards.value.size.toFloat())
+
             if (iterator.value < _cards.value.size) {
                 _currentCard.value = _cards.value[iterator.value]
                 _nextCardAvailability.value = true
@@ -152,19 +146,16 @@ class StudyDeckViewModel(
     }
 
     fun resetDeck() {
+        _state.value = UIState.LOADING
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _state.value = UIState.LOADING
                 _deckWithCards.value?.let {
                     val cards: List<Card> = it.cards.map { card ->
                         return@map card.copy(dueDate = Date())
                     }
                     DeckWithCards(it.deck, cards)
                 }
-
                 _state.value = UIState.NORMAL
-
-
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }
