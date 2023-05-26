@@ -55,4 +55,6 @@
     <string name="search_bar_community_hint">Search decks online</string>
     <string name="most_downloaded_title">Most downloaded 🔥</string>
     <string name="community_searchbar_title">Search community decks</string>
+    <string name="community_deck_downloads_title">Downloads</string>
+    <string name="community_deck_cards_title">Cards</string>
 </resources>

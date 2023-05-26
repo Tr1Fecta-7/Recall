@@ -1,5 +1,6 @@
 package nl.recall.data.communityDeck.network
 
+import android.util.Log
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -44,10 +45,6 @@ class CommunityDeckService(private val httpClientProvider: HttpClientProvider) {
     }
 
     suspend fun getCommunityDeckById(id: Long): CommunityDeckResponse {
-        return httpClientProvider.client.get("/api/v1/deck/card") {
-            url {
-                encodedPath = id.toString()
-            }
-        }.body()
+        return httpClientProvider.client.get("/api/v1/deck/$id").body()
     }
 }
