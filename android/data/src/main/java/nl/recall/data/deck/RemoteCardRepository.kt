@@ -24,7 +24,8 @@ class RemoteCardRepository(private val cardDao: CardDao): CardRepository {
         front: String,
         back: String,
         dueDate: Date,
-        deckId: Long
+        deckId: Long,
+        successStreak: Long
     ): Boolean {
         val cardEntityRow: Long = cardDao.insert(CardEntity(
             id = 0,
@@ -32,6 +33,7 @@ class RemoteCardRepository(private val cardDao: CardDao): CardRepository {
             back = back,
             dueDate = dueDate,
             deckId = deckId,
+            successStreak = successStreak
         ))
 
         return cardEntityRow >= 0

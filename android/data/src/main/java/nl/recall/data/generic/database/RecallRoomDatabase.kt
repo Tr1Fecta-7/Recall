@@ -10,7 +10,7 @@ import nl.recall.data.deck.models.DeckEntity
 import nl.recall.data.deck.storage.CardDao
 import nl.recall.data.deck.storage.DeckDao
 
-@Database(entities = [DeckEntity::class, CardEntity::class], version = 4, exportSchema = false)
+@Database(entities = [DeckEntity::class, CardEntity::class], version = 6, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class RecallRoomDatabase : RoomDatabase() {
 

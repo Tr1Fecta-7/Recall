@@ -108,7 +108,8 @@ fun MainContent(navigator: DestinationsNavigator, paddingValues: PaddingValues,
                             front = cardData.front,
                             back = cardData.back,
                             dueDate = Date(),
-                            deckId = deckId
+                            deckId = deckId,
+                            successStreak = card.successStreak
                         )
                     )
                 })

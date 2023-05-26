@@ -6,7 +6,7 @@ import java.util.Date
 
 @Factory
 class SaveCard(private val cardRepository: CardRepository) {
-    suspend operator fun invoke(front: String, back: String, dueDate: Date, deckId: Long): Boolean {
-        return cardRepository.saveCard(front = front, back = back, dueDate = dueDate, deckId = deckId)
+    suspend operator fun invoke(front: String, back: String, dueDate: Date, deckId: Long, successStreak: Long = 0): Boolean {
+        return cardRepository.saveCard(front = front, back = back, dueDate = dueDate, deckId = deckId, successStreak = successStreak)
     }
 }

@@ -3,13 +3,12 @@ package nl.recall.presentation.studyDeck
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import nl.recall.domain.deck.GetDeckById
-import nl.recall.domain.deck.UpdateDateCard
+import nl.recall.domain.deck.GetDeckWithCardsWithCorrectDueDate
+import nl.recall.domain.deck.UpdateCard
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
@@ -17,13 +16,15 @@ import nl.recall.presentation.studyDeck.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
+import java.util.Calendar
 import java.util.Date
+import kotlin.streams.toList
 
 @KoinViewModel
 class StudyDeckViewModel(
     @InjectedParam private val args: StudyDeckViewModelArgs,
-    private val getDeckById: GetDeckById,
-    private val updateDateCard: UpdateDateCard
+    private val getDeckById: GetDeckWithCardsWithCorrectDueDate,
+    private val updateCard: UpdateCard
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UIState.LOADING)
@@ -35,9 +36,10 @@ class StudyDeckViewModel(
         _deckWithCards.asStateFlow()
     }
 
-    private val _wrongCards = MutableStateFlow<ArrayList<Card>>(arrayListOf())
-    val wrongCards: StateFlow<ArrayList<Card>> = _wrongCards.asStateFlow()
+    private val _nextCardAvailability = MutableStateFlow(true)
+    val nextCardAvailability: StateFlow<Boolean> = _nextCardAvailability.asStateFlow()
 
+    private val _cards = MutableStateFlow<ArrayList<Card>>(arrayListOf())
 
     private val _progress = MutableStateFlow(0.0000f)
     val progress: StateFlow<Float> = _progress.asStateFlow()
@@ -65,7 +67,8 @@ class StudyDeckViewModel(
                 if (_deckWithCards.value?.cards.isNullOrEmpty()) {
                     _state.value = UIState.EMPTY
                 } else {
-                    deckWithCards?.value?.let {
+                    deckWithCards.value?.let {
+                        _cards.value = ArrayList(it.cards.stream().toList())
                         _currentCard.value = it.cards[iterator.value]
                         _deckSize.value = it.cards.size
                     }
@@ -87,37 +90,83 @@ class StudyDeckViewModel(
 
     fun onSwipeCard(direction: SwipeDirection, card: Card) {
         viewModelScope.launch(Dispatchers.IO) {
+            _nextCardAvailability.value = false
             try {
                 if (direction == SwipeDirection.LEFT) {
-                    updateDateCard(card.id, Date())
+                    var dt = Date()
+                    val c = Calendar.getInstance()
+                    c.time = dt
+                    c.add(Calendar.DATE, (card.successStreak + 1).toInt())
+                    dt = c.time
+                    updateCard(
+                        Card(
+                            card.id,
+                            card.front,
+                            card.back,
+                            dt,
+                            card.deckId,
+                            (card.successStreak + 1)
+                        )
+                    )
                 } else {
-                    wrongCards.value.add(card)
-                    updateDateCard(card.id, Date())
+                    val newCard =
+                        Card(
+                            card.id,
+                            card.front,
+                            card.back,
+                            Date(),
+                            card.deckId,
+                            (card.successStreak + 1)
+                        )
+
+                    _cards.value.add(newCard)
+                    updateCard(newCard)
+                    _deckSize.value = _cards.value.size
                 }
 
 
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
             }
-        }
-        _iterator.value++
-        _deckWithCards.value?.let {
-            _progress.value =
-                (iterator.value.toFloat() / it.cards.size.toFloat())
-            if (iterator.value < it.cards.size) {
-                _currentCard.value = it.cards[iterator.value]
+            _iterator.value++
+            _progress.value = (iterator.value.toFloat() / _cards.value.size.toFloat())
+            if (iterator.value < _cards.value.size) {
+                _currentCard.value = _cards.value[iterator.value]
+                _nextCardAvailability.value = true
             }
         }
+
+
     }
 
     fun getNextCard() {
         viewModelScope.launch(Dispatchers.IO) {
-            _deckWithCards.value?.let {
-                if (iterator.value + 1 < it.cards.size) {
-                    _nextCard.value = it.cards[iterator.value + 1]
+            _cards.value.let {
+                if (iterator.value + 1 < it.size) {
+                    _nextCard.value = it[iterator.value + 1]
                 } else {
                     _nextCard.value = null
                 }
+            }
+        }
+    }
+
+    fun resetDeck() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _state.value = UIState.LOADING
+                _deckWithCards.value?.let {
+                    val cards: List<Card> = it.cards.map { card ->
+                        return@map card.copy(dueDate = Date())
+                    }
+                    DeckWithCards(it.deck, cards)
+                }
+
+                _state.value = UIState.NORMAL
+
+
+            } catch (exception: Exception) {
+                _state.value = UIState.ERROR
             }
         }
     }

@@ -262,21 +262,26 @@ private fun Content(
                 }
 
                 LaunchedEffect(cardState.offset.value.x) {
-                    if (cardState.offset.value.x < 0.0f) {
-                        currentColor = BackgroundColors.CORRECT
+                    when {
+                        (cardState.offset.value.x < 0.0f) -> {
+                            currentColor = BackgroundColors.CORRECT
+                        }
+
+                        (cardState.offset.value.x > 0.0f) -> {
+                            currentColor = BackgroundColors.WRONG
+                        }
+
+                        (cardState.offset.value.x == 0.0f) -> {
+                            currentColor = BackgroundColors.NORMAL
+                        }
+
+                        (cardState.swipedDirection == Direction.Left
+                                || cardState.swipedDirection == Direction.Right) -> {
+                            currentColor = BackgroundColors.NORMAL
+                        }
                     }
 
-                    if (cardState.offset.value.x > 0.0f) {
-                        currentColor = BackgroundColors.WRONG
-                    }
 
-                    if (cardState.offset.value.x == 0.0f) {
-                        currentColor = BackgroundColors.NORMAL
-                    }
-
-                    if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
-                        currentColor = BackgroundColors.NORMAL
-                    }
                 }
 
                 val indexList = (index - deckWithCards.cards.size + 1).absoluteValue

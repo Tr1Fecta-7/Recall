@@ -21,5 +21,8 @@ data class CardEntity(
     val dueDate: Date = Date(),
 
     @ColumnInfo(name = "deck_id")
-    val deckId: Long = 0
+    val deckId: Long = 0,
+
+    @ColumnInfo(name = "success_streak")
+    val successStreak: Long = 0
 )
