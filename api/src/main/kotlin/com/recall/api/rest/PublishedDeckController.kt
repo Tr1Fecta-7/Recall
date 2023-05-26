@@ -2,6 +2,7 @@ package com.recall.api.rest
 
 import com.recall.api.mappers.PublishCardRequestMapper.toPublishedCard
 import com.recall.api.mappers.PublishDeckRequestMapper.toPublishedDeck
+import com.recall.api.models.PublishedCard
 import com.recall.api.models.PublishedDeck
 import com.recall.api.repositories.PublishedCardRepository
 import com.recall.api.repositories.PublishedDeckRepository
@@ -53,6 +54,15 @@ class PublishedDeckController(
 	@GetMapping("{id}")
 	fun getDeckById(@PathVariable id: Long): ResponseEntity<PublishedDeck> {
 		val deck = publishedDeckRepository
+			.findById(id)
+			.orElseThrow{ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find the published deck with id $id")}
+
+		return ResponseEntity.ok(deck)
+	}
+
+	@GetMapping("/card/{id}")
+	fun getCardById(@PathVariable id: Long): ResponseEntity<PublishedCard> {
+		val deck = publishedCardRepository
 			.findById(id)
 			.orElseThrow{ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find the published deck with id $id")}
 
