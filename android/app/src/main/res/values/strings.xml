@@ -85,4 +85,5 @@
     <string name="import_deck_alert_confirmation">Yes!</string>
     <string name="no_card_found">Could not find a card</string>
     <string name="error_when_retrieving_card">An error occurred whilst searching for the card</string>
+    <string name="error_community_deck_overview">An error occured whilst searching for decks online</string>
 </resources>

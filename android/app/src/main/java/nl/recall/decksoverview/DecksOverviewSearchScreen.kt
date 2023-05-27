@@ -53,148 +53,148 @@ import org.koin.androidx.compose.koinViewModel
 @Destination
 @Composable
 fun DecksOverviewSearchScreen(
-    navController: NavController,
-    navigator: DestinationsNavigator,
-    viewModel: DecksOverviewViewModel = koinViewModel()
+	navController: NavController,
+	navigator: DestinationsNavigator,
+	viewModel: DecksOverviewViewModel = koinViewModel(),
 ) {
-    val decks by viewModel.decks.collectAsState()
-    val uiState by viewModel.state.collectAsState()
+	val decks by viewModel.decks.collectAsState()
+	val uiState by viewModel.state.collectAsState()
 
-    Content(
-        navController = navController,
-        navigateBack = { navigator.popBackStack() },
-        viewModel::searchDecks
-    ) {
-        when (uiState) {
-            UIState.NORMAL -> {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(decks.entries.toList()) { entry ->
-                        DeckPreview(entry.key, cardCount = entry.value, onClick = {
-                            navigator.navigate(DeckDetailScreenDestination(deckId = entry.key.id))
-                        })
-                    }
-                }
-            }
+	Content(
+		navController = navController,
+		navigateBack = { navigator.popBackStack() },
+		viewModel::searchDecks
+	) {
+		when (uiState) {
+			UIState.NORMAL -> {
+				LazyColumn(
+					verticalArrangement = Arrangement.spacedBy(8.dp)
+				) {
+					items(decks.entries.toList()) { entry ->
+						DeckPreview(entry.key, cardCount = entry.value, onClick = {
+							navigator.navigate(DeckDetailScreenDestination(deckId = entry.key.id))
+						})
+					}
+				}
+			}
 
-            UIState.EMPTY -> {
-                Column(
-                    Modifier.fillMaxSize()
-                ) {
-                    ImageMessage(
-                        painter = painterResource(id = R.drawable.no_decks_found),
-                        text = stringResource(id = R.string.no_decks_found)
-                    )
-                }
-            }
+			UIState.EMPTY -> {
+				Column(
+					Modifier.fillMaxSize()
+				) {
+					ImageMessage(
+						painter = painterResource(id = R.drawable.no_decks_found),
+						text = stringResource(id = R.string.no_decks_found)
+					)
+				}
+			}
 
-            UIState.LOADING -> {
-                Column(
-                    Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+			UIState.LOADING -> {
+				Column(
+					Modifier.fillMaxSize(),
+					verticalArrangement = Arrangement.Center,
+					horizontalAlignment = Alignment.CenterHorizontally
+				) {
+					CircularProgressIndicator()
+				}
+			}
 
-            UIState.ERROR -> {
-                ImageMessage(
-                    painter = painterResource(id = R.drawable.error_image),
-                    text = stringResource(id = R.string.no_decks_found)
-                )
-            }
-        }
-    }
+			UIState.ERROR -> {
+				ImageMessage(
+					painter = painterResource(id = R.drawable.error_image),
+					text = stringResource(id = R.string.no_decks_found)
+				)
+			}
+		}
+	}
 }
 
 @Composable
 private fun Content(
-    navController: NavController,
-    navigateBack: () -> Unit,
-    searchDecks: (String) -> Unit,
-    content: @Composable (() -> Unit)
+	navController: NavController,
+	navigateBack: () -> Unit,
+	searchDecks: (String) -> Unit,
+	content: @Composable (() -> Unit),
 ) {
-    var searchQuery by remember {
-        mutableStateOf(TextFieldValue(String()))
-    }
-    val focusRequester = remember { FocusRequester() }
+	var searchQuery by remember {
+		mutableStateOf(TextFieldValue(String()))
+	}
+	val focusRequester = remember { FocusRequester() }
 
-    Scaffold(
-        containerColor = AppTheme.neutral50,
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = AppTheme.neutral50
-                ),
-                title = {
-                    Text(text = stringResource(id = R.string.deck_searchbar_title))
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navigateBack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-                    }
-                },
-            )
-        },
-        bottomBar = { BottomNav(navController = navController) }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(horizontal = 14.dp)
-                .focusRequester(focusRequester)
-                .onPlaced {
-                    focusRequester.requestFocus()
-                },
-        ) {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                value = searchQuery,
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.search_bar_deck_hint),
-                        color = AppTheme.neutral500
-                    )
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = AppTheme.neutral200,
-                    cursorColor = Color.Black,
-                    disabledLabelColor = AppTheme.white,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                onValueChange = {
-                    searchQuery = it
-                    searchDecks(searchQuery.text)
-                },
-                shape = RoundedCornerShape(35.dp),
-                singleLine = true,
-                trailingIcon = {
-                    if (searchQuery.text.isNotEmpty()) {
-                        IconButton(onClick = { searchQuery = TextFieldValue(String()) }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Close,
-                                contentDescription = "clear text-field"
-                            )
-                        }
-                    } else {
-                        IconButton(
-                            modifier = Modifier.padding(end = 6.dp),
-                            onClick = { /*Do nothing*/ }) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "search"
-                            )
-                        }
-                    }
-                }
-            )
+	Scaffold(
+		containerColor = AppTheme.neutral50,
+		topBar = {
+			TopAppBar(
+				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+					containerColor = AppTheme.neutral50
+				),
+				title = {
+					Text(text = stringResource(id = R.string.deck_searchbar_title))
+				},
+				navigationIcon = {
+					IconButton(onClick = { navigateBack() }) {
+						Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+					}
+				},
+			)
+		},
+		bottomBar = { BottomNav(navController = navController) }
+	) { paddingValues ->
+		Column(
+			modifier = Modifier
+				.padding(paddingValues)
+				.padding(horizontal = 14.dp)
+				.focusRequester(focusRequester)
+				.onPlaced {
+					focusRequester.requestFocus()
+				},
+		) {
+			TextField(
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(bottom = 8.dp),
+				value = searchQuery,
+				placeholder = {
+					Text(
+						text = stringResource(R.string.search_bar_deck_hint),
+						color = AppTheme.neutral500
+					)
+				},
+				colors = TextFieldDefaults.textFieldColors(
+					containerColor = AppTheme.neutral200,
+					cursorColor = Color.Black,
+					disabledLabelColor = AppTheme.white,
+					focusedIndicatorColor = Color.Transparent,
+					unfocusedIndicatorColor = Color.Transparent
+				),
+				onValueChange = {
+					searchQuery = it
+					searchDecks(searchQuery.text)
+				},
+				shape = RoundedCornerShape(35.dp),
+				singleLine = true,
+				trailingIcon = {
+					if (searchQuery.text.isNotEmpty()) {
+						IconButton(onClick = { searchQuery = TextFieldValue(String()) }) {
+							Icon(
+								imageVector = Icons.Outlined.Close,
+								contentDescription = "clear text-field"
+							)
+						}
+					} else {
+						IconButton(
+							modifier = Modifier.padding(end = 6.dp),
+							onClick = { /*Do nothing*/ }) {
+							Icon(
+								imageVector = Icons.Default.Search,
+								contentDescription = "search"
+							)
+						}
+					}
+				}
+			)
 
-            content()
-        }
-    }
+			content()
+		}
+	}
 }

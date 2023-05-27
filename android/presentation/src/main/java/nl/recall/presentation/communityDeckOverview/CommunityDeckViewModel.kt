@@ -14,8 +14,8 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class CommunityDeckViewModel(
-	private val getCommunityDecks: GetCommunityDecks
-): ViewModel() {
+	private val getCommunityDecks: GetCommunityDecks,
+) : ViewModel() {
 	private val _state = MutableStateFlow(UIState.LOADING)
 	val state: StateFlow<UIState> by lazy {
 		_state.asStateFlow()
@@ -31,12 +31,16 @@ class CommunityDeckViewModel(
 		_state.value = UIState.LOADING
 
 		viewModelScope.launch(Dispatchers.IO) {
-			_decks.value = getCommunityDecks()
+			try {
+				_decks.value = getCommunityDecks()
 
-			if (_decks.value.isEmpty()) {
-				_state.value = UIState.EMPTY
-			} else {
-				_state.value = UIState.NORMAL
+				if (_decks.value.isEmpty()) {
+					_state.value = UIState.EMPTY
+				} else {
+					_state.value = UIState.NORMAL
+				}
+			} catch (e: Exception) {
+				_state.value = UIState.ERROR
 			}
 		}
 	}
@@ -45,16 +49,20 @@ class CommunityDeckViewModel(
 		_state.value = UIState.LOADING
 
 		viewModelScope.launch(Dispatchers.IO) {
-			if (title.isEmpty()) {
-				_decks.value = getCommunityDecks()
-			} else {
-				_decks.value = getCommunityDecks(title)
-			}
+			try {
+				if (title.isEmpty()) {
+					_decks.value = getCommunityDecks()
+				} else {
+					_decks.value = getCommunityDecks(title)
+				}
 
-			if (_decks.value.isEmpty()) {
-				_state.value = UIState.EMPTY
-			} else {
-				_state.value = UIState.NORMAL
+				if (_decks.value.isEmpty()) {
+					_state.value = UIState.EMPTY
+				} else {
+					_state.value = UIState.NORMAL
+				}
+			} catch (e: Exception) {
+				_state.value = UIState.ERROR
 			}
 		}
 	}

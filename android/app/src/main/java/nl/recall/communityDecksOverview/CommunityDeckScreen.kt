@@ -46,126 +46,126 @@ import org.koin.androidx.compose.koinViewModel
 @Destination
 @Composable
 fun CommunityDeckOverviewScreen(
-    navController: NavController,
-    navigator: DestinationsNavigator,
-    viewModel: CommunityDeckViewModel = koinViewModel()
+	navController: NavController,
+	navigator: DestinationsNavigator,
+	viewModel: CommunityDeckViewModel = koinViewModel(),
 ) {
-    val decks by viewModel.decks.collectAsState()
-    val uiState by viewModel.state.collectAsState()
+	val decks by viewModel.decks.collectAsState()
+	val uiState by viewModel.state.collectAsState()
 
-    Content(
-        navigateToDeckSearch = {
-            navigator.navigate(CommunityDeckSearchScreenDestination)
-        },
-        navController = navController,
-    ) {
-        when (uiState) {
-            UIState.NORMAL -> {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(decks) { deck ->
-                        CommunityDeckPreview(deck, onClick = {
-                            navigator.navigate(CommunityDeckDetailScreenDestination(deckId = deck.id))
-                        })
-                    }
-                }
-            }
+	Content(
+		navigateToDeckSearch = {
+			navigator.navigate(CommunityDeckSearchScreenDestination)
+		},
+		navController = navController,
+	) {
+		when (uiState) {
+			UIState.NORMAL -> {
+				LazyColumn(
+					verticalArrangement = Arrangement.spacedBy(8.dp)
+				) {
+					items(decks) { deck ->
+						CommunityDeckPreview(deck, onClick = {
+							navigator.navigate(CommunityDeckDetailScreenDestination(deckId = deck.id))
+						})
+					}
+				}
+			}
 
-            UIState.EMPTY -> {
-                Column(
-                    Modifier.fillMaxSize()
-                ) {
-                    ImageMessage(
-                        painter = painterResource(id = R.drawable.no_decks_found),
-                        text = stringResource(id = R.string.no_decks_found)
-                    )
-                }
-            }
+			UIState.EMPTY -> {
+				Column(
+					Modifier.fillMaxSize()
+				) {
+					ImageMessage(
+						painter = painterResource(id = R.drawable.no_decks_found),
+						text = stringResource(id = R.string.no_decks_found)
+					)
+				}
+			}
 
-            UIState.LOADING -> {
-                Column(
-                    Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+			UIState.LOADING -> {
+				Column(
+					Modifier.fillMaxSize(),
+					verticalArrangement = Arrangement.Center,
+					horizontalAlignment = Alignment.CenterHorizontally
+				) {
+					CircularProgressIndicator()
+				}
+			}
 
-            UIState.ERROR -> {
-                ImageMessage(
-                    painter = painterResource(id = R.drawable.error_image),
-                    text = stringResource(id = R.string.no_decks_found)
-                )
-            }
-        }
-    }
+			UIState.ERROR -> {
+				ImageMessage(
+					painter = painterResource(id = R.drawable.error_image),
+					text = stringResource(id = R.string.error_community_deck_overview)
+				)
+			}
+		}
+	}
 }
 
 @Composable
 private fun Content(
-    navigateToDeckSearch: () -> Unit,
-    navController: NavController,
-    content: @Composable (() -> Unit)
+	navigateToDeckSearch: () -> Unit,
+	navController: NavController,
+	content: @Composable (() -> Unit),
 ) {
-    Scaffold(
-        containerColor = AppTheme.neutral50,
-        bottomBar = { BottomNav(navController = navController) }
-    ) { paddingValues ->
-        Column(
-            Modifier.padding(
-                top = paddingValues.calculateTopPadding() + 56.dp,
-                bottom = paddingValues.calculateBottomPadding(),
-                start = 14.dp,
-                end = 14.dp
-            )
-        ) {
-            Text(
-                text = stringResource(id = R.string.community_deck_overview_title),
-                color = AppTheme.neutral800,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Medium
-            )
-            Text(
-                text = stringResource(id = R.string.community_deck_overview_subtitle),
-                color = AppTheme.neutral500
-            )
+	Scaffold(
+		containerColor = AppTheme.neutral50,
+		bottomBar = { BottomNav(navController = navController) }
+	) { paddingValues ->
+		Column(
+			Modifier.padding(
+				top = paddingValues.calculateTopPadding() + 56.dp,
+				bottom = paddingValues.calculateBottomPadding(),
+				start = 14.dp,
+				end = 14.dp
+			)
+		) {
+			Text(
+				text = stringResource(id = R.string.community_deck_overview_title),
+				color = AppTheme.neutral800,
+				style = MaterialTheme.typography.titleLarge,
+				fontWeight = FontWeight.Medium
+			)
+			Text(
+				text = stringResource(id = R.string.community_deck_overview_subtitle),
+				color = AppTheme.neutral500
+			)
 
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = AppTheme.neutral200,
-                ),
-                shape = RoundedCornerShape(35.dp),
-                onClick = {
-                    navigateToDeckSearch()
-                }
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(R.string.search_bar_community_hint),
-                        color = AppTheme.neutral500
-                    )
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-                }
-            }
+			Card(modifier = Modifier
+				.fillMaxWidth()
+				.padding(vertical = 24.dp),
+				colors = CardDefaults.cardColors(
+					containerColor = AppTheme.neutral200,
+				),
+				shape = RoundedCornerShape(35.dp),
+				onClick = {
+					navigateToDeckSearch()
+				}
+			) {
+				Row(
+					modifier = Modifier
+						.padding(15.dp)
+						.fillMaxWidth(),
+					verticalAlignment = Alignment.CenterVertically,
+					horizontalArrangement = Arrangement.SpaceBetween
+				) {
+					Text(
+						text = stringResource(R.string.search_bar_community_hint),
+						color = AppTheme.neutral500
+					)
+					Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+				}
+			}
 
-            Text(
-                text = stringResource(id = R.string.most_downloaded_title),
-                fontWeight = FontWeight.Bold
-            )
+			Text(
+				text = stringResource(id = R.string.most_downloaded_title),
+				fontWeight = FontWeight.Bold
+			)
 
-            Spacer(modifier = Modifier.height(6.dp))
+			Spacer(modifier = Modifier.height(6.dp))
 
-            content()
-        }
-    }
+			content()
+		}
+	}
 }
