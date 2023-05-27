@@ -60,7 +60,6 @@ class PublishedDeckController(
 
 		val savedDeck = publishedDeckRepository.save(
 			storedDeck.copy(
-				id = body.id,
 				title = body.title,
 				icon = body.icon,
 				color = body.color,
