@@ -58,6 +58,7 @@ import nl.recall.components.AlertWindow
 import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
 import nl.recall.components.communityDeck.CommunityDeckDetailStat
+import nl.recall.destinations.CommunityCardScreenDestination
 import nl.recall.domain.communityDeck.models.CommunityDeck
 import nl.recall.presentation.communityDeckDetail.CommunityDeckDetailViewModel
 import nl.recall.presentation.communityDeckDetail.model.CommunityDeckDetailViewModelArgs
@@ -169,10 +170,10 @@ private fun Content(
 			BottomNav(navController = navController)
 		},
 		containerColor = AppTheme.neutral50,
-		content = {
+		content = { paddingValues ->
 			Column(
 				modifier = Modifier
-					.padding(it)
+					.padding(paddingValues)
 					.padding(top = 20.dp, start = 20.dp, end = 20.dp)
 					.fillMaxSize()
 			) {
@@ -266,12 +267,12 @@ private fun Content(
 							) {
 								Card(
 									onClick = {
-										// navigator.navigate(
-										//     EditCardScreenDestination(
-										//         clickedCardId = card.id,
-										//         deckId = communityDeck.id
-										//     )
-										// )
+										navigator.navigate(
+											CommunityCardScreenDestination(
+												cardId = card.id,
+												title = communityDeck.title
+											)
+										)
 									},
 									shape = RoundedCornerShape(12.dp),
 									border = BorderStroke(1.dp, AppTheme.neutral200),

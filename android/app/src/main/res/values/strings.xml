@@ -62,4 +62,6 @@
     <string name="import_deck_alert_title">Import deck</string>
     <string name="import_deck_alert_subtext">Do you want to save \'French GL 6\' to your own collection?</string>
     <string name="import_deck_alert_confirmation">Yes!</string>
+    <string name="no_card_found">Could not find a card</string>
+    <string name="error_when_retrieving_card">An error occured whilst searching for the card</string>
 </resources>
