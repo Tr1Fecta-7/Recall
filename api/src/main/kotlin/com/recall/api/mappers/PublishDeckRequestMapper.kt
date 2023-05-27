@@ -1,11 +1,11 @@
 package com.recall.api.mappers
 
 import com.recall.api.models.PublishedDeck
-import com.recall.api.request.PublishDeckRequest
+import com.recall.api.request.PublishDeckPostRequest
 import java.time.LocalDate
 
 object PublishDeckRequestMapper {
-	fun PublishDeckRequest.toPublishedDeck(): PublishedDeck {
+	fun PublishDeckPostRequest.toPublishedDeck(): PublishedDeck {
 		return PublishedDeck(
 			title = title,
 			creation = LocalDate.now(),

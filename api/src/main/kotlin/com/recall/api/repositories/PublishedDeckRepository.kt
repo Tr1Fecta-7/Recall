@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface PublishedDeckRepository : JpaRepository<PublishedDeck, Long>
+interface PublishedDeckRepository : JpaRepository<PublishedDeck, Long> {
+    fun findAllByTitleContainingIgnoreCase(title: String): List<PublishedDeck>
+}

@@ -1,16 +1,16 @@
 package nl.recall.data.communityDeck.mappers
 
 import nl.recall.data.communityDeck.network.request.CommunityCardRequest
-import nl.recall.data.communityDeck.network.response.CardResponse
+import nl.recall.data.communityDeck.network.response.CommunityCardResponse
 import nl.recall.domain.communityDeck.models.CommunityCard
 import nl.recall.domain.deck.model.Card
 
 object CommunityCardMapper {
-    internal fun List<CardResponse>.toDomain(): List<CommunityCard> {
+    internal fun List<CommunityCardResponse>.toDomain(): List<CommunityCard> {
         return map { it.toDomain() }
     }
 
-    fun CardResponse.toDomain(): CommunityCard {
+    fun CommunityCardResponse.toDomain(): CommunityCard {
         return CommunityCard(
             back = back,
             front = front,

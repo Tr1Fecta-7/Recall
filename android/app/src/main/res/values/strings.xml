@@ -63,4 +63,18 @@
     <string name="shared_preferences_current_streak">currentStreak</string>
     <string name="deck_name_title">Deck name</string>
     <string name="start_smart_learning_text">Start Smart Learning</string>
+    <string name="community_deck_overview_title">Community</string>
+    <string name="community_deck_overview_subtitle">See what others are learning!</string>
+    <string name="search_bar_community_hint">Search decks online</string>
+    <string name="most_downloaded_title">Most downloaded 🔥</string>
+    <string name="community_searchbar_title">Search community decks</string>
+    <string name="community_deck_downloads_title">Downloads</string>
+    <string name="community_deck_cards_title">Cards</string>
+    <string name="deck_import_error">Couldn\'t import deck</string>
+    <string name="deck_import_success">Imported deck!</string>
+    <string name="import_deck_alert_title">Import deck</string>
+    <string name="import_deck_alert_subtext">Do you want to save \'%s\' to your own collection?</string>
+    <string name="import_deck_alert_confirmation">Yes!</string>
+    <string name="no_card_found">Could not find a card</string>
+    <string name="error_when_retrieving_card">An error occurred whilst searching for the card</string>
 </resources>

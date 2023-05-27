@@ -22,6 +22,7 @@ import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
 import nl.recall.NavGraphs
 import nl.recall.R
+import nl.recall.destinations.CommunityDeckOverviewScreenDestination
 import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.destinations.DecksOverviewSearchScreenDestination
 import nl.recall.theme.AndroidAppTheme
@@ -34,7 +35,7 @@ enum class BottomBarDestination(
 ) {
     Deck(DecksOverviewScreenDestination, R.drawable.outline_inbox_24, R.string.nav_deck_label),
     Community(
-        DecksOverviewSearchScreenDestination /* TODO: Change to Community destination once it's made */,
+        CommunityDeckOverviewScreenDestination,
         R.drawable.outline_collections_bookmark_24,
         R.string.nav_community_label
     ),

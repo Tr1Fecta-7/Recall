@@ -4,8 +4,8 @@ data class CommunityDeck(
     val cards: List<CommunityCard>,
     val color: String,
     val creation: String,
-    val downloads: Int,
+    val downloads: Long,
     val icon: String,
     val id: Long,
-    val title: String
+    val title: String,
 )

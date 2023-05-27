@@ -5,12 +5,10 @@ import android.content.res.Resources.NotFoundException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import nl.recall.data.deck.mappers.DeckEntityMapper.toDomain
-import nl.recall.data.deck.mappers.DeckMapper
 import nl.recall.data.deck.mappers.DeckWithCardCountMapper.toDomain
 import nl.recall.data.deck.mappers.DeckWithCardsMapper.toDomain
 import nl.recall.data.deck.models.DeckEntity
 import nl.recall.data.deck.storage.DeckDao
-import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.Deck
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.domain.repositories.DeckRepository
@@ -53,6 +51,23 @@ class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
             )
         return deckEntityRow >= 0
 
+    }
+
+    override suspend fun saveDeckAndGetId(
+        title: String,
+        creationDate: Date,
+        icon: String,
+        color: String,
+    ): Long {
+        return deckDao.insert(
+            DeckEntity(
+                id = 0,
+                title = title,
+                creationDate = creationDate,
+                icon = icon,
+                color = color
+            )
+        )
     }
 
     override suspend fun updateDeck(deck: Deck): Boolean {
