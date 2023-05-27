@@ -5,11 +5,13 @@ import java.util.Date
 
 
 interface CardRepository {
+
+    suspend fun resetAlgorithm(deckId: Long): Boolean
     suspend fun getCardsBySearchQuery(deckId: Long, query: String): List<Card>
 
     suspend fun getCardById(deckId: Long, cardId: Long): Card
 
-    suspend fun saveCard(front: String, back: String, dueDate: Date, deckId: Long): Boolean
+    suspend fun saveCard(front: String, back: String, dueDate: Date, deckId: Long, successStreak: Long): Boolean
 
     suspend fun updateCard(card: Card): Boolean
 

@@ -68,5 +68,10 @@ object Versions {
     //Konfetti
     const val KONFETTI = "2.0.2"
 
+    //JUnit
+    const val J_UNIT = "5.8.1"
+
+    //Mockk
+    const val MOCKK = "1.13.4"
     const val PAGER_INDICATOR = "0.30.1"
 }

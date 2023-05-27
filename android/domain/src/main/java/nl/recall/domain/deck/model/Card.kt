@@ -8,4 +8,5 @@ data class Card(
     val back: String,
     val dueDate: Date,
     val deckId: Long,
+    val successStreak: Long
 )

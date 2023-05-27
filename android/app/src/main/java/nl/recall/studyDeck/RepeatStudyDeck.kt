@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexstyl.swipeablecard.Direction
 import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
-import com.alexstyl.swipeablecard.SwipeableCardState
 import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.ramcosta.composedestinations.annotation.Destination
@@ -71,9 +70,7 @@ import nl.recall.destinations.StudyDeckFinishedScreenDestination
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.RepeatStudyDeckViewModel
-import nl.recall.presentation.studyDeck.StudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
-import nl.recall.presentation.studyDeck.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
 import nl.recall.studyDeck.model.BackgroundColors
 import nl.recall.studyDeck.model.CardFaceUIState
@@ -159,36 +156,36 @@ fun RepeatStudyDeckScreen(
                     }
                 }
             }
-        })
-
-
+        }
+    )
 }
-
 
 @Composable
 private fun ContentScaffold(
     navigator: DestinationsNavigator, content: @Composable ((PaddingValues) -> Unit), title: String?
 ) {
-    Scaffold(topBar = {
-        TopAppBar(
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = AppTheme.neutral50,
-            ),
-            title = {
-                Text(
-                    text = title ?: stringResource(id = R.string.deck_detail_title_placeholder)
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = { navigator.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-                }
-            },
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = AppTheme.neutral50,
+                ),
+                title = {
+                    Text(
+                        text = title ?: stringResource(id = R.string.deck_detail_title_placeholder)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+                    }
+                },
 
-            )
-    }, content = { paddingValues ->
-        content(paddingValues)
-    })
+                )
+        }, content = { paddingValues ->
+            content(paddingValues)
+        }
+    )
 }
 
 @OptIn(ExperimentalSwipeableCardApi::class)
@@ -209,7 +206,6 @@ private fun Content(
     var currentColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
-
 
     LaunchedEffect(currentColor) {
         color.animateTo(
@@ -253,8 +249,7 @@ private fun Content(
         Box(
             Modifier
                 .padding(24.dp)
-                .fillMaxSize(),
-            propagateMinConstraints = false
+                .fillMaxSize(), propagateMinConstraints = false
         ) {
             cards.forEachIndexed() { index, (card, cardState) ->
                 var cardFaceUIState by remember {
@@ -277,6 +272,8 @@ private fun Content(
                     if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
                         currentColor = BackgroundColors.NORMAL
                     }
+
+
                 }
 
                 val indexList = (index - deckWithCards.cards.size + 1).absoluteValue
@@ -292,15 +289,13 @@ private fun Content(
                             }
                         },
                         modifierFront = Modifier,
-                        modifierBack = Modifier.swipableCard(state = cardState,
-                            onSwiped = {
-                                scope.launch(Dispatchers.Unconfined) {
-                                    viewModel.onSwipeCard()
-                                }
-                            },
-                            onSwipeCancel = {
-                                currentColor = BackgroundColors.NORMAL
-                            }),
+                        modifierBack = Modifier.swipableCard(state = cardState, onSwiped = {
+                            scope.launch(Dispatchers.Unconfined) {
+                                viewModel.onSwipeCard()
+                            }
+                        }, onSwipeCancel = {
+                            currentColor = BackgroundColors.NORMAL
+                        }),
                         front = {
                             Column(
                                 modifier = Modifier

@@ -17,7 +17,8 @@ fun AlertWindow(
     confirmTextColor: Color,
     openDialog: Boolean,
     onCloseDialog: () -> Unit,
-    onPressConfirm: () -> Unit
+    onPressConfirm: () -> Unit,
+    cancelButtonVisibility: Boolean = true
 ) {
     MaterialTheme {
         Column {
@@ -51,15 +52,18 @@ fun AlertWindow(
                         }
                     },
                     dismissButton = {
-                        TextButton(
-                            onClick = {
-                                onCloseDialog()
-                            }) {
-                            Text(
-                                "Cancel",
-                                color = AppTheme.neutral800
-                            )
+                        if(cancelButtonVisibility) {
+                            TextButton(
+                                onClick = {
+                                    onCloseDialog()
+                                }) {
+                                Text(
+                                    "Cancel",
+                                    color = AppTheme.neutral800
+                                )
+                            }
                         }
+
                     }
                 )
             }

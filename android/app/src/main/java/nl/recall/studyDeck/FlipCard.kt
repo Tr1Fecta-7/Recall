@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -33,10 +34,17 @@ fun FlipCard(
     val rotation = animateFloatAsState(
         targetValue = cardFaceUIState.angle,
         animationSpec = tween(
-            durationMillis = 400,
+            durationMillis =
+            if (cardFaceUIState == CardFaceUIState.Back) {
+                400
+            } else {
+                0
+            },
             easing = FastOutSlowInEasing,
         )
     )
+
+
 
 
     Box(
@@ -53,7 +61,7 @@ fun FlipCard(
                 shape = RoundedCornerShape(20.dp),
                 modifier = modifierFront
                     .fillMaxSize()
-                    .padding(bottom = 15.dp, start = 10.dp, end = 10.dp),
+                    .padding(bottom = 45.dp, start = 10.dp, end = 10.dp),
                 onClick = { onClick(cardFaceUIState) },
             ) {
                 front()
@@ -65,7 +73,7 @@ fun FlipCard(
                 shape = RoundedCornerShape(20.dp),
                 modifier = modifierBack
                     .fillMaxSize()
-                    .padding(bottom = 15.dp, start = 10.dp, end = 10.dp)
+                    .padding(bottom = 45.dp, start = 10.dp, end = 10.dp)
                     .graphicsLayer {
                         rotationY = 180f
                     },

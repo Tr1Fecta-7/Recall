@@ -63,6 +63,14 @@
     <string name="shared_preferences_current_streak">currentStreak</string>
     <string name="deck_name_title">Deck name</string>
     <string name="start_smart_learning_text">Start Smart Learning</string>
+    <string name="dropdown_menu_reset_algorithm">Reset algorithm</string>
+    <string name="dialog_reset_algorithm_title">Reset algorithm</string>
+    <string name="dialog_reset_algorithm_text">Are you sure you want to reset the algorithm? By doing this all your progress for this deck will be lost!</string>
+    <string name="reset_text">Reset</string>
+    <string name="dropdown_menu_info_algorithm">Information</string>
+    <string name="close_text">Close</string>
+    <string name="dialog_info_algorithm_title">How does it work?</string>
+    <string name="dialog_info_algorithm_text">Come back to the app every day to practice your flashcards. If you consistently answer a flashcard correctly, the algorithm will show it less frequently during your study sessions. Flashcards that you often answer incorrectly will appear more frequently.\n\nIf you prefer not to have the algorithm determine your daily learning, we recommend using the regular \'Start Learning\' method.\n\nYou can reset the algorithm by tapping on the ellipsis (...) during your study session and selecting the option to reset the algorithm.</string>
     <string name="community_deck_overview_title">Community</string>
     <string name="community_deck_overview_subtitle">See what others are learning!</string>
     <string name="search_bar_community_hint">Search decks online</string>

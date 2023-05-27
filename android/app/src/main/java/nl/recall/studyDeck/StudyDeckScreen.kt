@@ -17,16 +17,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -52,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexstyl.swipeablecard.Direction
 import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
+import com.alexstyl.swipeablecard.SwipeableCardState
 import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.ramcosta.composedestinations.annotation.Destination
@@ -60,9 +66,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import nl.recall.R
+import nl.recall.components.AlertWindow
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
 import nl.recall.destinations.StudyDeckFinishedScreenDestination
+import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.StudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
@@ -70,11 +78,9 @@ import nl.recall.presentation.studyDeck.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
 import nl.recall.studyDeck.model.BackgroundColors
 import nl.recall.studyDeck.model.CardFaceUIState
-import nl.recall.studyDeckFinished.StudyDeckFinishedScreen
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.math.absoluteValue
 
 @Destination
 @Composable
@@ -87,25 +93,41 @@ fun StudyDeckScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
     val deckWithCards by viewModel.deckWithCards.collectAsState()
+    val currentCard by viewModel.currentCard.collectAsState()
+    val nextCard by viewModel.nextCard.collectAsState()
     val progress by viewModel.progress.collectAsState()
     val iterator by viewModel.iterator.collectAsState()
+    val deckSize by viewModel.deckSize.collectAsState()
+    val nextCardAvailability by viewModel.nextCardAvailability.collectAsState()
 
     ContentScaffold(
-        title = deckWithCards?.deck?.title,
+        title = deckWithCards?.deck?.title
+            ?: stringResource(id = R.string.deck_detail_title_placeholder),
         navigator = navigator,
+        resetAlgorithm = {
+            viewModel.resetDeck()
+            navigator.popBackStack()
+        },
         content = { paddingValues ->
             when (uiState) {
                 UIState.NORMAL -> {
-                    deckWithCards?.let { deckWithCards ->
-                        Content(
-                            deckWithCards = deckWithCards,
-                            paddingValues = paddingValues,
-                            progress = progress,
-                            iterator = iterator,
-                            viewModel = viewModel,
-                            navigator = navigator
-                        )
+                    deckWithCards?.let {deck ->
+                        currentCard?.let { card ->
+                            Content(
+                                paddingValues = paddingValues,
+                                currentCard = card,
+                                nextCard = nextCard,
+                                progress = progress,
+                                iterator = iterator,
+                                viewModel = viewModel,
+                                navigator = navigator,
+                                deckSize = deckSize,
+                                nextCardAvailability = nextCardAvailability,
+                                deckWithCards = deck
+                            )
+                        }
                     }
+
                 }
 
                 UIState.ERROR -> {
@@ -160,48 +182,145 @@ fun StudyDeckScreen(
 
 @Composable
 private fun ContentScaffold(
-    navigator: DestinationsNavigator, content: @Composable ((PaddingValues) -> Unit), title: String?
+    navigator: DestinationsNavigator,
+    content: @Composable ((PaddingValues) -> Unit),
+    title: String,
+    resetAlgorithm: () -> (Unit)
 ) {
-    Scaffold(topBar = {
-        TopAppBar(
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = AppTheme.neutral50,
-            ),
-            title = {
-                Text(
-                    text = title ?: stringResource(id = R.string.deck_detail_title_placeholder)
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = { navigator.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-                }
-            },
+    var expandedMoreVert by remember {
+        mutableStateOf(false)
+    }
+    var alertWindowReset by remember {
+        mutableStateOf(false)
+    }
 
+    var alertWindowInfo by remember {
+        mutableStateOf(false)
+    }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = AppTheme.neutral50,
+                ),
+                title = {
+                    Text(
+                        text = title
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        expandedMoreVert = !expandedMoreVert
+                    }) {
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
+                    }
+                    DropdownMenu(
+                        expanded = expandedMoreVert,
+                        onDismissRequest = { expandedMoreVert = false },
+                        modifier = Modifier
+                            .background(AppTheme.white)
+                            .width(180.dp),
+                    ) {
+                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_reset_algorithm)) },
+                            onClick = {
+                                alertWindowReset = true
+                            })
+                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_info_algorithm)) },
+                            onClick = {
+                                alertWindowInfo = true
+                            })
+                    }
+                }
             )
-    }, content = { paddingValues ->
-        content(paddingValues)
-    })
+        }, content = { paddingValues ->
+            content(paddingValues)
+        }
+    )
+    AlertWindow(
+        title = stringResource(id = R.string.dialog_reset_algorithm_title),
+        subText = stringResource(id = R.string.dialog_reset_algorithm_text),
+        confirmText = stringResource(id = R.string.reset_text),
+        confirmTextColor = AppTheme.red700,
+        openDialog = alertWindowReset,
+        onCloseDialog = {
+            expandedMoreVert = false
+            alertWindowReset = false
+        },
+        onPressConfirm = {
+            resetAlgorithm()
+        }
+    )
+    AlertWindow(
+        title = stringResource(id = R.string.dialog_info_algorithm_title),
+        subText = stringResource(id = R.string.dialog_info_algorithm_text),
+        confirmText = stringResource(id = R.string.close_text),
+        confirmTextColor = AppTheme.neutral800,
+        openDialog = alertWindowInfo,
+        onCloseDialog = {
+            expandedMoreVert = false
+            alertWindowInfo = false
+        },
+        onPressConfirm = {
+
+        },
+        cancelButtonVisibility = false
+    )
 }
 
 @OptIn(ExperimentalSwipeableCardApi::class)
 @Composable
 private fun Content(
     paddingValues: PaddingValues,
-    deckWithCards: DeckWithCards,
+    currentCard: Card,
+    nextCard: Card?,
     progress: Float,
     iterator: Int,
     viewModel: StudyDeckViewModel,
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    deckSize: Int,
+    nextCardAvailability: Boolean,
+    deckWithCards: DeckWithCards
 ) {
+    var cardFaceUIState by remember {
+        mutableStateOf(CardFaceUIState.Front)
+    }
     val animatedProgress = animateFloatAsState(
         targetValue = progress, animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
-    val cards = deckWithCards.cards.map { it to rememberSwipeableCardState() }
     var currentBackgroundColor by remember { mutableStateOf(BackgroundColors.NORMAL) }
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
+    val cardStates = ArrayList<SwipeableCardState>()
 
+    for (i in 0..deckSize) {
+        cardStates.add(rememberSwipeableCardState())
+    }
+
+    if (cardStates.size <= deckSize) {
+        cardStates.add(rememberSwipeableCardState())
+    }
+
+
+    LaunchedEffect(cardStates[iterator].offset.value.x) {
+        when {
+            (cardStates[iterator].offset.value.x < 0.0f) -> {
+                currentBackgroundColor = BackgroundColors.CORRECT
+            }
+
+            (cardStates[iterator].offset.value.x > 0.0f) -> {
+                currentBackgroundColor = BackgroundColors.WRONG
+            }
+
+            (cardStates[iterator].offset.value.x == 0.0f || cardStates[iterator].swipedDirection != null) -> {
+                currentBackgroundColor = BackgroundColors.NORMAL
+            }
+        }
+    }
 
     LaunchedEffect(currentBackgroundColor) {
         color.animateTo(
@@ -227,7 +346,7 @@ private fun Content(
                 ) {
                     Text(
                         fontSize = 14.sp, modifier = Modifier.padding(4.dp), text = stringResource(
-                            id = R.string.study_progression, iterator, deckWithCards.cards.size
+                            id = R.string.study_progression, iterator, deckSize
                         )
                     )
                 }
@@ -238,67 +357,76 @@ private fun Content(
             Modifier
                 .padding(24.dp)
                 .fillMaxSize(),
-            propagateMinConstraints = false
         ) {
-
             LaunchedEffect(key1 = progress){
                 if(progress == 1.0f) {
                     navigator.popBackStack()
                     navigator.navigate(StudyDeckFinishedScreenDestination(title = deckWithCards.deck.title, deckWithCards.cards.size))
                 }
             }
-
-
-            cards.reversed().forEachIndexed() { index, (card, cardState) ->
-                var cardFaceUIState by remember {
-                    mutableStateOf(CardFaceUIState.Front)
+            if (nextCard != null) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = AppTheme.white),
+                    elevation = CardDefaults.cardElevation(3.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 45.dp, start = 10.dp, end = 10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(30.dp)
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = nextCard.front, fontWeight = FontWeight.Bold, fontSize = 25.sp
+                        )
+                        Row(
+                            Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.click_to_rotate),
+                                fontSize = 10.sp,
+                                lineHeight = 12.sp,
+                            )
+                        }
+                    }
                 }
+            }
 
-                LaunchedEffect(cardState.offset.value.x) {
-                    if (cardState.offset.value.x < 0.0f) {
-                        currentBackgroundColor = BackgroundColors.CORRECT
-                    }
+            if (nextCardAvailability) {
+                this@Column.AnimatedVisibility(
+                    visible = nextCardAvailability,
+                    enter = fadeIn(tween(200)),
+                    exit = fadeOut(tween(0))
+                ) {
 
-                    if (cardState.offset.value.x > 0.0f) {
-                        currentBackgroundColor = BackgroundColors.WRONG
-                    }
-
-                    if (cardState.offset.value.x == 0.0f) {
-                        currentBackgroundColor = BackgroundColors.NORMAL
-                    }
-
-                    if (cardState.swipedDirection == Direction.Left || cardState.swipedDirection == Direction.Right) {
-                        currentBackgroundColor = BackgroundColors.NORMAL
-                    }
-                }
-
-                val indexList = (index-deckWithCards.cards.size+1).absoluteValue
-
-                if (cardState.swipedDirection == null) {
-
-                    FlipCard(
-                        elevation = if (indexList == iterator) 3 else 0,
-                        cardFaceUIState = cardFaceUIState,
-                        onClick = {
-                            if (indexList == iterator) {
-                                cardFaceUIState = CardFaceUIState.Back
-                            }
-                        },
-                        modifierFront = Modifier,
-                        modifierBack = Modifier.swipableCard(state = cardState,
-                            onSwiped = { direction ->
-                                scope.launch(Dispatchers.Unconfined) {
+                    FlipCard(cardFaceUIState = cardFaceUIState,
+                        modifierBack = Modifier.swipableCard(
+                            cardStates[iterator], onSwiped = { direction ->
+                                scope.launch {
+                                    cardFaceUIState = CardFaceUIState.Front
                                     if (direction == Direction.Left) {
-                                        viewModel.onSwipeCard(SwipeDirection.LEFT, card)
+                                        viewModel.onSwipeCard(
+                                            SwipeDirection.LEFT, currentCard
+                                        )
                                     } else {
-                                        viewModel.onSwipeCard(SwipeDirection.RIGHT, card)
+                                        viewModel.onSwipeCard(
+                                            SwipeDirection.RIGHT, currentCard
+                                        )
                                     }
+                                    delay(100)
+                                    viewModel.getNextCard()
                                 }
-
-                            },
-                            onSwipeCancel = {
-                                currentBackgroundColor = BackgroundColors.NORMAL
-                            }),
+                            }, blockedDirections = listOf(Direction.Down, Direction.Up)
+                        ),
+                        onClick = { cardFaceUIState = CardFaceUIState.Back },
+                        elevation = if (deckSize - 1 == iterator) {
+                            3
+                        } else {
+                            0
+                        },
                         front = {
                             Column(
                                 modifier = Modifier
@@ -307,7 +435,7 @@ private fun Content(
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = card.front,
+                                    text = currentCard.front,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 25.sp
                                 )
@@ -330,23 +458,18 @@ private fun Content(
                                     .fillMaxSize(),
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Column(
-
-                                ) {
+                                Column {
                                     Text(
-                                        text = card.front,
+                                        text = currentCard.front,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 25.sp
                                     )
                                     Text(
-                                        text = card.back,
+                                        text = currentCard.back,
                                         fontWeight = FontWeight.Light,
                                         fontSize = 25.sp
                                     )
                                 }
-
-
-
                                 Column(
                                     Modifier.fillMaxWidth(),
                                     verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -368,11 +491,14 @@ private fun Content(
                                                 containerColor = AppTheme.red300
                                             ),
                                             onClick = {
-                                                scope.launch(Dispatchers.Unconfined) {
-                                                    cardState.swipe(Direction.Right)
+                                                scope.launch {
+                                                    cardStates[iterator].swipe(Direction.Right)
+                                                    cardFaceUIState = CardFaceUIState.Front
                                                     viewModel.onSwipeCard(
-                                                        SwipeDirection.RIGHT, card
+                                                        SwipeDirection.LEFT, currentCard
                                                     )
+                                                    delay(100)
+                                                    viewModel.getNextCard()
                                                     currentBackgroundColor = BackgroundColors.WRONG
                                                     delay(500)
                                                     currentBackgroundColor = BackgroundColors.NORMAL
@@ -394,12 +520,15 @@ private fun Content(
                                             ),
                                             onClick = {
                                                 scope.launch(Dispatchers.Unconfined) {
-                                                    cardState.swipe(Direction.Left)
+                                                    cardStates[iterator].swipe(Direction.Left)
+                                                    cardFaceUIState = CardFaceUIState.Front
                                                     viewModel.onSwipeCard(
-                                                        SwipeDirection.LEFT, card
+                                                        SwipeDirection.RIGHT, currentCard
                                                     )
-                                                    println(cards.size)
-                                                    currentBackgroundColor = BackgroundColors.CORRECT
+                                                    delay(100)
+                                                    viewModel.getNextCard()
+                                                    currentBackgroundColor =
+                                                        BackgroundColors.CORRECT
                                                     delay(500)
                                                     currentBackgroundColor = BackgroundColors.NORMAL
                                                 }
@@ -413,7 +542,7 @@ private fun Content(
                                     }
                                 }
                             }
-                        },
+                        }
                     )
                 }
             }
