@@ -69,14 +69,15 @@ import nl.recall.R
 import nl.recall.components.AlertWindow
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
+import nl.recall.destinations.StudyDeckFinishedScreenDestination
 import nl.recall.domain.deck.model.Card
+import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.StudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
 import nl.recall.presentation.studyDeck.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
 import nl.recall.studyDeck.model.BackgroundColors
 import nl.recall.studyDeck.model.CardFaceUIState
-import nl.recall.studyDeckFinished.StudyDeckFinishedScreen
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -110,19 +111,23 @@ fun StudyDeckScreen(
         content = { paddingValues ->
             when (uiState) {
                 UIState.NORMAL -> {
-                    currentCard?.let { card ->
-                        Content(
-                            paddingValues = paddingValues,
-                            currentCard = card,
-                            nextCard = nextCard,
-                            progress = progress,
-                            iterator = iterator,
-                            viewModel = viewModel,
-                            navigator = navigator,
-                            deckSize = deckSize,
-                            nextCardAvailability = nextCardAvailability,
-                        )
+                    deckWithCards?.let {deck ->
+                        currentCard?.let { card ->
+                            Content(
+                                paddingValues = paddingValues,
+                                currentCard = card,
+                                nextCard = nextCard,
+                                progress = progress,
+                                iterator = iterator,
+                                viewModel = viewModel,
+                                navigator = navigator,
+                                deckSize = deckSize,
+                                nextCardAvailability = nextCardAvailability,
+                                deckWithCards = deck
+                            )
+                        }
                     }
+
                 }
 
                 UIState.ERROR -> {
@@ -278,7 +283,8 @@ private fun Content(
     viewModel: StudyDeckViewModel,
     navigator: DestinationsNavigator,
     deckSize: Int,
-    nextCardAvailability: Boolean
+    nextCardAvailability: Boolean,
+    deckWithCards: DeckWithCards
 ) {
     var cardFaceUIState by remember {
         mutableStateOf(CardFaceUIState.Front)
@@ -352,10 +358,11 @@ private fun Content(
                 .padding(24.dp)
                 .fillMaxSize(),
         ) {
-            this@Column.AnimatedVisibility(
-                visible = (progress >= 1.0f), enter = fadeIn(), exit = fadeOut()
-            ) {
-                StudyDeckFinishedScreen(navigator = navigator)
+            LaunchedEffect(key1 = progress){
+                if(progress == 1.0f) {
+                    navigator.popBackStack()
+                    navigator.navigate(StudyDeckFinishedScreenDestination(title = deckWithCards.deck.title, deckWithCards.cards.size))
+                }
             }
             if (nextCard != null) {
                 Card(
