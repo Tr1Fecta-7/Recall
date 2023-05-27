@@ -105,7 +105,7 @@ fun CommunityDeckDetailScreen(
 			) {
 				ImageMessage(
 					painter = painterResource(id = R.drawable.error_image),
-					text = stringResource(id = R.string.no_deck_found)
+					text = stringResource(id = R.string.community_deck_detail_error)
 				)
 			}
 		}

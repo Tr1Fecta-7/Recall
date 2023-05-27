@@ -105,7 +105,7 @@ fun CommunityDeckSearchScreen(
 			UIState.ERROR -> {
 				ImageMessage(
 					painter = painterResource(id = R.drawable.error_image),
-					text = stringResource(id = R.string.no_decks_found)
+					text = stringResource(id = R.string.community_deck_overview_error)
 				)
 			}
 		}

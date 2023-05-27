@@ -98,7 +98,7 @@ fun CommunityCardScreen(
 					Modifier.fillMaxSize()
 				) {
 					ImageMessage(
-						painter = painterResource(id = R.drawable.no_decks_found),
+						painter = painterResource(id = R.drawable.error_image),
 						text = stringResource(id = R.string.error_when_retrieving_card)
 					)
 				}
