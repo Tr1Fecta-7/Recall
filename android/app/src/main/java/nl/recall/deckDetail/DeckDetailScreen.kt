@@ -1,7 +1,6 @@
 package nl.recall.deckDetail
 
 import DeckDetailPreview
-import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -23,9 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -37,7 +34,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -82,6 +78,7 @@ import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.text.SimpleDateFormat
 import java.util.Date
 
 @Destination
@@ -292,8 +289,10 @@ private fun Content(
                     deckWithCards = deckWithCards,
                     title = stringResource(id = R.string.start_smart_learning_text),
                     icon = painterResource(id = R.drawable.cards_icon),
-                    cardCount = deckWithCards.cards.stream().filter { it.dueDate <= Date() }
-                        .count(),
+                    cardCount = deckWithCards.cards.stream().filter {
+                        val fmt = SimpleDateFormat("yyyyMMdd")
+                        return@filter fmt.format(Date()) >= fmt.format(it.dueDate)
+                    }.count(),
                     onClick = {
                         navigator.navigate(StudyDeckScreenDestination(deckWithCards.deck.id))
                     }
@@ -323,7 +322,8 @@ private fun Content(
                         ),
                         shape = RoundedCornerShape(35.dp),
                         onClick = {
-                            navigator.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
+                            navigator
+                                .navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
                         }) {
                         Row(
                             modifier = Modifier
@@ -344,7 +344,6 @@ private fun Content(
             Spacer(modifier = Modifier.height(10.dp))
         }
         itemsIndexed(items = deckWithCards.cards, itemContent = { index, card ->
-
             AnimatedVisibility(
                 visibleState = state,
                 enter = slideInVertically(
@@ -399,7 +398,6 @@ private fun Content(
 
     }
 
-
     AlertWindow(
         title = stringResource(id = R.string.dialog_delete_deck_title),
         subText = stringResource(id = R.string.dialog_delete_deck_text),
@@ -414,7 +412,6 @@ private fun Content(
         }
     )
 }
-
 
 private fun informUser(context: Context, text: String) {
     Toast.makeText(

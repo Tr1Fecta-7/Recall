@@ -99,8 +99,9 @@ fun StudyDeckScreen(
     val deckSize by viewModel.deckSize.collectAsState()
     val nextCardAvailability by viewModel.nextCardAvailability.collectAsState()
 
-    ContentScaffold(title = deckWithCards?.deck?.title
-        ?: stringResource(id = R.string.deck_detail_title_placeholder),
+    ContentScaffold(
+        title = deckWithCards?.deck?.title
+            ?: stringResource(id = R.string.deck_detail_title_placeholder),
         navigator = navigator,
         resetAlgorithm = {
             viewModel.resetDeck()
@@ -191,48 +192,49 @@ private fun ContentScaffold(
     var alertWindowInfo by remember {
         mutableStateOf(false)
     }
-    Scaffold(topBar = {
-        TopAppBar(
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = AppTheme.neutral50,
-            ),
-            title = {
-                Text(
-                    text = title
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = { navigator.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = AppTheme.neutral50,
+                ),
+                title = {
+                    Text(
+                        text = title
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        expandedMoreVert = !expandedMoreVert
+                    }) {
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
+                    }
+                    DropdownMenu(
+                        expanded = expandedMoreVert,
+                        onDismissRequest = { expandedMoreVert = false },
+                        modifier = Modifier
+                            .background(AppTheme.white)
+                            .width(180.dp),
+                    ) {
+                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_reset_algorithm)) },
+                            onClick = {
+                                alertWindowReset = true
+                            })
+                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_info_algorithm)) },
+                            onClick = {
+                                alertWindowInfo = true
+                            })
+                    }
                 }
-            },
-            actions = {
-                IconButton(onClick = {
-                    expandedMoreVert = !expandedMoreVert
-                }) {
-                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
-                }
-                DropdownMenu(
-                    expanded = expandedMoreVert,
-                    onDismissRequest = { expandedMoreVert = false },
-                    modifier = Modifier
-                        .background(AppTheme.white)
-                        .width(180.dp),
-                ) {
-                    DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_reset_algorithm)) },
-                        onClick = {
-                            alertWindowReset = true
-                        })
-                    DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_info_algorithm)) },
-                        onClick = {
-                            alertWindowInfo = true
-                        })
-                }
-            }
-        )
-    }, content = { paddingValues ->
-        content(paddingValues)
-    }
+            )
+        }, content = { paddingValues ->
+            content(paddingValues)
+        }
     )
     AlertWindow(
         title = stringResource(id = R.string.dialog_reset_algorithm_title),
@@ -314,13 +316,11 @@ private fun Content(
         }
     }
 
-
     LaunchedEffect(currentBackgroundColor) {
         color.animateTo(
             targetValue = currentBackgroundColor.color, animationSpec = tween(500)
         )
     }
-
 
     Column(
         modifier = Modifier
@@ -535,7 +535,8 @@ private fun Content(
                                     }
                                 }
                             }
-                        })
+                        }
+                    )
                 }
             }
         }

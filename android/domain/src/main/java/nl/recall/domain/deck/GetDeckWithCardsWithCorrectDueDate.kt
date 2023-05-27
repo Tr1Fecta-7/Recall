@@ -14,10 +14,8 @@ class GetDeckWithCardsWithCorrectDueDate(private val deckRepository: DeckReposit
 
         val response = deckRepository.getDeckById(id)
         return DeckWithCards(response.deck, response.cards.stream().filter {
-
             val fmt = SimpleDateFormat("yyyyMMdd")
             return@filter fmt.format(Date()) >= fmt.format(it.dueDate)
-
         }.collect(Collectors.toList()))
     }
 }

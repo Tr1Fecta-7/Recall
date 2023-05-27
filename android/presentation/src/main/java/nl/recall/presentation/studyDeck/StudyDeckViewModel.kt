@@ -58,7 +58,6 @@ class StudyDeckViewModel(
     private val _nextCard = MutableStateFlow<Card?>(null)
     val nextCard: StateFlow<Card?> = _nextCard.asStateFlow()
 
-
     private fun getDeckWithCards() {
         _state.value = UIState.LOADING
         viewModelScope.launch(Dispatchers.IO) {
@@ -155,9 +154,6 @@ class StudyDeckViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _deckWithCards.value?.let {
-//                    val cards: List<Card> = it.cards.map { card ->
-//                        return@map card.copy(dueDate = Date())
-//                    }
                     println(resetAlgorithm(it.deck.id))
                 }
                 _state.value = UIState.NORMAL
