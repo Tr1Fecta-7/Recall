@@ -13,19 +13,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -213,38 +209,9 @@ private fun Content(
 					fontWeight = FontWeight.Bold
 				)
 
-				if (communityDeck.cards.isNotEmpty()) {
-					Card(modifier = Modifier
-						.fillMaxWidth(),
-						colors = CardDefaults.cardColors(
-							containerColor = AppTheme.neutral200,
-						),
-						shape = RoundedCornerShape(35.dp),
-						onClick = {
-							// navigator.navigate(DeckDetailSearchScreenDestination(communityDeck.deck.id))
-						}) {
-						Row(
-							modifier = Modifier
-								.padding(15.dp)
-								.fillMaxWidth(),
-							verticalAlignment = Alignment.CenterVertically,
-							horizontalArrangement = Arrangement.SpaceBetween
-						) {
-							Text(
-								text = stringResource(R.string.search_bar_card_hint),
-								color = AppTheme.neutral500
-							)
-							Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-						}
-					}
-				}
 				LazyColumn(
 					verticalArrangement = Arrangement.spacedBy(2.dp),
 				) {
-					item {
-						Spacer(modifier = Modifier.height(10.dp))
-					}
-
 					if (communityDeck.cards.isEmpty()) {
 						item {
 							ImageMessage(
