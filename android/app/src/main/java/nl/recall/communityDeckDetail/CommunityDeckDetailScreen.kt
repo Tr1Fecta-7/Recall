@@ -175,7 +175,10 @@ private fun Content(
 			) {
 				AlertWindow(
 					title = stringResource(R.string.import_deck_alert_title),
-					subText = stringResource(R.string.import_deck_alert_subtext),
+					subText = stringResource(
+						R.string.import_deck_alert_subtext,
+						communityDeck.title
+					),
 					confirmText = stringResource(R.string.import_deck_alert_confirmation),
 					confirmTextColor = AppTheme.primary500,
 					openDialog = isDialogOpen,
