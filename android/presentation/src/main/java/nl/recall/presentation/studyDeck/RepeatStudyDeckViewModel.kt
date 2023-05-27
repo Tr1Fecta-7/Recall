@@ -6,21 +6,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import nl.recall.domain.deck.GetDeckById
 import nl.recall.domain.deck.GetShuffledDeckById
-import nl.recall.domain.deck.ObserveDeckById
-import nl.recall.domain.deck.UpdateDateCard
-import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
-import nl.recall.presentation.studyDeck.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
-import java.util.Date
 
 @KoinViewModel
 class RepeatStudyDeckViewModel(
@@ -45,7 +37,6 @@ class RepeatStudyDeckViewModel(
 
     private fun getDeckWithCards() {
         viewModelScope.launch(Dispatchers.IO) {
-
             try {
                 _state.value = UIState.LOADING
                 _deckWithCards.value = getShuffledDeckById(args.deckId)

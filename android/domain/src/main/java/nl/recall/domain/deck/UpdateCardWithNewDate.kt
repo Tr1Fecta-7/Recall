@@ -6,15 +6,10 @@ import org.koin.core.annotation.Factory
 import java.util.Calendar
 import java.util.Date
 import kotlin.math.ceil
-import kotlin.math.roundToInt
 
 @Factory
 class UpdateCardWithNewDate(private val cardRepository: CardRepository) {
     val STRENGTH_ALGORITHM = 0.2
-
-//    fun test(): String {
-//        return cardRepository.test("hello")
-//    }
 
     suspend operator fun invoke(card: Card): Boolean {
         return cardRepository.updateCard(
@@ -23,7 +18,7 @@ class UpdateCardWithNewDate(private val cardRepository: CardRepository) {
                 front = card.front,
                 back = card.back,
                 dueDate = calculateNewDueDate(card.successStreak),
-                deckId = card.id,
+                deckId = card.deckId,
                 successStreak = card.successStreak
             )
         )

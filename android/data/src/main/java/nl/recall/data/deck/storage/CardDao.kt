@@ -1,14 +1,11 @@
 package nl.recall.data.deck.storage
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import nl.recall.data.deck.models.CardEntity
-import nl.recall.domain.deck.model.Card
-import org.koin.core.annotation.Singleton
 import java.util.Date
 
 @Dao
@@ -35,4 +32,8 @@ interface CardDao {
     @Transaction
     @Query("DELETE FROM card where deck_id = :deckId AND card.id = :cardId")
     suspend fun deleteCardById(deckId: Long, cardId: Long): Int
+
+    @Transaction
+    @Query("UPDATE card SET due_date =:date, success_streak = 0 WHERE deck_id = :deckId")
+    suspend fun resetAlgorithm(deckId: Long, date: Date): Int
 }

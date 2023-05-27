@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import nl.recall.domain.deck.GetDeckWithCardsWithCorrectDueDate
+import nl.recall.domain.deck.ResetAlgorithm
 import nl.recall.domain.deck.UpdateCard
 import nl.recall.domain.deck.UpdateCardWithNewDate
 import nl.recall.domain.deck.model.Card
@@ -17,16 +18,15 @@ import nl.recall.presentation.studyDeck.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
-import java.util.Calendar
 import java.util.Date
-import kotlin.streams.toList
 
 @KoinViewModel
 class StudyDeckViewModel(
     @InjectedParam private val args: StudyDeckViewModelArgs,
     private val getDeckById: GetDeckWithCardsWithCorrectDueDate,
     private val updateCardWithNewDate: UpdateCardWithNewDate,
-    private val updateCard: UpdateCard
+    private val updateCard: UpdateCard,
+    private val resetAlgorithm: ResetAlgorithm,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UIState.LOADING)
@@ -62,29 +62,28 @@ class StudyDeckViewModel(
     private fun getDeckWithCards() {
         _state.value = UIState.LOADING
         viewModelScope.launch(Dispatchers.IO) {
-
             try {
                 _deckWithCards.value = getDeckById(args.deckId)
                 if (_deckWithCards.value?.cards.isNullOrEmpty()) {
                     _state.value = UIState.EMPTY
                 } else {
                     deckWithCards.value?.let {
-                        _cards.value = ArrayList(it.cards.stream().toList())
+                        _cards.value = ArrayList(it.cards)
                         _currentCard.value = it.cards[iterator.value]
                         _deckSize.value = it.cards.size
                     }
 
                     _state.value = UIState.NORMAL
                 }
-            } catch (exception: Exception) {
-                _state.value = UIState.ERROR
-            }
             _deckWithCards.value?.let {
                 if (iterator.value + 1 < it.cards.size) {
                     _nextCard.value = it.cards[iterator.value + 1]
                 } else {
                     _nextCard.value = null
                 }
+            }
+            } catch (exception: Exception) {
+                _state.value = UIState.ERROR
             }
         }
     }
@@ -118,15 +117,16 @@ class StudyDeckViewModel(
                     updateCard(newCard)
                     _deckSize.value = _cards.value.size
                 }
-            } catch (exception: Exception) {
-                _state.value = UIState.ERROR
-            }
+
             _iterator.value++
             _progress.value = (iterator.value.toFloat() / _cards.value.size.toFloat())
 
             if (iterator.value < _cards.value.size) {
                 _currentCard.value = _cards.value[iterator.value]
                 _nextCardAvailability.value = true
+            }
+            } catch (exception: Exception) {
+                _state.value = UIState.ERROR
             }
         }
 
@@ -135,13 +135,18 @@ class StudyDeckViewModel(
 
     fun getNextCard() {
         viewModelScope.launch(Dispatchers.IO) {
-            _cards.value.let {
-                if (iterator.value + 1 < it.size) {
-                    _nextCard.value = it[iterator.value + 1]
-                } else {
-                    _nextCard.value = null
+            try {
+                _cards.value.let {
+                    if (iterator.value + 1 < it.size) {
+                        _nextCard.value = it[iterator.value + 1]
+                    } else {
+                        _nextCard.value = null
+                    }
                 }
+            } catch (exception: Exception) {
+                _state.value = UIState.ERROR
             }
+
         }
     }
 
@@ -150,10 +155,10 @@ class StudyDeckViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _deckWithCards.value?.let {
-                    val cards: List<Card> = it.cards.map { card ->
-                        return@map card.copy(dueDate = Date())
-                    }
-                    DeckWithCards(it.deck, cards)
+//                    val cards: List<Card> = it.cards.map { card ->
+//                        return@map card.copy(dueDate = Date())
+//                    }
+                    println(resetAlgorithm(it.deck.id))
                 }
                 _state.value = UIState.NORMAL
             } catch (exception: Exception) {

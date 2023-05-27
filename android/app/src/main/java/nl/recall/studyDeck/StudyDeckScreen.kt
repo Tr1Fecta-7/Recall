@@ -1,14 +1,11 @@
 package nl.recall.studyDeck
 
 import androidx.compose.animation.Animatable
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,20 +15,23 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -50,7 +50,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,6 +66,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import nl.recall.R
+import nl.recall.components.AlertWindow
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
 import nl.recall.domain.deck.model.Card
@@ -102,6 +102,10 @@ fun StudyDeckScreen(
     ContentScaffold(title = deckWithCards?.deck?.title
         ?: stringResource(id = R.string.deck_detail_title_placeholder),
         navigator = navigator,
+        resetAlgorithm = {
+            viewModel.resetDeck()
+            navigator.popBackStack()
+        },
         content = { paddingValues ->
             when (uiState) {
                 UIState.NORMAL -> {
@@ -115,7 +119,7 @@ fun StudyDeckScreen(
                             viewModel = viewModel,
                             navigator = navigator,
                             deckSize = deckSize,
-                            nextCardAvailability = nextCardAvailability
+                            nextCardAvailability = nextCardAvailability,
                         )
                     }
                 }
@@ -174,8 +178,19 @@ fun StudyDeckScreen(
 private fun ContentScaffold(
     navigator: DestinationsNavigator,
     content: @Composable ((PaddingValues) -> Unit),
-    title: String
+    title: String,
+    resetAlgorithm: () -> (Unit)
 ) {
+    var expandedMoreVert by remember {
+        mutableStateOf(false)
+    }
+    var alertWindowReset by remember {
+        mutableStateOf(false)
+    }
+
+    var alertWindowInfo by remember {
+        mutableStateOf(false)
+    }
     Scaffold(topBar = {
         TopAppBar(
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -191,11 +206,63 @@ private fun ContentScaffold(
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
                 }
             },
-
-            )
+            actions = {
+                IconButton(onClick = {
+                    expandedMoreVert = !expandedMoreVert
+                }) {
+                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
+                }
+                DropdownMenu(
+                    expanded = expandedMoreVert,
+                    onDismissRequest = { expandedMoreVert = false },
+                    modifier = Modifier
+                        .background(AppTheme.white)
+                        .width(180.dp),
+                ) {
+                    DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_reset_algorithm)) },
+                        onClick = {
+                            alertWindowReset = true
+                        })
+                    DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_info_algorithm)) },
+                        onClick = {
+                            alertWindowInfo = true
+                        })
+                }
+            }
+        )
     }, content = { paddingValues ->
         content(paddingValues)
-    })
+    }
+    )
+    AlertWindow(
+        title = stringResource(id = R.string.dialog_reset_algorithm_title),
+        subText = stringResource(id = R.string.dialog_reset_algorithm_text),
+        confirmText = stringResource(id = R.string.reset_text),
+        confirmTextColor = AppTheme.red700,
+        openDialog = alertWindowReset,
+        onCloseDialog = {
+            expandedMoreVert = false
+            alertWindowReset = false
+        },
+        onPressConfirm = {
+            resetAlgorithm()
+        }
+    )
+    AlertWindow(
+        title = stringResource(id = R.string.dialog_info_algorithm_title),
+        subText = stringResource(id = R.string.dialog_info_algorithm_text),
+        confirmText = stringResource(id = R.string.close_text),
+        confirmTextColor = AppTheme.neutral800,
+        openDialog = alertWindowInfo,
+        onCloseDialog = {
+            expandedMoreVert = false
+            alertWindowInfo = false
+        },
+        onPressConfirm = {
+
+        },
+        cancelButtonVisibility = false
+    )
 }
 
 @OptIn(ExperimentalSwipeableCardApi::class)
@@ -226,7 +293,7 @@ private fun Content(
         cardStates.add(rememberSwipeableCardState())
     }
 
-    if (cardStates.size != deckSize) {
+    if (cardStates.size <= deckSize) {
         cardStates.add(rememberSwipeableCardState())
     }
 
@@ -333,7 +400,7 @@ private fun Content(
                             cardStates[iterator], onSwiped = { direction ->
                                 scope.launch {
                                     cardFaceUIState = CardFaceUIState.Front
-                                    if (direction.equals(Direction.Left)) {
+                                    if (direction == Direction.Left) {
                                         viewModel.onSwipeCard(
                                             SwipeDirection.LEFT, currentCard
                                         )
@@ -384,9 +451,7 @@ private fun Content(
                                     .fillMaxSize(),
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Column(
-
-                                ) {
+                                Column {
                                     Text(
                                         text = currentCard.front,
                                         fontWeight = FontWeight.Bold,
@@ -419,7 +484,7 @@ private fun Content(
                                                 containerColor = AppTheme.red300
                                             ),
                                             onClick = {
-                                                scope.launch() {
+                                                scope.launch {
                                                     cardStates[iterator].swipe(Direction.Right)
                                                     cardFaceUIState = CardFaceUIState.Front
                                                     viewModel.onSwipeCard(
