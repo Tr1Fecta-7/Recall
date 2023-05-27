@@ -214,7 +214,6 @@ private fun Content(
 	) {
 		Column(horizontalAlignment = Alignment.CenterHorizontally) {
 			LinearProgressIndicator(progress = animatedProgress, Modifier.fillMaxWidth())
-
 			LaunchedEffect(key1 = progress) {
 				if (progress == 1.0f) {
 					navigator.popBackStack()
@@ -239,10 +238,8 @@ private fun Content(
 							id = R.string.study_progression, iterator, deckWithCards.cards.size
 						)
 					)
-					Text(text = "joe")
 				}
 			}
-
 		}
 		Box(
 			Modifier
