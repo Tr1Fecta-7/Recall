@@ -7,8 +7,8 @@ data class CommunityDeckResponse(
 	val cards: List<CommunityCardResponse>,
 	val color: String,
 	val creation: String,
-	val downloads: Int,
+	val downloads: Long,
 	val icon: String,
 	val id: Long,
-	val title: String
+	val title: String,
 )

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import nl.recall.domain.communityDeck.GetCommunityDeckById
+import nl.recall.domain.communityDeck.UpdateCommunityDeck
 import nl.recall.domain.communityDeck.models.CommunityDeck
 import nl.recall.domain.deck.SaveCard
 import nl.recall.domain.deck.SaveDeckAndGetId
@@ -24,6 +25,7 @@ class CommunityDeckDetailViewModel(
 	@InjectedParam private val args: CommunityDeckDetailViewModelArgs,
 	private val getCommunityDeckById: GetCommunityDeckById,
 	private val saveDeckAndGetId: SaveDeckAndGetId,
+	private val updateDeck: UpdateCommunityDeck,
 	private val saveCard: SaveCard,
 ) : ViewModel() {
 
@@ -56,7 +58,12 @@ class CommunityDeckDetailViewModel(
 				val formatter = SimpleDateFormat("yyyy-MM-dd")
 				val communityDeckDate = formatter.parse(communityDeck.creation)
 
-				// TODO: Increase downloads
+				updateDeck(
+					communityDeck.copy(
+						downloads = communityDeck.downloads + 1
+					)
+				)
+
 				val deckId = saveDeckAndGetId(
 					title = communityDeck.title,
 					creationDate = communityDeckDate ?: Date(),

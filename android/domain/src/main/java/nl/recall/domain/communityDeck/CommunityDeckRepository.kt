@@ -10,5 +10,7 @@ interface CommunityDeckRepository {
 
     suspend fun publishDeck(deckWithCards: DeckWithCards)
 
+    suspend fun updateDeck(communityDeck: CommunityDeck)
+
     suspend fun getCommunityDeckById(id: Long): CommunityDeck
 }

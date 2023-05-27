@@ -194,7 +194,7 @@ private fun Content(
 				Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 					CommunityDeckDetailStat(
 						title = stringResource(id = R.string.community_deck_downloads_title),
-						count = communityDeck.downloads,
+						count = communityDeck.downloads.toInt(),
 						icon = painterResource(id = R.drawable.outline_file_download_24),
 						modifier = Modifier.weight(0.5f)
 					)
