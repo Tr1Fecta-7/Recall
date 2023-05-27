@@ -1,14 +1,8 @@
 package nl.recall.studyDeck
 
 import androidx.compose.animation.Animatable
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -65,16 +59,13 @@ import kotlinx.coroutines.launch
 import nl.recall.R
 import nl.recall.components.ImageMessage
 import nl.recall.components.card.FlipCard
-import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.StudyDeckFinishedScreenDestination
-import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.studyDeck.RepeatStudyDeckViewModel
 import nl.recall.presentation.studyDeck.model.StudyDeckViewModelArgs
 import nl.recall.presentation.uiState.UIState
 import nl.recall.studyDeck.model.BackgroundColors
 import nl.recall.studyDeck.model.CardFaceUIState
-import nl.recall.studyDeckFinished.StudyDeckFinishedScreen
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -241,7 +232,6 @@ private fun Content(
                             id = R.string.study_progression, iterator, deckWithCards.cards.size
                         )
                     )
-                    Text(text = "joe")
                 }
             }
 
