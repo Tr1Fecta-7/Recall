@@ -10,6 +10,7 @@ MYSQL_PASSWORD=""
 ```
 
 # API
+These routes are protected with JWT.
 - GET `/api/v1/deck` to get all published decks.
 - POST `/api/v1/deck` to publish a new deck. Example:
 ```json
@@ -29,4 +30,15 @@ MYSQL_PASSWORD=""
   ]
 }
 ```
+- PUT `/api/v1/deck/:id` to edit an existing deck Example:
+```json
+{
+  "id": "1",
+  "title": "Test 2",
+  "icon": "😃",
+  "color": "#FFFFFF",
+  "downloads": 2
+}
+```
 - GET `/api/v1/deck/:id` to get published deck with id.
+- GET `/api/v1/deck/card/:id` to get published card with id.
