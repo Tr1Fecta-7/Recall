@@ -88,8 +88,8 @@ class StudyDeckViewModel(
     }
 
     fun onSwipeCard(direction: SwipeDirection, card: Card) {
+        _nextCardAvailability.value = false
         viewModelScope.launch(Dispatchers.IO) {
-            _nextCardAvailability.value = false
             try {
                 if (direction == SwipeDirection.LEFT) {
                     updateCardWithNewDate(
@@ -116,13 +116,11 @@ class StudyDeckViewModel(
                     updateCard(newCard)
                     _deckSize.value = _cards.value.size
                 }
-
             _iterator.value++
             _progress.value = (iterator.value.toFloat() / _cards.value.size.toFloat())
 
             if (iterator.value < _cards.value.size) {
                 _currentCard.value = _cards.value[iterator.value]
-                _nextCardAvailability.value = true
             }
             } catch (exception: Exception) {
                 _state.value = UIState.ERROR
@@ -134,6 +132,7 @@ class StudyDeckViewModel(
 
     fun getNextCard() {
         viewModelScope.launch(Dispatchers.IO) {
+            _nextCardAvailability.value = true
             try {
                 _cards.value.let {
                     if (iterator.value + 1 < it.size) {

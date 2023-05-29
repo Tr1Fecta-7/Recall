@@ -403,6 +403,7 @@ private fun Content(
 						cardStates[iterator], onSwiped = { direction ->
 							scope.launch {
 								cardFaceUIState = CardFaceUIState.Front
+//								delay(100)
 								if (direction == Direction.Left) {
 									viewModel.onSwipeCard(
 										SwipeDirection.LEFT, currentCard
@@ -412,7 +413,7 @@ private fun Content(
 										SwipeDirection.RIGHT, currentCard
 									)
 								}
-								delay(100)
+								delay(200)
 								viewModel.getNextCard()
 							}
 						}, blockedDirections = listOf(Direction.Down, Direction.Up)
@@ -491,7 +492,7 @@ private fun Content(
 												cardStates[iterator].swipe(Direction.Right)
 												cardFaceUIState = CardFaceUIState.Front
 												viewModel.onSwipeCard(
-													SwipeDirection.LEFT, currentCard
+													SwipeDirection.RIGHT, currentCard
 												)
 												delay(100)
 												viewModel.getNextCard()
@@ -519,7 +520,7 @@ private fun Content(
 												cardStates[iterator].swipe(Direction.Left)
 												cardFaceUIState = CardFaceUIState.Front
 												viewModel.onSwipeCard(
-													SwipeDirection.RIGHT, currentCard
+													SwipeDirection.LEFT, currentCard
 												)
 												delay(100)
 												viewModel.getNextCard()
