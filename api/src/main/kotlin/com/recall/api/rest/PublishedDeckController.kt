@@ -9,7 +9,6 @@ import com.recall.api.repositories.PublishedDeckRepository
 import com.recall.api.request.PublishDeckPostRequest
 import com.recall.api.request.PublishDeckPutRequest
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -29,11 +28,11 @@ class PublishedDeckController(
 	): ResponseEntity<List<PublishedDeck>> {
 		return if (title.isPresent) {
 			ResponseEntity.ok(
-				publishedDeckRepository.findAllByTitleContainingIgnoreCaseOOrderByDownloads(title.get())
+				publishedDeckRepository.findAllByTitleContainingIgnoreCaseOrderByDownloadsDesc(title.get())
 			)
 		} else {
 			ResponseEntity.ok(
-				publishedDeckRepository.findAll(Sort.by(Sort.Direction.DESC, "downloads"))
+				publishedDeckRepository.findAllByOrderByDownloadsDesc()
 			)
 		}
 	}
