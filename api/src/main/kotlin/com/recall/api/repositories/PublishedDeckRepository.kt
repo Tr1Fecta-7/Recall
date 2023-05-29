@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PublishedDeckRepository : JpaRepository<PublishedDeck, Long> {
-    fun findAllByTitleContainingIgnoreCase(title: String): List<PublishedDeck>
+    fun findAllByTitleContainingIgnoreCaseOOrderByDownloads(title: String): List<PublishedDeck>
 }
