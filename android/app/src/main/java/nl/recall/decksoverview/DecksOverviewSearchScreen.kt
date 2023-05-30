@@ -57,6 +57,7 @@ fun DecksOverviewSearchScreen(
 	navigator: DestinationsNavigator,
 	viewModel: DecksOverviewViewModel = koinViewModel(),
 ) {
+	viewModel.observeDecks()
 	val decks by viewModel.decks.collectAsState()
 	val uiState by viewModel.state.collectAsState()
 

@@ -10,7 +10,6 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import nl.recall.data.deck.models.DeckEntity
 import nl.recall.data.deck.models.DeckWithCardsEntity
-import nl.recall.domain.deck.model.DeckWithCards
 
 @Dao
 interface DeckDao {
@@ -26,6 +25,12 @@ interface DeckDao {
     @MapInfo(valueColumn = "count")
     @Query("SELECT deck.*, count(card.id) AS count FROM deck LEFT JOIN card ON deck.id = card.deck_id GROUP BY deck.id")
     suspend fun getDecksWithCardCount(): Map<DeckEntity, Int>
+
+
+    @Transaction
+    @MapInfo(valueColumn = "count")
+    @Query("SELECT deck.*, count(card.id) AS count FROM deck LEFT JOIN card ON deck.id = card.deck_id GROUP BY deck.id")
+    fun observeDecksWithCardCount(): Flow<Map<DeckEntity, Int>>
 
     @Transaction
     @MapInfo(valueColumn = "count")

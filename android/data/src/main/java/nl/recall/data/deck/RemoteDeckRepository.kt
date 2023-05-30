@@ -29,6 +29,10 @@ class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
         return deckDao.getDecksWithCardCount().toDomain()
     }
 
+    override suspend fun observeDecksWithCardCount(): Flow<Map<Deck, Int>> {
+        return deckDao.observeDecksWithCardCount().map { it.toDomain() }
+    }
+
     override suspend fun searchDeckWithCardCount(title: String): Map<Deck, Int> {
         return deckDao.searchDecksWithCardCount("%$title%").toDomain()
     }
