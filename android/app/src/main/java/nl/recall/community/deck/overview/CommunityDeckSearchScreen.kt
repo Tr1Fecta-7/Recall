@@ -1,9 +1,11 @@
-package nl.recall.decksoverview
+package nl.recall.community.deck.overview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -43,21 +46,20 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
-import nl.recall.components.deck.DeckPreview
-import nl.recall.destinations.DeckDetailScreenDestination
-import nl.recall.presentation.deck.overview.DecksOverviewViewModel
+import nl.recall.components.communityDeck.CommunityDeckPreview
+import nl.recall.destinations.CommunityDeckDetailScreenDestination
+import nl.recall.presentation.community.deck.overview.CommunityDeckViewModel
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Destination
 @Composable
-fun DecksOverviewSearchScreen(
+fun CommunityDeckSearchScreen(
 	navController: NavController,
 	navigator: DestinationsNavigator,
-	viewModel: DecksOverviewViewModel = koinViewModel(),
+	viewModel: CommunityDeckViewModel = koinViewModel(),
 ) {
-	viewModel.observeDecks()
 	val decks by viewModel.decks.collectAsState()
 	val uiState by viewModel.state.collectAsState()
 
@@ -71,9 +73,9 @@ fun DecksOverviewSearchScreen(
 				LazyColumn(
 					verticalArrangement = Arrangement.spacedBy(8.dp)
 				) {
-					items(decks.entries.toList()) { entry ->
-						DeckPreview(entry.key, cardCount = entry.value, onClick = {
-							navigator.navigate(DeckDetailScreenDestination(deckId = entry.key.id))
+					items(decks) { deck ->
+						CommunityDeckPreview(deck, onClick = {
+							navigator.navigate(CommunityDeckDetailScreenDestination(deckId = deck.id))
 						})
 					}
 				}
@@ -103,7 +105,7 @@ fun DecksOverviewSearchScreen(
 			UIState.ERROR -> {
 				ImageMessage(
 					painter = painterResource(id = R.drawable.error_image),
-					text = stringResource(id = R.string.no_decks_found)
+					text = stringResource(id = R.string.community_deck_overview_error)
 				)
 			}
 		}
@@ -130,7 +132,7 @@ private fun Content(
 					containerColor = AppTheme.neutral50
 				),
 				title = {
-					Text(text = stringResource(id = R.string.deck_searchbar_title))
+					Text(text = stringResource(id = R.string.search_bar_community_hint))
 				},
 				navigationIcon = {
 					IconButton(onClick = { navigateBack() }) {
@@ -194,6 +196,15 @@ private fun Content(
 					}
 				}
 			)
+
+			Spacer(modifier = Modifier.height(18.dp))
+
+			Text(
+				text = stringResource(id = R.string.most_downloaded_title),
+				fontWeight = FontWeight.Bold
+			)
+
+			Spacer(modifier = Modifier.height(6.dp))
 
 			content()
 		}

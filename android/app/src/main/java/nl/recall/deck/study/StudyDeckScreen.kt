@@ -1,4 +1,4 @@
-package nl.recall.studyDeck
+package nl.recall.deck.study
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.animateFloatAsState

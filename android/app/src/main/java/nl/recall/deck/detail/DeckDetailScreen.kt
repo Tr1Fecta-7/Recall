@@ -1,4 +1,4 @@
-package nl.recall.deckDetail
+package nl.recall.deck.detail
 
 import DeckDetailPreview
 import android.content.Context

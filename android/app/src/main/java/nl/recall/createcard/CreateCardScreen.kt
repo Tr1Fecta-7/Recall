@@ -27,7 +27,7 @@ import nl.recall.components.BottomNav
 import nl.recall.components.card.CardPreview
 import nl.recall.destinations.CreateCardScreenDestination
 import nl.recall.domain.models.CardPreviewData
-import nl.recall.presentation.createCard.CreateCardViewModel
+import nl.recall.presentation.card.create.CreateCardViewModel
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
@@ -36,65 +36,85 @@ import java.util.Date
 @Destination
 @Composable
 fun CreateCardScreen(navController: NavController, navigator: DestinationsNavigator, deckId: Long) {
-    Scaffold(
-        containerColor = AppTheme.neutral50,
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = AppTheme.neutral50),
-                title = { Text(stringResource(id = R.string.create_card_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack()}) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
-                    }
-                },
-            )
-        },
-        bottomBar = { BottomNav(navController = navController) },
-        content = { MainContent(navController = navController, navigator = navigator, it, deckId = deckId) }
-    )
+	Scaffold(
+		containerColor = AppTheme.neutral50,
+		topBar = {
+			TopAppBar(
+				colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = AppTheme.neutral50),
+				title = { Text(stringResource(id = R.string.create_card_title)) },
+				navigationIcon = {
+					IconButton(onClick = { navigator.popBackStack() }) {
+						Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+					}
+				},
+			)
+		},
+		bottomBar = { BottomNav(navController = navController) },
+		content = {
+			MainContent(
+				navController = navController,
+				navigator = navigator,
+				it,
+				deckId = deckId
+			)
+		}
+	)
 }
 
 @Composable
-fun MainContent(navController: NavController, navigator: DestinationsNavigator, paddingValues: PaddingValues, deckId: Long) {
-    val viewModel: CreateCardViewModel = koinViewModel()
+fun MainContent(
+    navController: NavController,
+    navigator: DestinationsNavigator,
+    paddingValues: PaddingValues,
+    deckId: Long,
+) {
+	val viewModel: CreateCardViewModel = koinViewModel()
 
-    val uiState: UIState by viewModel.state.collectAsState()
-    val savedCardInDatabase = viewModel.savedCardBoolean.collectAsState().value;
+	val uiState: UIState by viewModel.state.collectAsState()
+	val savedCardInDatabase = viewModel.savedCardBoolean.collectAsState().value;
 
-    when (uiState) {
-        UIState.NORMAL -> {
-            if (savedCardInDatabase) {
-                navController.popBackStack()
-                navController.navigate(CreateCardScreenDestination(deckId).route)
-                return
-            }
+	when (uiState) {
+		UIState.NORMAL -> {
+			if (savedCardInDatabase) {
+				navController.popBackStack()
+				navController.navigate(CreateCardScreenDestination(deckId).route)
+				return
+			}
 
-            val card = CardPreviewData(
-                front = "",
-                back = "",
-                buttonText = stringResource(id = R.string.create_card_title)
-            )
+			val card = CardPreviewData(
+				front = "",
+				back = "",
+				buttonText = stringResource(id = R.string.create_card_title)
+			)
 
-            CardPreview(card, paddingValues, onClick = {
-                viewModel.saveCardToDatabase(front = card.front, back = card.back, dueDate = Date(), deckId = deckId)
-            })
-        }
-        UIState.LOADING -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-        UIState.ERROR -> {
+			CardPreview(card, paddingValues, onClick = {
+				viewModel.saveCardToDatabase(
+					front = card.front,
+					back = card.back,
+					dueDate = Date(),
+					deckId = deckId
+				)
+			})
+		}
 
-        }
-        UIState.EMPTY -> {
+		UIState.LOADING -> {
+			Column(
+				Modifier.fillMaxSize(),
+				verticalArrangement = Arrangement.Center,
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				CircularProgressIndicator()
+			}
+		}
 
-        }
-    }
+		UIState.ERROR -> {
+
+		}
+
+		UIState.EMPTY -> {
+
+		}
+	}
 
 
 }

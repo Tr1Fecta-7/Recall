@@ -1,4 +1,4 @@
-package nl.recall.deckDetail
+package nl.recall.deck.detail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState

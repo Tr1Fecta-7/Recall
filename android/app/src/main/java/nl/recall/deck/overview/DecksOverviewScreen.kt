@@ -1,7 +1,8 @@
-package nl.recall.decksoverview
+package nl.recall.deck.overview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,62 +10,69 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.BottomNav
 import nl.recall.components.ImageMessage
 import nl.recall.components.deck.DeckPreview
+import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
+import nl.recall.destinations.DecksOverviewSearchScreenDestination
+import nl.recall.destinations.OnboardingScreenDestination
+import nl.recall.onboarding.model.OnboardingManager
 import nl.recall.presentation.deck.overview.DecksOverviewViewModel
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 
+@RootNavGraph(start = true)
 @Destination
 @Composable
-fun DecksOverviewSearchScreen(
+fun DecksOverviewScreen(
 	navController: NavController,
 	navigator: DestinationsNavigator,
 	viewModel: DecksOverviewViewModel = koinViewModel(),
 ) {
+	val context = LocalContext.current
+
+	val onboardingCompleted = OnboardingManager.isOnboardingCompleted(context)
+	if (!onboardingCompleted) {
+		navigator.navigate(OnboardingScreenDestination)
+	}
+
 	viewModel.observeDecks()
 	val decks by viewModel.decks.collectAsState()
 	val uiState by viewModel.state.collectAsState()
 
 	Content(
+		navigateToCreateDeck = { navigator.navigate(DeckCreateDestination) },
+		navigateToDeckSearch = {
+			navigator.navigate(DecksOverviewSearchScreenDestination)
+		},
 		navController = navController,
-		navigateBack = { navigator.popBackStack() },
-		viewModel::searchDecks
 	) {
 		when (uiState) {
 			UIState.NORMAL -> {
@@ -112,88 +120,68 @@ fun DecksOverviewSearchScreen(
 
 @Composable
 private fun Content(
+	navigateToCreateDeck: () -> Unit,
+	navigateToDeckSearch: () -> Unit,
 	navController: NavController,
-	navigateBack: () -> Unit,
-	searchDecks: (String) -> Unit,
 	content: @Composable (() -> Unit),
 ) {
-	var searchQuery by remember {
-		mutableStateOf(TextFieldValue(String()))
-	}
-	val focusRequester = remember { FocusRequester() }
-
 	Scaffold(
 		containerColor = AppTheme.neutral50,
-		topBar = {
-			TopAppBar(
-				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-					containerColor = AppTheme.neutral50
-				),
-				title = {
-					Text(text = stringResource(id = R.string.deck_searchbar_title))
-				},
-				navigationIcon = {
-					IconButton(onClick = { navigateBack() }) {
-						Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-					}
-				},
-			)
+		floatingActionButton = {
+			FloatingActionButton(
+				onClick = { navigateToCreateDeck() },
+				contentColor = AppTheme.primary900,
+				containerColor = AppTheme.primary300
+			) {
+				Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
+			}
 		},
 		bottomBar = { BottomNav(navController = navController) }
 	) { paddingValues ->
 		Column(
-			modifier = Modifier
-				.padding(paddingValues)
-				.padding(horizontal = 14.dp)
-				.focusRequester(focusRequester)
-				.onPlaced {
-					focusRequester.requestFocus()
-				},
+			Modifier.padding(
+				top = paddingValues.calculateTopPadding() + 56.dp,
+				bottom = paddingValues.calculateBottomPadding(),
+				start = 14.dp,
+				end = 14.dp
+			)
 		) {
-			TextField(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(bottom = 8.dp),
-				value = searchQuery,
-				placeholder = {
+			Text(
+				text = stringResource(id = R.string.deck_overview_title),
+				color = AppTheme.neutral800,
+				style = MaterialTheme.typography.titleLarge,
+				fontWeight = FontWeight.Medium
+			)
+			Text(
+				text = stringResource(id = R.string.deck_overview_subtitle),
+				color = AppTheme.neutral500
+			)
+
+			Card(modifier = Modifier
+				.fillMaxWidth()
+				.padding(vertical = 24.dp),
+				colors = CardDefaults.cardColors(
+					containerColor = AppTheme.neutral200,
+				),
+				shape = RoundedCornerShape(35.dp),
+				onClick = {
+					navigateToDeckSearch()
+				}
+			) {
+				Row(
+					modifier = Modifier
+						.padding(15.dp)
+						.fillMaxWidth(),
+					verticalAlignment = Alignment.CenterVertically,
+					horizontalArrangement = Arrangement.SpaceBetween
+				) {
 					Text(
 						text = stringResource(R.string.search_bar_deck_hint),
 						color = AppTheme.neutral500
 					)
-				},
-				colors = TextFieldDefaults.textFieldColors(
-					containerColor = AppTheme.neutral200,
-					cursorColor = Color.Black,
-					disabledLabelColor = AppTheme.white,
-					focusedIndicatorColor = Color.Transparent,
-					unfocusedIndicatorColor = Color.Transparent
-				),
-				onValueChange = {
-					searchQuery = it
-					searchDecks(searchQuery.text)
-				},
-				shape = RoundedCornerShape(35.dp),
-				singleLine = true,
-				trailingIcon = {
-					if (searchQuery.text.isNotEmpty()) {
-						IconButton(onClick = { searchQuery = TextFieldValue(String()) }) {
-							Icon(
-								imageVector = Icons.Outlined.Close,
-								contentDescription = "clear text-field"
-							)
-						}
-					} else {
-						IconButton(
-							modifier = Modifier.padding(end = 6.dp),
-							onClick = { /*Do nothing*/ }) {
-							Icon(
-								imageVector = Icons.Default.Search,
-								contentDescription = "search"
-							)
-						}
-					}
+					Icon(imageVector = Icons.Default.Search, contentDescription = "search")
 				}
-			)
+			}
 
 			content()
 		}

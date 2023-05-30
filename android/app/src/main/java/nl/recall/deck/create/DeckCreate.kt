@@ -1,4 +1,4 @@
-package nl.recall.createdeck
+package nl.recall.deck.create
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
