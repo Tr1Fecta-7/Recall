@@ -21,7 +21,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.deck.DeckFrontEndComponent
-import nl.recall.createdeck.DeckLoading
+import nl.recall.deck.create.DeckLoading
 import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.deck.edit.DeckEditViewModel
 import nl.recall.presentation.deck.edit.model.DeckEditViewModelArgs
@@ -33,10 +33,10 @@ import org.koin.core.parameter.parametersOf
 @Destination
 @Composable
 fun DeckEdit(
-    navigator: DestinationsNavigator,
-    clickedDeckId: Long,
-    viewModel: DeckEditViewModel =
-        koinViewModel(parameters = { parametersOf(DeckEditViewModelArgs(clickedDeckId)) }),
+	navigator: DestinationsNavigator,
+	clickedDeckId: Long,
+	viewModel: DeckEditViewModel =
+		koinViewModel(parameters = { parametersOf(DeckEditViewModelArgs(clickedDeckId)) }),
 ) {
 	Scaffold(
 		topBar = {
@@ -58,9 +58,9 @@ fun DeckEdit(
 
 @Composable
 private fun MainContent(
-    navigator: DestinationsNavigator,
-    paddingValues: PaddingValues,
-    viewModel: DeckEditViewModel,
+	navigator: DestinationsNavigator,
+	paddingValues: PaddingValues,
+	viewModel: DeckEditViewModel,
 ) {
 	viewModel.observeDeck()
 	val deck = viewModel.deck.collectAsState().value
@@ -91,9 +91,13 @@ private fun MainContent(
 					mutableStateOf(true)
 				}
 
-				var validationEmoji by remember {
-					// stardart emoji present, thus onload always true
+				var isEmojiFieldCorrect by remember {
+					//stardart emoji present, thus onload always true
 					mutableStateOf(true)
+				}
+
+				var characterCount by remember {
+					mutableStateOf(0)
 				}
 
 				DeckFrontEndComponent(
@@ -121,15 +125,16 @@ private fun MainContent(
 					deckColor = deckColor,
 					emojiTextfield = emojiTextfield,
 					onEmojiTextFieldValueChange = { text ->
-						if (text.text.length <= 2) {
+						if (characterCount == 0 && text.text.isNotBlank()) {
 							emojiTextfield = text
-							validationEmoji = emojiTextfield.text.isNotBlank()
-						} else {
-							validationEmoji = false
+							characterCount++
+						} else if (text.text.isEmpty()) {
+							characterCount--
+							emojiTextfield = text
 						}
 					},
 					validationTitle = validationTitle,
-					validationEmoji = validationEmoji,
+					validationEmoji = isEmojiFieldCorrect,
 					submitButtonText = stringResource(id = R.string.edit_deck_title)
 				)
 			}

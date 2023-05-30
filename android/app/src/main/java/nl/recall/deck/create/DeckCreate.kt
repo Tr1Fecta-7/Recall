@@ -62,19 +62,19 @@ fun DeckCreate(navController: NavController, navigator: DestinationsNavigator) {
 
 @Composable
 private fun MainContent(
-    navigator: DestinationsNavigator,
-    paddingValues: PaddingValues,
-    viewModel: CreateDeckViewModel = koinViewModel(parameters = {
-        parametersOf(
-            CreateDeckViewModelArgs(
-                id = 1,
-                title = "",
-                color = "#2596be",
-                creationDate = Date(),
-                icon = "\uD83D\uDD25"
-            )
-        )
-    }),
+	navigator: DestinationsNavigator,
+	paddingValues: PaddingValues,
+	viewModel: CreateDeckViewModel = koinViewModel(parameters = {
+		parametersOf(
+			CreateDeckViewModelArgs(
+				id = 1,
+				title = "",
+				color = "#2596be",
+				creationDate = Date(),
+				icon = "\uD83D\uDD25"
+			)
+		)
+	}),
 ) {
 	val deck = viewModel.deck.collectAsState().value
 	val uiState: UIState by viewModel.state.collectAsState()
@@ -109,6 +109,10 @@ private fun MainContent(
 						mutableStateOf(true)
 					}
 
+					var characterCount by remember {
+						mutableStateOf(0)
+					}
+
 					DeckFrontEndComponent(
 						paddingValues = paddingValues,
 						onSubmitDeck = {
@@ -131,11 +135,12 @@ private fun MainContent(
 						deckColor = deckColor,
 						emojiTextfield = emojiTextfield,
 						onEmojiTextFieldValueChange = { text ->
-							if (text.text.length <= 2) {
+							if (characterCount == 0 && text.text.isNotBlank()) {
 								emojiTextfield = text
-								validationEmoji = emojiTextfield.text.isNotBlank()
-							} else {
-								validationEmoji = false
+								characterCount++
+							} else if (text.text.isEmpty()) {
+								characterCount--
+								emojiTextfield = text
 							}
 						},
 						validationTitle = validationTitle,
@@ -143,8 +148,6 @@ private fun MainContent(
 						submitButtonText = stringResource(id = R.string.create_deck_title)
 					)
 				}
-
-
 			}
 		}
 

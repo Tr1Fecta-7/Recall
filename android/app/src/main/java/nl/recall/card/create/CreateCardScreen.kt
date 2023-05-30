@@ -1,4 +1,4 @@
-package nl.recall.createcard
+package nl.recall.card.create
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -63,10 +63,10 @@ fun CreateCardScreen(navController: NavController, navigator: DestinationsNaviga
 
 @Composable
 fun MainContent(
-    navController: NavController,
-    navigator: DestinationsNavigator,
-    paddingValues: PaddingValues,
-    deckId: Long,
+	navController: NavController,
+	navigator: DestinationsNavigator,
+	paddingValues: PaddingValues,
+	deckId: Long,
 ) {
 	val viewModel: CreateCardViewModel = koinViewModel()
 
@@ -77,7 +77,9 @@ fun MainContent(
 		UIState.NORMAL -> {
 			if (savedCardInDatabase) {
 				navController.popBackStack()
-				navController.navigate(CreateCardScreenDestination(deckId).route)
+				navController.navigate(
+					CreateCardScreenDestination(deckId).route
+				)
 				return
 			}
 

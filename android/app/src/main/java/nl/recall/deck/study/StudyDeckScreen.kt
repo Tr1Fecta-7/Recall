@@ -65,7 +65,8 @@ import kotlinx.coroutines.launch
 import nl.recall.R
 import nl.recall.components.AlertWindow
 import nl.recall.components.ImageMessage
-import nl.recall.components.card.FlipCard
+import nl.recall.deck.study.model.BackgroundColors
+import nl.recall.deck.study.model.CardFaceUIState
 import nl.recall.destinations.StudyDeckFinishedScreenDestination
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
@@ -73,8 +74,6 @@ import nl.recall.presentation.deck.study.StudyDeckViewModel
 import nl.recall.presentation.deck.study.model.StudyDeckViewModelArgs
 import nl.recall.presentation.deck.study.model.SwipeDirection
 import nl.recall.presentation.uiState.UIState
-import nl.recall.studyDeck.model.BackgroundColors
-import nl.recall.studyDeck.model.CardFaceUIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf

@@ -79,7 +79,9 @@ fun DeckDetailSearchScreen(
 		mutableStateOf(TextFieldValue(""))
 	}
 	val navigateToCard: (Long) -> Unit =
-		{ navigator.navigate(EditCardScreenDestination(clickedCardId = it, deckId = deckId)) }
+		{
+			navigator.navigate(EditCardScreenDestination(clickedCardId = it, deckId = deckId))
+		}
 	val focusRequester = remember { FocusRequester() }
 
 

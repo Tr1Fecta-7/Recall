@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import nl.recall.studyDeck.model.CardFaceUIState
+import nl.recall.deck.study.model.CardFaceUIState
 import nl.recall.theme.AppTheme
 
 @Composable

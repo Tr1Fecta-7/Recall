@@ -1,4 +1,4 @@
-package nl.recall.editcard
+package nl.recall.card.edit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,8 +43,8 @@ import java.util.Date
 @Destination
 @Composable
 fun EditCardScreen(
-    navController: NavController, navigator: DestinationsNavigator,
-    clickedCardId: Long, deckId: Long,
+	navController: NavController, navigator: DestinationsNavigator,
+	clickedCardId: Long, deckId: Long,
 ) {
 	val viewModel: EditCardViewModel = koinViewModel(parameters = {
 		parametersOf(EditCardViewModelArgs(deckId = deckId, cardId = clickedCardId))
@@ -88,9 +88,9 @@ fun EditCardScreen(
 
 @Composable
 fun MainContent(
-    navigator: DestinationsNavigator, paddingValues: PaddingValues,
-    viewModel: EditCardViewModel, deckId: Long, openDialog: Boolean,
-    closeDialog: () -> (Unit),
+	navigator: DestinationsNavigator, paddingValues: PaddingValues,
+	viewModel: EditCardViewModel, deckId: Long, openDialog: Boolean,
+	closeDialog: () -> (Unit),
 ) {
 	val card = viewModel.card.collectAsState().value
 	val uiState: UIState by viewModel.state.collectAsState()
