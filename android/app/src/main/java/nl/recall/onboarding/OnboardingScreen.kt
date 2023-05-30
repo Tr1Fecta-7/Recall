@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,12 +38,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.onboarding.model.OnboardingItems
+import nl.recall.onboarding.model.OnboardingManager
 import nl.recall.theme.AppTheme
 
-@RootNavGraph(start = true)
+@RootNavGraph
+@NavGraph
+annotation class OnboardingNavGraph(
+    val start: Boolean = false
+)
+
+
+@OnboardingNavGraph(start = true)
 @Destination
 @Composable
 fun OnboardingScreen(navController: NavController, navigator: DestinationsNavigator) {
@@ -54,9 +64,14 @@ fun OnboardingScreen(navController: NavController, navigator: DestinationsNaviga
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainContent(navController: NavController, navigator: DestinationsNavigator, paddingValues: PaddingValues) {
+fun MainContent(
+    navController: NavController,
+    navigator: DestinationsNavigator,
+    paddingValues: PaddingValues
+) {
     val pagerState = rememberPagerState()
     val items = OnboardingItems.getData()
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -68,7 +83,9 @@ fun MainContent(navController: NavController, navigator: DestinationsNavigator, 
         }
 
         Column(
-            modifier = Modifier.padding(16.dp).offset(y = -(30).dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .offset(y = -(30).dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (pagerState.currentPage != items.size - 1) {
@@ -81,12 +98,14 @@ fun MainContent(navController: NavController, navigator: DestinationsNavigator, 
                 CustomPagerIndicator(
                     pagerState = pagerState,
                     pageCount = items.size,
-                    activeColor = AppTheme.primary400, // Color for active (current) dot
-                    inactiveColor = AppTheme.neutral300 // Color for inactive (passed) dots
+                    activeColor = AppTheme.primary400,
+                    inactiveColor = AppTheme.neutral300
                 )
             } else {
                 Button(
-                    onClick = {},
+                    onClick = {
+                        OnboardingManager.setOnboardingCompleted(context)
+                    },
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth()
@@ -171,7 +190,6 @@ fun OnboardingPage(items: OnboardingItems) {
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
             //letterSpacing = 1.sp,
-
         )
     }
 }
