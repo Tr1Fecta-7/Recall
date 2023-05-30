@@ -24,7 +24,7 @@ import nl.recall.NavGraphs
 import nl.recall.R
 import nl.recall.destinations.CommunityDeckOverviewScreenDestination
 import nl.recall.destinations.DecksOverviewScreenDestination
-import nl.recall.destinations.DecksOverviewSearchScreenDestination
+import nl.recall.destinations.SettingsScreenDestination
 import nl.recall.theme.AndroidAppTheme
 import nl.recall.theme.AppTheme
 
@@ -40,7 +40,7 @@ enum class BottomBarDestination(
         R.string.nav_community_label
     ),
     Settings(
-        DecksOverviewSearchScreenDestination /* TODO: Change to Settings destination once it's made */,
+        SettingsScreenDestination /* TODO: Change to Settings destination once it's made */,
         R.drawable.outline_settings_24,
         R.string.nav_settings_label
     ),

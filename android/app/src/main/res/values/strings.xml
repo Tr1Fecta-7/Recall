@@ -93,4 +93,6 @@
     <string name="community_deck_overview_error">Could not load decks from the internet</string>
     <string name="no_cards_in_deck">It looks like there are no cards in this deck yet. Add them using the button below.</string>
     <string name="cards_done_today">Looks like you\'ve done all your cards today. Good job!. Come back later to study more.</string>
+    <string name="settings_title">Settings</string>
+    <string name="algorithm_strength_setting_name">Algorithm strength:</string>
 </resources>
