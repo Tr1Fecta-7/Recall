@@ -1,5 +1,6 @@
 package nl.recall.onboarding
 
+import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,12 +36,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import nl.recall.NavGraphs
+import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.onboarding.model.OnboardingItems
 import nl.recall.onboarding.model.OnboardingManager
 import nl.recall.theme.AppTheme
@@ -52,6 +56,7 @@ annotation class OnboardingNavGraph(
 )
 
 
+@RootNavGraph
 @OnboardingNavGraph(start = true)
 @Destination
 @Composable
@@ -67,7 +72,7 @@ fun OnboardingScreen(navController: NavController, navigator: DestinationsNaviga
 fun MainContent(
     navController: NavController,
     navigator: DestinationsNavigator,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
 ) {
     val pagerState = rememberPagerState()
     val items = OnboardingItems.getData()
@@ -105,6 +110,7 @@ fun MainContent(
                 Button(
                     onClick = {
                         OnboardingManager.setOnboardingCompleted(context)
+                        navigator.navigate(DecksOverviewScreenDestination)
                     },
                     modifier = Modifier
                         .padding(16.dp)
