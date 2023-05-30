@@ -64,7 +64,7 @@ fun DecksOverviewScreen(
 		navigator.navigate(OnboardingScreenDestination)
 	}
 
-
+	viewModel.observeDecks()
 	val decks by viewModel.decks.collectAsState()
 	val uiState by viewModel.state.collectAsState()
 
