@@ -1,13 +1,13 @@
-package com.recall.api.rest
+package com.recall.api.published.deck.rest
 
-import com.recall.api.mappers.PublishCardRequestMapper.toPublishedCard
-import com.recall.api.mappers.PublishDeckRequestMapper.toPublishedDeck
-import com.recall.api.models.PublishedCard
-import com.recall.api.models.PublishedDeck
-import com.recall.api.repositories.PublishedCardRepository
-import com.recall.api.repositories.PublishedDeckRepository
-import com.recall.api.request.PublishDeckPostRequest
-import com.recall.api.request.PublishDeckPutRequest
+import com.recall.api.published.card.mappers.PublishCardRequestMapper.toPublishedCard
+import com.recall.api.published.card.models.PublishedCard
+import com.recall.api.published.card.repositories.PublishedCardRepository
+import com.recall.api.published.deck.mappers.PublishDeckRequestMapper.toPublishedDeck
+import com.recall.api.published.deck.models.PublishedDeck
+import com.recall.api.published.deck.repositories.PublishedDeckRepository
+import com.recall.api.published.deck.requests.PublishDeckPostRequest
+import com.recall.api.published.deck.requests.PublishDeckPutRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

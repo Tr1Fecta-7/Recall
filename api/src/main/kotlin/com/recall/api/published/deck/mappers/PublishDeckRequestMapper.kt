@@ -1,7 +1,7 @@
-package com.recall.api.mappers
+package com.recall.api.published.deck.mappers
 
-import com.recall.api.models.PublishedDeck
-import com.recall.api.request.PublishDeckPostRequest
+import com.recall.api.published.deck.models.PublishedDeck
+import com.recall.api.published.deck.requests.PublishDeckPostRequest
 import java.time.LocalDate
 
 object PublishDeckRequestMapper {

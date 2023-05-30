@@ -1,4 +1,4 @@
-package com.recall.api.request
+package com.recall.api.published.card.requests
 
 data class PublishCardRequest(
 	val front: String,

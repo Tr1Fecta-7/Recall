@@ -1,4 +1,4 @@
-package com.recall.api.request
+package com.recall.api.published.deck.requests
 
 data class PublishDeckPutRequest(
 	val id: Long,
