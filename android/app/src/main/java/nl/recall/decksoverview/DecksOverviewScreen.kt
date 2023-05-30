@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,7 +40,10 @@ import nl.recall.components.ImageMessage
 import nl.recall.components.deck.DeckPreview
 import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
+import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.destinations.DecksOverviewSearchScreenDestination
+import nl.recall.destinations.OnboardingScreenDestination
+import nl.recall.onboarding.model.OnboardingManager
 import nl.recall.presentation.decksOverview.DecksOverviewViewModel
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
@@ -53,6 +57,14 @@ fun DecksOverviewScreen(
 	navigator: DestinationsNavigator,
 	viewModel: DecksOverviewViewModel = koinViewModel(),
 ) {
+	val context = LocalContext.current
+
+	val onboardingCompleted = OnboardingManager.isOnboardingCompleted(context)
+	if (!onboardingCompleted) {
+		navigator.navigate(OnboardingScreenDestination)
+	}
+
+
 	val decks by viewModel.decks.collectAsState()
 	val uiState by viewModel.state.collectAsState()
 
