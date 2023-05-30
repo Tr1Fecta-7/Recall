@@ -109,6 +109,10 @@ private fun MainContent(
                         mutableStateOf(true)
                     }
 
+                    var characterCount by remember {
+                        mutableStateOf(0)
+                    }
+
                     DeckFrontEndComponent(
                         paddingValues = paddingValues,
                         onSubmitDeck = {
@@ -131,11 +135,12 @@ private fun MainContent(
                         deckColor = deckColor,
                         emojiTextfield = emojiTextfield,
                         onEmojiTextFieldValueChange = { text ->
-                            if (text.text.length <= 2) {
+                            if (characterCount == 0 && text.text.isNotBlank()) {
                                 emojiTextfield = text
-                                validationEmoji = emojiTextfield.text.isNotBlank()
-                            } else {
-                                validationEmoji = false
+                                characterCount++
+                            } else if (text.text.isEmpty()) {
+                                characterCount--
+                                emojiTextfield = text
                             }
                         },
                         validationTitle = validationTitle,

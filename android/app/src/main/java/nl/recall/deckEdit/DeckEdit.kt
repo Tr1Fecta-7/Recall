@@ -22,9 +22,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.deck.DeckFrontEndComponent
 import nl.recall.createdeck.DeckLoading
-import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.domain.deck.model.Deck
-import nl.recall.presentation.createDeck.CreateDeckViewModel
 import nl.recall.presentation.deckEdit.DeckEditViewModel
 import nl.recall.presentation.deckEdit.model.DeckEditViewModelArgs
 import nl.recall.presentation.uiState.UIState
@@ -93,9 +91,13 @@ private fun MainContent(
                     mutableStateOf(true)
                 }
 
-                var validationEmoji by remember {
+                var isEmojiFieldCorrect by remember {
                     //stardart emoji present, thus onload always true
                     mutableStateOf(true)
+                }
+
+                var characterCount by remember {
+                    mutableStateOf(0)
                 }
 
                 DeckFrontEndComponent(
@@ -122,15 +124,16 @@ private fun MainContent(
                     deckColor = deckColor,
                     emojiTextfield = emojiTextfield,
                     onEmojiTextFieldValueChange = { text ->
-                        if (text.text.length <= 2) {
+                        if (characterCount == 0 && text.text.isNotBlank()) {
                             emojiTextfield = text
-                            validationEmoji = emojiTextfield.text.isNotBlank()
-                        } else {
-                            validationEmoji = false
+                            characterCount++
+                        } else if (text.text.isEmpty()) {
+                            characterCount--
+                            emojiTextfield = text
                         }
                     },
                     validationTitle = validationTitle,
-                    validationEmoji = validationEmoji,
+                    validationEmoji = isEmojiFieldCorrect,
                     submitButtonText = stringResource(id = R.string.edit_deck_title)
                 )
             }
