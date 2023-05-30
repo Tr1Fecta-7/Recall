@@ -312,6 +312,7 @@ private fun Content(
 				)
 
 				Text(
+					modifier = Modifier.padding(bottom = 10.dp),
 					text = stringResource(id = R.string.cards_title),
 					fontSize = 20.sp,
 					fontWeight = FontWeight.Bold
