@@ -6,8 +6,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import nl.recall.domain.deck.GetDecksWithCardCount
+import nl.recall.domain.deck.ObserveDecksWithCardCount
 import nl.recall.domain.deck.SearchDeckWithCardCount
 import nl.recall.domain.deck.model.Deck
 import nl.recall.presentation.uiState.UIState
@@ -16,7 +19,8 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 class DecksOverviewViewModel(
     private val getDecksWithCardCount: GetDecksWithCardCount,
-    private val searchDecksWithCardCount: SearchDeckWithCardCount
+    private val searchDecksWithCardCount: SearchDeckWithCardCount,
+    private val observeDecksWithCardCount: ObserveDecksWithCardCount
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UIState.LOADING)
@@ -25,20 +29,14 @@ class DecksOverviewViewModel(
     }
 
     private val _decks = MutableStateFlow<Map<Deck, Int>>(emptyMap())
-    val decks: StateFlow<Map<Deck, Int>> by lazy {
-        fetchDecks()
-        _decks.asStateFlow()
-    }
+    val decks: StateFlow<Map<Deck, Int>> =_decks.asStateFlow()
 
-    private fun fetchDecks() {
-        _state.value = UIState.LOADING
-
+    fun observeDecks() {
         viewModelScope.launch(Dispatchers.IO) {
-            _decks.value = getDecksWithCardCount()
-
-            if (_decks.value.isEmpty()) {
-                _state.value = UIState.EMPTY
-            } else {
+            observeDecksWithCardCount().catch {
+                _state.value = UIState.ERROR
+            }.collectLatest {
+                _decks.value = it
                 _state.value = UIState.NORMAL
             }
         }
