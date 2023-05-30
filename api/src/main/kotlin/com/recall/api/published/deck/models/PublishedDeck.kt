@@ -1,25 +1,27 @@
-package com.recall.api.models
+package com.recall.api.published.deck.models
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.recall.api.published.card.models.PublishedCard
 import jakarta.persistence.*
 import org.hibernate.Hibernate
+import java.time.LocalDate
 
 @Entity
-data class PublishedCard(
+data class PublishedDeck(
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	var id: Long? = null,
-	var front: String,
-	var back: String,
-	@JsonIgnore
-	@ManyToOne
-	@JoinColumn(name = "deck_id", nullable = false)
-	var deck: PublishedDeck
+	var title: String,
+	var creation: LocalDate,
+	var icon: String,
+	var color: String,
+	var downloads: Long,
+	@OneToMany(mappedBy = "deck")
+	var cards: List<PublishedCard>
 ) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-		other as PublishedCard
+		other as PublishedDeck
 
 		return id != null && id == other.id
 	}
