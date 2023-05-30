@@ -324,6 +324,18 @@ private fun Content(
 		)
 	}
 
+	LaunchedEffect(key1 = progress) {
+		if (progress == 1.0f) {
+			navigator.popBackStack()
+			navigator.navigate(
+				StudyDeckFinishedScreenDestination(
+					title = deckWithCards.deck.title,
+					cardsSize = deckSize
+				)
+			)
+		}
+	}
+
 	Column(
 		modifier = Modifier
 			.padding(paddingValues)
@@ -354,17 +366,6 @@ private fun Content(
 				.padding(24.dp)
 				.fillMaxSize(),
 		) {
-			LaunchedEffect(key1 = progress) {
-				if (progress == 1.0f) {
-					navigator.popBackStack()
-					navigator.navigate(
-						StudyDeckFinishedScreenDestination(
-							title = deckWithCards.deck.title,
-							deckWithCards.cards.size
-						)
-					)
-				}
-			}
 			if (nextCard != null) {
 				Card(
 					colors = CardDefaults.cardColors(containerColor = AppTheme.white),
@@ -403,7 +404,6 @@ private fun Content(
 						cardStates[iterator], onSwiped = { direction ->
 							scope.launch {
 								cardFaceUIState = CardFaceUIState.Front
-//								delay(100)
 								if (direction == Direction.Left) {
 									viewModel.onSwipeCard(
 										SwipeDirection.LEFT, currentCard

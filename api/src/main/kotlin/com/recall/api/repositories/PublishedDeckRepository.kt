@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface PublishedDeckRepository : JpaRepository<PublishedDeck, Long> {
     fun findAllByTitleContainingIgnoreCaseOrderByDownloadsDesc(title: String): List<PublishedDeck>
-    fun findAllByOrderByDownloadsDesc(): List<PublishedDeck>
+    fun findAllByOrderByDownloadsDesc(): MutableList<PublishedDeck>
 }
