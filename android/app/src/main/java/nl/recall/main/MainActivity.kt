@@ -16,15 +16,13 @@ class MainActivity : AppCompatActivity(), KoinComponent {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val onboardingCompleted = OnboardingManager.isOnboardingCompleted(this)
-
         setContent {
             AndroidAppTheme {
                 val navEngine = rememberNavHostEngine()
                 val navController = navEngine.rememberNavController()
 
                 DestinationsNavHost(
-                    navGraph = if (onboardingCompleted) NavGraphs.root else NavGraphs.onboarding,
+                    navGraph = NavGraphs.root,
                     engine = navEngine,
                     navController = navController,
                 )
