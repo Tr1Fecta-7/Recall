@@ -6,6 +6,9 @@
     <string name="onboarding_create_study_subtitle_text">Create your own decks of cards and start studying</string>
     <string name="onboarding_discover_title_text">Discover decks</string>
     <string name="onboarding_discover_subtitle_text">Learn new things by discovering decks made by others</string>
+    <string name="onboarding_welcome_indicator_text">Welcome</string>
+    <string name="onboarding_create_study_indicator_text">Decks</string>
+    <string name="onboarding_discover_indicator_text">Community</string>
     <string name="deck_card_count">%s cards</string>
     <string name="create_deck_title">Create deck</string>
     <string name="create_deck_create_text_field">Deck name</string>

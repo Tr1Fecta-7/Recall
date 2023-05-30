@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +21,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,7 +42,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.onboarding.model.OnboardingItems
 import nl.recall.theme.AppTheme
 
-//@RootNavGraph(start = true)
+@RootNavGraph(start = true)
 @Destination
 @Composable
 fun OnboardingScreen(navController: NavController, navigator: DestinationsNavigator) {
@@ -68,15 +67,35 @@ fun MainContent(navController: NavController, navigator: DestinationsNavigator, 
             OnboardingPage(items = items[page])
         }
 
-        CustomPagerIndicator(
-            pagerState = pagerState,
-            pageCount = items.size,
-            activeColor = AppTheme.primary400, // Color for active (current) dot
-            inactiveColor = AppTheme.neutral300 // Color for inactive (passed) dots
-        )
+        Column(
+            modifier = Modifier.padding(16.dp).offset(y = -(30).dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (pagerState.currentPage != items.size - 1) {
+                Text(
+                    text = stringResource(id = items[pagerState.currentPage].indicatorText),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+
+                CustomPagerIndicator(
+                    pagerState = pagerState,
+                    pageCount = items.size,
+                    activeColor = AppTheme.primary400, // Color for active (current) dot
+                    inactiveColor = AppTheme.neutral300 // Color for inactive (passed) dots
+                )
+            } else {
+                Button(
+                    onClick = {},
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(text = "Get Started")
+                }
+            }
+        }
     }
-
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -107,7 +126,10 @@ fun CustomPagerIndicator(
 
             Box(
                 modifier = Modifier
-                    .size(width = if (pageIndex == pagerState.currentPage) 50.dp else 10.dp, height = 10.dp)
+                    .size(
+                        width = if (pageIndex == pagerState.currentPage) 50.dp else 8.dp,
+                        height = 8.dp
+                    )
                     .background(color = dotColor, shape = dotShape)
                     .padding(horizontal = 4.dp)
             )
@@ -142,7 +164,7 @@ fun OnboardingPage(items: OnboardingItems) {
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = stringResource(id = items.desc),
+            text = stringResource(id = items.description),
             modifier = Modifier
                 .padding(start = 8.dp, end = 8.dp),
             color = AppTheme.neutral400,
