@@ -313,36 +313,41 @@ private fun Content(
 					fontSize = 20.sp,
 					fontWeight = FontWeight.Bold
 				)
-
-				if (deckWithCards.cards.isNotEmpty()) {
-					Card(modifier = Modifier
-						.fillMaxWidth(),
-						colors = CardDefaults.cardColors(
-							containerColor = AppTheme.neutral200,
-						),
-						shape = RoundedCornerShape(35.dp),
-						onClick = {
-							navigator
-								.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
-						}) {
-						Row(
-							modifier = Modifier
-								.padding(15.dp)
-								.fillMaxWidth(),
-							verticalAlignment = Alignment.CenterVertically,
-							horizontalArrangement = Arrangement.SpaceBetween
-						) {
-							Text(
-								text = stringResource(R.string.search_bar_card_hint),
-								color = AppTheme.neutral500
-							)
-							Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-						}
+			}
+		}
+		item {
+			if (deckWithCards.cards.isNotEmpty()) {
+				Card(modifier = Modifier
+					.fillMaxWidth(),
+					colors = CardDefaults.cardColors(
+						containerColor = AppTheme.neutral200,
+					),
+					shape = RoundedCornerShape(35.dp),
+					onClick = {
+						navigator
+							.navigate(DeckDetailSearchScreenDestination(deckWithCards.deck.id))
+					}) {
+					Row(
+						modifier = Modifier
+							.padding(15.dp)
+							.fillMaxWidth(),
+						verticalAlignment = Alignment.CenterVertically,
+						horizontalArrangement = Arrangement.SpaceBetween
+					) {
+						Text(
+							text = stringResource(R.string.search_bar_card_hint),
+							color = AppTheme.neutral500
+						)
+						Icon(imageVector = Icons.Default.Search, contentDescription = "search")
 					}
 				}
+				Spacer(modifier = Modifier.height(10.dp))
 			}
-			Spacer(modifier = Modifier.height(10.dp))
 		}
+
+
+
+
 		itemsIndexed(items = deckWithCards.cards, itemContent = { index, card ->
 			AnimatedVisibility(
 				visibleState = state,
