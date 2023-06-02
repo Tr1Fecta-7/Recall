@@ -1,5 +1,6 @@
 package nl.recall.onboarding
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -56,6 +57,7 @@ annotation class OnboardingNavGraph(
 )
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RootNavGraph
 @OnboardingNavGraph(start = true)
 @Destination
@@ -63,16 +65,14 @@ annotation class OnboardingNavGraph(
 fun OnboardingScreen(navController: NavController, navigator: DestinationsNavigator) {
     Scaffold(
         containerColor = AppTheme.neutral50,
-        content = { MainContent(navController = navController, navigator = navigator, it) }
+        content = { MainContent(navigator = navigator) }
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainContent(
-    navController: NavController,
     navigator: DestinationsNavigator,
-    paddingValues: PaddingValues,
 ) {
     val pagerState = rememberPagerState()
     val items = OnboardingItems.getData()
