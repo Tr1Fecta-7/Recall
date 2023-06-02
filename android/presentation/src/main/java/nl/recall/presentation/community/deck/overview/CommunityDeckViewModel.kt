@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import nl.recall.domain.communityDeck.GetCommunityDecks
 import nl.recall.domain.communityDeck.models.CommunityDeck
 import nl.recall.presentation.uiState.UIState
@@ -32,12 +33,14 @@ class CommunityDeckViewModel(
 
 		viewModelScope.launch(Dispatchers.IO) {
 			try {
-				_decks.value = getCommunityDecks()
+				withTimeout(5_000) {
+					_decks.value = getCommunityDecks()
 
-				if (_decks.value.isEmpty()) {
-					_state.value = UIState.EMPTY
-				} else {
-					_state.value = UIState.NORMAL
+					if (_decks.value.isEmpty()) {
+						_state.value = UIState.EMPTY
+					} else {
+						_state.value = UIState.NORMAL
+					}
 				}
 			} catch (e: Exception) {
 				_state.value = UIState.ERROR

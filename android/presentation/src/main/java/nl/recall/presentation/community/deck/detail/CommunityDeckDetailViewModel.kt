@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import nl.recall.domain.communityDeck.GetCommunityDeckById
 import nl.recall.domain.communityDeck.UpdateCommunityDeck
 import nl.recall.domain.communityDeck.models.CommunityDeck
@@ -55,31 +56,33 @@ class CommunityDeckDetailViewModel(
 		_importState.value = UIState.LOADING
 		viewModelScope.launch(Dispatchers.IO) {
 			try {
-				val formatter = SimpleDateFormat("yyyy-MM-dd")
-				val communityDeckDate = formatter.parse(communityDeck.creation)
+				withTimeout(5_000) {
+					val formatter = SimpleDateFormat("yyyy-MM-dd")
+					val communityDeckDate = formatter.parse(communityDeck.creation)
 
-				updateDeck(
-					communityDeck.copy(
-						downloads = communityDeck.downloads + 1
+					updateDeck(
+						communityDeck.copy(
+							downloads = communityDeck.downloads + 1
+						)
 					)
-				)
 
-				val deckId = saveDeckAndGetId(
-					title = communityDeck.title,
-					creationDate = communityDeckDate ?: Date(),
-					icon = communityDeck.icon,
-					color = communityDeck.color
-				)
-
-				communityDeck.cards.forEach { card ->
-					saveCard(
-						front = card.front,
-						back = card.back,
-						dueDate = Date(),
-						deckId = deckId
+					val deckId = saveDeckAndGetId(
+						title = communityDeck.title,
+						creationDate = communityDeckDate ?: Date(),
+						icon = communityDeck.icon,
+						color = communityDeck.color
 					)
+
+					communityDeck.cards.forEach { card ->
+						saveCard(
+							front = card.front,
+							back = card.back,
+							dueDate = Date(),
+							deckId = deckId
+						)
+					}
+					_importState.value = UIState.NORMAL
 				}
-				_importState.value = UIState.NORMAL
 			} catch (e: Exception) {
 				_importState.value = UIState.ERROR
 			}
