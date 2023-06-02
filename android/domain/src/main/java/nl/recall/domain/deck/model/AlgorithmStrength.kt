@@ -1,4 +1,4 @@
-package nl.recall.presentation.settings.model
+package nl.recall.domain.deck.model
 
 enum class AlgorithmStrength(val strengthName: String, val strength: Double) {
     EASY("Easy", 0.05),

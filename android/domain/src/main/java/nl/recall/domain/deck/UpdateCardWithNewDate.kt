@@ -1,5 +1,6 @@
 package nl.recall.domain.deck
 
+import nl.recall.domain.deck.model.AlgorithmStrength
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.repositories.CardRepository
 import org.koin.core.annotation.Factory
@@ -9,15 +10,14 @@ import kotlin.math.ceil
 
 @Factory
 class UpdateCardWithNewDate(private val cardRepository: CardRepository) {
-    val STRENGTH_ALGORITHM = 0.2
 
-    suspend operator fun invoke(card: Card): Boolean {
+    suspend operator fun invoke(card: Card, algorithmStrength: AlgorithmStrength): Boolean {
         return cardRepository.updateCard(
             Card(
                 id = card.id,
                 front = card.front,
                 back = card.back,
-                dueDate = calculateNewDueDate(card.successStreak),
+                dueDate = calculateNewDueDate(card.successStreak, algorithmStrength),
                 deckId = card.deckId,
                 successStreak = card.successStreak
             )
@@ -25,8 +25,8 @@ class UpdateCardWithNewDate(private val cardRepository: CardRepository) {
     }
 
 
-    private fun calculateNewDueDate(successStreak: Long): Date {
-        val days = ceil(STRENGTH_ALGORITHM*(successStreak*successStreak)).toInt()
+    private fun calculateNewDueDate(successStreak: Long, algorithmStrength: AlgorithmStrength): Date {
+        val days = ceil(algorithmStrength.strength*(successStreak*successStreak)).toInt()
 
         var newDueDate = Date()
         val calendar = Calendar.getInstance()

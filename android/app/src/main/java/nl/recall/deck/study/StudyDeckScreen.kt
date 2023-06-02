@@ -1,5 +1,6 @@
 package nl.recall.deck.study
 
+import android.content.Context
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -50,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -71,6 +73,7 @@ import nl.recall.components.AlertWindow
 import nl.recall.deck.study.model.BackgroundColors
 import nl.recall.deck.study.model.CardFaceUIState
 import nl.recall.destinations.StudyDeckFinishedScreenDestination
+import nl.recall.domain.deck.model.AlgorithmStrength
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.deck.study.StudyDeckViewModel
@@ -100,9 +103,8 @@ fun StudyDeckScreen(
     val deckSize by viewModel.deckSize.collectAsState()
     val nextCardAvailability by viewModel.nextCardAvailability.collectAsState()
 
-    ContentScaffold(
-        title = deckWithCards?.deck?.title
-            ?: stringResource(id = R.string.deck_detail_title_placeholder),
+    ContentScaffold(title = deckWithCards?.deck?.title
+        ?: stringResource(id = R.string.deck_detail_title_placeholder),
         navigator = navigator,
         resetAlgorithm = {
             viewModel.resetDeck()
@@ -230,52 +232,44 @@ private fun ContentScaffold(
     var alertWindowInfo by remember {
         mutableStateOf(false)
     }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = AppTheme.neutral50,
-                ),
-                title = {
-                    Text(
-                        text = title
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        expandedMoreVert = !expandedMoreVert
-                    }) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
-                    }
-                    DropdownMenu(
-                        expanded = expandedMoreVert,
-                        onDismissRequest = { expandedMoreVert = false },
-                        modifier = Modifier
-                            .background(AppTheme.white)
-                            .width(180.dp),
-                    ) {
-                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_reset_algorithm)) },
-                            onClick = {
-                                alertWindowReset = true
-                            })
-                        DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_info_algorithm)) },
-                            onClick = {
-                                alertWindowInfo = true
-                            })
-                    }
-                }
+    Scaffold(topBar = {
+        TopAppBar(colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = AppTheme.neutral50,
+        ), title = {
+            Text(
+                text = title
             )
-        }, content = { paddingValues ->
-            content(paddingValues)
-        }
-    )
-    AlertWindow(
-        title = stringResource(id = R.string.dialog_reset_algorithm_title),
+        }, navigationIcon = {
+            IconButton(onClick = { navigator.popBackStack() }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back")
+            }
+        }, actions = {
+            IconButton(onClick = {
+                expandedMoreVert = !expandedMoreVert
+            }) {
+                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "")
+            }
+            DropdownMenu(
+                expanded = expandedMoreVert,
+                onDismissRequest = { expandedMoreVert = false },
+                modifier = Modifier
+                    .background(AppTheme.white)
+                    .width(180.dp),
+            ) {
+                DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_reset_algorithm)) },
+                    onClick = {
+                        alertWindowReset = true
+                    })
+                DropdownMenuItem(text = { Text(stringResource(id = R.string.dropdown_menu_info_algorithm)) },
+                    onClick = {
+                        alertWindowInfo = true
+                    })
+            }
+        })
+    }, content = { paddingValues ->
+        content(paddingValues)
+    })
+    AlertWindow(title = stringResource(id = R.string.dialog_reset_algorithm_title),
         subText = stringResource(id = R.string.dialog_reset_algorithm_text),
         confirmText = stringResource(id = R.string.reset_text),
         confirmTextColor = AppTheme.red700,
@@ -286,8 +280,7 @@ private fun ContentScaffold(
         },
         onPressConfirm = {
             resetAlgorithm()
-        }
-    )
+        })
     AlertWindow(
         title = stringResource(id = R.string.dialog_info_algorithm_title),
         subText = stringResource(id = R.string.dialog_info_algorithm_text),
@@ -329,6 +322,7 @@ private fun Content(
     val color = remember { Animatable(BackgroundColors.NORMAL.color) }
     val scope = rememberCoroutineScope()
     val cardStates = ArrayList<SwipeableCardState>()
+    val context = LocalContext.current
 
     for (i in 0..deckSize) {
         cardStates.add(rememberSwipeableCardState())
@@ -366,8 +360,7 @@ private fun Content(
             navigator.popBackStack()
             navigator.navigate(
                 StudyDeckFinishedScreenDestination(
-                    title = deckWithCards.deck.title,
-                    cardsSize = deckSize
+                    title = deckWithCards.deck.title, cardsSize = deckSize
                 )
             )
         }
@@ -441,13 +434,14 @@ private fun Content(
                         cardStates[iterator], onSwiped = { direction ->
                             scope.launch {
                                 cardFaceUIState = CardFaceUIState.Front
+                                println(getStrength(context = context))
                                 if (direction == Direction.Left) {
                                     viewModel.onSwipeCard(
-                                        SwipeDirection.LEFT, currentCard
+                                        SwipeDirection.LEFT, currentCard, getStrength(context)
                                     )
                                 } else {
                                     viewModel.onSwipeCard(
-                                        SwipeDirection.RIGHT, currentCard
+                                        SwipeDirection.RIGHT, currentCard, getStrength(context)
                                     )
                                 }
                                 delay(200)
@@ -474,8 +468,7 @@ private fun Content(
                                 fontSize = 25.sp
                             )
                             Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
+                                Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.click_to_rotate),
@@ -529,7 +522,9 @@ private fun Content(
                                                 cardStates[iterator].swipe(Direction.Right)
                                                 cardFaceUIState = CardFaceUIState.Front
                                                 viewModel.onSwipeCard(
-                                                    SwipeDirection.RIGHT, currentCard
+                                                    SwipeDirection.RIGHT,
+                                                    currentCard,
+                                                    getStrength(context)
                                                 )
                                                 delay(100)
                                                 viewModel.getNextCard()
@@ -557,12 +552,13 @@ private fun Content(
                                                 cardStates[iterator].swipe(Direction.Left)
                                                 cardFaceUIState = CardFaceUIState.Front
                                                 viewModel.onSwipeCard(
-                                                    SwipeDirection.LEFT, currentCard
+                                                    SwipeDirection.LEFT,
+                                                    currentCard,
+                                                    getStrength(context)
                                                 )
                                                 delay(100)
                                                 viewModel.getNextCard()
-                                                currentBackgroundColor =
-                                                    BackgroundColors.CORRECT
+                                                currentBackgroundColor = BackgroundColors.CORRECT
                                                 delay(500)
                                                 currentBackgroundColor = BackgroundColors.NORMAL
                                             }
@@ -576,10 +572,18 @@ private fun Content(
                                 }
                             }
                         }
-                    }
-                )
+                    })
 
             }
         }
     }
+}
+
+private fun getStrength(
+    context: Context,
+): AlgorithmStrength {
+    val strength =
+        context.applicationContext.getSharedPreferences("settingsFile", Context.MODE_PRIVATE)
+            .getString("strength", AlgorithmStrength.NORMAL.toString())
+    return AlgorithmStrength.valueOf(strength ?: AlgorithmStrength.NORMAL.toString())
 }

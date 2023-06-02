@@ -37,23 +37,9 @@ class RemoteDeckRepository(private val deckDao: DeckDao) : DeckRepository {
         return deckDao.searchDecksWithCardCount("%$title%").toDomain()
     }
 
-    override suspend fun saveDeck(
-        title: String,
-        creationDate: Date,
-        icon: String,
-        color: String
-    ): Boolean {
-        val deckEntityRow: Long =
-            deckDao.insert(
-                DeckEntity(
-                    id = 0,
-                    title = title,
-                    creationDate = creationDate,
-                    icon = icon,
-                    color = color
-                )
-            )
-        return deckEntityRow >= 0
+    override suspend fun saveDeck(title: String, creationDate: Date, icon: String, color: String): Long {
+        return deckDao.insert(DeckEntity(id = 0, title = title, creationDate = creationDate, icon = icon, color = color)
+        )
 
     }
 
