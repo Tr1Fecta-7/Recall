@@ -239,8 +239,9 @@ private fun Content(
 									onClick = {
 										navigator.navigate(
 											CommunityCardScreenDestination(
-												cardId = card.id,
-												title = communityDeck.title
+												title = communityDeck.title,
+												front = card.front,
+												back = card.back
 											)
 										)
 									},
