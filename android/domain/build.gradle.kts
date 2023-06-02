@@ -31,9 +31,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
     }
 }
 
-//tasks.test {
-//    useJUnitPlatform()
-//}
+tasks.test {
+    useJUnitPlatform()
+}
 
 dependencies {
     // Koin DI
@@ -43,10 +43,10 @@ dependencies {
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.COROUTINES}")
-    api ("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.COROUTINES}")
-//
-//    runtimeOnly ("org.junit.jupiter:junit-jupiter-engine:${Versions.J_UNIT}")
-//    api ("org.junit.jupiter:junit-jupiter-api:${Versions.J_UNIT}")
-//    api ("org.junit.jupiter:junit-jupiter:${Versions.J_UNIT}")
-//    api ("io.mockk:mockk:${Versions.MOCKK}")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.COROUTINES}")
+
+    runtimeOnly ("org.junit.jupiter:junit-jupiter-engine:${Versions.J_UNIT}")
+    testImplementation ("org.junit.jupiter:junit-jupiter-api:${Versions.J_UNIT}")
+    testImplementation ("org.junit.jupiter:junit-jupiter:${Versions.J_UNIT}")
+    testImplementation ("io.mockk:mockk:${Versions.MOCKK}")
 }
