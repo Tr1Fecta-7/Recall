@@ -25,6 +25,12 @@ dependencies {
 	runtimeOnly("com.mysql:mysql-connector-j")
 }
 
+tasks.withType<Jar> {
+	manifest {
+		attributes["Main-Class"] = "com.recall.api.ApiApplication"
+	}
+}
+
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
