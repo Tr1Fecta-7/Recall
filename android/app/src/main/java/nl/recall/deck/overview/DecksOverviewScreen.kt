@@ -21,11 +21,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,8 +42,8 @@ import nl.recall.destinations.DeckCreateDestination
 import nl.recall.destinations.DeckDetailScreenDestination
 import nl.recall.destinations.DecksOverviewSearchScreenDestination
 import nl.recall.destinations.OnboardingScreenDestination
-import nl.recall.onboarding.model.OnboardingManager
 import nl.recall.presentation.deck.overview.DecksOverviewViewModel
+import nl.recall.presentation.deck.overview.model.DeckOverviewNavigationAction
 import nl.recall.presentation.uiState.UIState
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
@@ -56,14 +56,14 @@ fun DecksOverviewScreen(
 	navigator: DestinationsNavigator,
 	viewModel: DecksOverviewViewModel = koinViewModel(),
 ) {
-	val context = LocalContext.current
-
-	val onboardingCompleted = OnboardingManager.isOnboardingCompleted(context)
-	if (!onboardingCompleted) {
-		navigator.navigate(OnboardingScreenDestination)
+	LaunchedEffect(Unit) {
+		viewModel.navigation.collect {
+			when(it) {
+				DeckOverviewNavigationAction.OPEN_ONBOARDING -> navigator.navigate(OnboardingScreenDestination)
+			}
+		}
 	}
 
-	viewModel.observeDecks()
 	val decks by viewModel.decks.collectAsState()
 	val uiState by viewModel.state.collectAsState()
 

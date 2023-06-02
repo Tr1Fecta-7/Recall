@@ -3,8 +3,11 @@ package nl.recall.presentation.deck.overview
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -13,6 +16,7 @@ import nl.recall.domain.deck.GetDecksWithCardCount
 import nl.recall.domain.deck.ObserveDecksWithCardCount
 import nl.recall.domain.deck.SearchDeckWithCardCount
 import nl.recall.domain.deck.model.Deck
+import nl.recall.presentation.deck.overview.model.DeckOverviewNavigationAction
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
 
@@ -23,13 +27,19 @@ class DecksOverviewViewModel(
 	private val observeDecksWithCardCount: ObserveDecksWithCardCount,
 ) : ViewModel() {
 
+	private val _navigation = MutableSharedFlow<DeckOverviewNavigationAction>(replay = 0, extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+	val navigation = _navigation.asSharedFlow()
+
 	private val _state = MutableStateFlow(UIState.LOADING)
 	val state: StateFlow<UIState> by lazy {
 		_state.asStateFlow()
 	}
 
 	private val _decks = MutableStateFlow<Map<Deck, Int>>(emptyMap())
-	val decks: StateFlow<Map<Deck, Int>> = _decks.asStateFlow()
+	val decks: StateFlow<Map<Deck, Int>> by lazy {
+		observeDecks()
+		_decks.asStateFlow()
+	}
 
 	fun observeDecks() {
 		viewModelScope.launch(Dispatchers.IO) {
@@ -45,6 +55,10 @@ class DecksOverviewViewModel(
 				}
 			}
 		}
+	}
+
+	fun emitToNav() {
+		_navigation.tryEmit(DeckOverviewNavigationAction.OPEN_ONBOARDING)
 	}
 
 	fun searchDecks(title: String) {
