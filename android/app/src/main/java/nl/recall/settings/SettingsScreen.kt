@@ -1,5 +1,6 @@
 package nl.recall.settings
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,13 +29,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.R
 import nl.recall.components.BottomNav
+import nl.recall.domain.deck.model.AlgorithmStrength
 import nl.recall.presentation.settings.SettingsViewModel
-import nl.recall.presentation.settings.model.AlgorithmStrength
 import nl.recall.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -46,8 +47,8 @@ fun SettingsScreen(
     navigator: DestinationsNavigator,
     viewModel: SettingsViewModel = koinViewModel()
 ) {
-    val strength by viewModel.strength.collectAsState()
-    var selectedStrength by remember { mutableStateOf(strength) }
+    val context = LocalContext.current
+    var selectedStrength by remember { mutableStateOf(getStrength(context)) }
     val changeStrength: (AlgorithmStrength) -> (Boolean) = {
         selectedStrength = it
         viewModel.updateStrength(it)
@@ -142,7 +143,7 @@ private fun DropdownMenuBox(
                         text = { Text(text = item.strengthName) },
                         onClick = {
                             expanded = false
-                            if (changeStrength(item)) {
+                            if (changeStrength(saveStrength(context, item))) {
                                 Toast.makeText(context, "Algorithm strength changed to ${item.strengthName}", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -151,4 +152,23 @@ private fun DropdownMenuBox(
             }
         }
     }
+}
+
+private fun saveStrength(
+    context: Context,
+    algorithmStrength: AlgorithmStrength
+): AlgorithmStrength {
+    context.applicationContext.getSharedPreferences("settingsFile", Context.MODE_PRIVATE)?.edit {
+        putString("strength", algorithmStrength.toString())
+    }
+    return algorithmStrength
+}
+
+private fun getStrength(
+    context: Context,
+): AlgorithmStrength {
+    val strength =
+        context.applicationContext.getSharedPreferences("settingsFile", Context.MODE_PRIVATE)
+            .getString("strength", AlgorithmStrength.NORMAL.toString())
+    return AlgorithmStrength.valueOf(strength ?: AlgorithmStrength.NORMAL.toString())
 }

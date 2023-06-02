@@ -11,6 +11,7 @@ import nl.recall.domain.deck.GetDeckWithCardsWithCorrectDueDate
 import nl.recall.domain.deck.ResetAlgorithm
 import nl.recall.domain.deck.UpdateCard
 import nl.recall.domain.deck.UpdateCardWithNewDate
+import nl.recall.domain.deck.model.AlgorithmStrength
 import nl.recall.domain.deck.model.Card
 import nl.recall.domain.deck.model.DeckWithCards
 import nl.recall.presentation.deck.study.model.StudyDeckViewModelArgs
@@ -87,20 +88,21 @@ class StudyDeckViewModel(
 		}
 	}
 
-	fun onSwipeCard(direction: SwipeDirection, card: Card) {
+	fun onSwipeCard(direction: SwipeDirection, card: Card, algorithmStrength: AlgorithmStrength) {
 		_nextCardAvailability.value = false
 		viewModelScope.launch(Dispatchers.IO) {
 			try {
 				if (direction == SwipeDirection.LEFT) {
 					updateCardWithNewDate(
-						Card(
+						card = Card(
 							id = card.id,
 							front = card.front,
 							back = card.back,
 							dueDate = card.dueDate,
 							deckId = card.deckId,
 							successStreak = (card.successStreak + 1)
-						)
+						),
+						algorithmStrength = algorithmStrength
 					)
 				} else {
 					val newCard =
