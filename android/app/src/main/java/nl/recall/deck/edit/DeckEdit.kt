@@ -33,119 +33,121 @@ import org.koin.core.parameter.parametersOf
 @Destination
 @Composable
 fun DeckEdit(
-	navigator: DestinationsNavigator,
-	clickedDeckId: Long,
-	viewModel: DeckEditViewModel =
-		koinViewModel(parameters = { parametersOf(DeckEditViewModelArgs(clickedDeckId)) }),
+    navigator: DestinationsNavigator,
+    clickedDeckId: Long,
+    viewModel: DeckEditViewModel =
+        koinViewModel(parameters = { parametersOf(DeckEditViewModelArgs(clickedDeckId)) }),
 ) {
-	Scaffold(
-		topBar = {
-			TopAppBar(
-				title = { Text(stringResource(id = R.string.edit_deck_title)) },
-				navigationIcon = {
-					IconButton(onClick = { navigator.popBackStack() }) {
-						Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
-					}
-				},
-				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-					containerColor = AppTheme.white
-				),
-			)
-		},
-		content = { MainContent(navigator = navigator, it, viewModel) }
-	)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(id = R.string.edit_deck_title)) },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = AppTheme.white
+                ),
+            )
+        },
+        content = { MainContent(navigator = navigator, it, viewModel) }
+    )
 }
 
 @Composable
 private fun MainContent(
-	navigator: DestinationsNavigator,
-	paddingValues: PaddingValues,
-	viewModel: DeckEditViewModel,
+    navigator: DestinationsNavigator,
+    paddingValues: PaddingValues,
+    viewModel: DeckEditViewModel,
 ) {
-	viewModel.observeDeck()
-	val deck = viewModel.deck.collectAsState().value
-	val uiState: UIState by viewModel.state.collectAsState()
-	val updatedInDatabase = viewModel.updatedDeckBoolean.collectAsState()
+    viewModel.observeDeck()
+    val deck = viewModel.deck.collectAsState().value
+    val uiState: UIState by viewModel.state.collectAsState()
+    val updatedInDatabase by viewModel.updatedDeckBoolean.collectAsState()
 
-	when (uiState) {
-		UIState.NORMAL -> {
-			deck?.let {
+    when (uiState) {
+        UIState.NORMAL -> {
+            deck?.let {
 
-				if (updatedInDatabase.value) navigator.popBackStack()
+                if (updatedInDatabase) navigator.popBackStack() else {
 
-				var deckColor by remember {
-					mutableStateOf(deck.color)
-				}
 
-				var showAlert by remember {
-					mutableStateOf(false)
-				}
+                    var deckColor by remember {
+                        mutableStateOf(deck.color)
+                    }
 
-				var deckTitleTextField by remember {
-					mutableStateOf(TextFieldValue(deck.title))
-				}
-				var emojiTextfield by remember {
-					mutableStateOf(TextFieldValue(deck.icon))
-				}
-				var validationTitle by remember {
-					mutableStateOf(true)
-				}
+                    var showAlert by remember {
+                        mutableStateOf(false)
+                    }
 
-				var isEmojiFieldCorrect by remember {
-					//stardart emoji present, thus onload always true
-					mutableStateOf(true)
-				}
+                    var deckTitleTextField by remember {
+                        mutableStateOf(TextFieldValue(deck.title))
+                    }
+                    var emojiTextfield by remember {
+                        mutableStateOf(TextFieldValue(deck.icon))
+                    }
+                    var validationTitle by remember {
+                        mutableStateOf(true)
+                    }
 
-				var characterCount by remember {
-					mutableStateOf(0)
-				}
+                    var isEmojiFieldCorrect by remember {
+                        //stardart emoji present, thus onload always true
+                        mutableStateOf(true)
+                    }
 
-				DeckFrontEndComponent(
-					paddingValues = paddingValues,
-					onSubmitDeck = {
-						viewModel.updateDeckInDatabase(
-							Deck(
-								id = deck.id,
-								title = deckTitleTextField.text,
-								creationDate = deck.creationDate,
-								icon = emojiTextfield.text,
-								color = deckColor
-							)
-						)
-					},
-					showAlert = showAlert,
-					toggleAlert = { showAlert = !showAlert },
-					preSelectedColor = deck.color,
-					onSetColor = { color -> deckColor = color },
-					deckTitleTextField = deckTitleTextField,
-					onDeckTextFieldValueChange = { text ->
-						deckTitleTextField = text
-						validationTitle = text.text.isNotBlank()
-					},
-					deckColor = deckColor,
-					emojiTextfield = emojiTextfield,
-					onEmojiTextFieldValueChange = { text ->
-						if (characterCount == 0 && text.text.isNotBlank()) {
-							emojiTextfield = text
-							characterCount++
-						} else if (text.text.isEmpty()) {
-							characterCount--
-							emojiTextfield = text
-						}
-					},
-					validationTitle = validationTitle,
-					validationEmoji = isEmojiFieldCorrect,
-					submitButtonText = stringResource(id = R.string.edit_deck_title)
-				)
-			}
-		}
+                    var characterCount by remember {
+                        mutableStateOf(0)
+                    }
 
-		UIState.LOADING -> {
-			DeckLoading()
-		}
+                    DeckFrontEndComponent(
+                        paddingValues = paddingValues,
+                        onSubmitDeck = {
+                            viewModel.updateDeckInDatabase(
+                                Deck(
+                                    id = deck.id,
+                                    title = deckTitleTextField.text,
+                                    creationDate = deck.creationDate,
+                                    icon = emojiTextfield.text,
+                                    color = deckColor
+                                )
+                            )
+                        },
+                        showAlert = showAlert,
+                        toggleAlert = { showAlert = !showAlert },
+                        preSelectedColor = deck.color,
+                        onSetColor = { color -> deckColor = color },
+                        deckTitleTextField = deckTitleTextField,
+                        onDeckTextFieldValueChange = { text ->
+                            deckTitleTextField = text
+                            validationTitle = text.text.isNotBlank()
+                        },
+                        deckColor = deckColor,
+                        emojiTextfield = emojiTextfield,
+                        onEmojiTextFieldValueChange = { text ->
+                            if (characterCount == 0 && text.text.isNotBlank()) {
+                                emojiTextfield = text
+                                characterCount++
+                            } else if (text.text.isEmpty()) {
+                                characterCount--
+                                emojiTextfield = text
+                            }
+                        },
+                        validationTitle = validationTitle,
+                        validationEmoji = isEmojiFieldCorrect,
+                        submitButtonText = stringResource(id = R.string.edit_deck_title)
+                    )
+                }
+            }
+        }
 
-		else -> {
+        UIState.LOADING -> {
+            DeckLoading()
+        }
 
-		}
-	}
+        else -> {
+
+        }
+    }
 }

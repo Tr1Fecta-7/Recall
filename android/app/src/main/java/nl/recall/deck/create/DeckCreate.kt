@@ -41,135 +41,135 @@ import java.util.Date
 @Destination
 @Composable
 fun DeckCreate(navController: NavController, navigator: DestinationsNavigator) {
-	Scaffold(
-		topBar = {
-			TopAppBar(
-				title = { Text(stringResource(id = R.string.create_deck_title)) },
-				navigationIcon = {
-					IconButton(onClick = { navigator.popBackStack() }) {
-						Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
-					}
-				},
-				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-					containerColor = AppTheme.neutral50
-				),
-			)
-		},
-		bottomBar = { BottomNav(navController = navController) },
-		content = { MainContent(navigator = navigator, it) }
-	)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(id = R.string.create_deck_title)) },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = AppTheme.neutral50
+                ),
+            )
+        },
+        bottomBar = { BottomNav(navController = navController) },
+        content = { MainContent(navigator = navigator, it) }
+    )
 }
 
 @Composable
 private fun MainContent(
-	navigator: DestinationsNavigator,
-	paddingValues: PaddingValues,
-	viewModel: CreateDeckViewModel = koinViewModel(parameters = {
-		parametersOf(
-			CreateDeckViewModelArgs(
-				id = 1,
-				title = "",
-				color = "#2596be",
-				creationDate = Date(),
-				icon = "\uD83D\uDD25"
-			)
-		)
-	}),
+    navigator: DestinationsNavigator,
+    paddingValues: PaddingValues,
+    viewModel: CreateDeckViewModel = koinViewModel(parameters = {
+        parametersOf(
+            CreateDeckViewModelArgs(
+                id = 1,
+                title = "",
+                color = "#2596be",
+                creationDate = Date(),
+                icon = "\uD83D\uDD25"
+            )
+        )
+    }),
 ) {
-	val deck = viewModel.deck.collectAsState().value
-	val uiState: UIState by viewModel.state.collectAsState()
-	val savedDeckIntoDatabase = viewModel.savedDeckBoolean.collectAsState().value;
+    val deck = viewModel.deck.collectAsState().value
+    val uiState: UIState by viewModel.state.collectAsState()
+    val savedDeckIntoDatabase = viewModel.savedDeckBoolean.collectAsState().value;
+    if (savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination) else {
+        when (uiState) {
+            UIState.NORMAL -> {
+                deck?.let {
 
-	when (uiState) {
-		UIState.NORMAL -> {
-			deck?.let {
 
-				if (savedDeckIntoDatabase) navigator.navigate(DecksOverviewScreenDestination)
-				else {
-					var deckColor by remember {
-						mutableStateOf(deck.color)
-					}
+                    var deckColor by remember {
+                        mutableStateOf(deck.color)
+                    }
 
-					var showAlert by remember {
-						mutableStateOf(false)
-					}
+                    var showAlert by remember {
+                        mutableStateOf(false)
+                    }
 
-					var deckTitleTextField by remember {
-						mutableStateOf(TextFieldValue(deck.title))
-					}
-					var emojiTextfield by remember {
-						mutableStateOf(TextFieldValue(deck.icon))
-					}
-					var validationTitle by remember {
-						mutableStateOf(false)
-					}
+                    var deckTitleTextField by remember {
+                        mutableStateOf(TextFieldValue(deck.title))
+                    }
+                    var emojiTextfield by remember {
+                        mutableStateOf(TextFieldValue(deck.icon))
+                    }
+                    var validationTitle by remember {
+                        mutableStateOf(false)
+                    }
 
-					var validationEmoji by remember {
-						// stardart emoji present, thus onload always true
-						mutableStateOf(true)
-					}
+                    var validationEmoji by remember {
+                        // stardart emoji present, thus onload always true
+                        mutableStateOf(true)
+                    }
 
-					var characterCount by remember {
-						mutableStateOf(0)
-					}
+                    var characterCount by remember {
+                        mutableStateOf(0)
+                    }
 
-					DeckFrontEndComponent(
-						paddingValues = paddingValues,
-						onSubmitDeck = {
-							viewModel.saveDeckToDatabase(
-								title = deckTitleTextField.text,
-								creationDate = Date(),
-								icon = emojiTextfield.text,
-								color = deckColor
-							)
-						},
-						showAlert = showAlert,
-						toggleAlert = { showAlert = !showAlert },
-						preSelectedColor = deck.color,
-						onSetColor = { color -> deckColor = color },
-						deckTitleTextField = deckTitleTextField,
-						onDeckTextFieldValueChange = { text ->
-							deckTitleTextField = text
-							validationTitle = text.text.isNotBlank()
-						},
-						deckColor = deckColor,
-						emojiTextfield = emojiTextfield,
-						onEmojiTextFieldValueChange = { text ->
-							if (characterCount == 0 && text.text.isNotBlank()) {
-								emojiTextfield = text
-								characterCount++
-							} else if (text.text.isEmpty()) {
-								characterCount--
-								emojiTextfield = text
-							}
-						},
-						validationTitle = validationTitle,
-						validationEmoji = validationEmoji,
-						submitButtonText = stringResource(id = R.string.create_deck_title)
-					)
-				}
-			}
-		}
+                    DeckFrontEndComponent(
+                        paddingValues = paddingValues,
+                        onSubmitDeck = {
+                            viewModel.saveDeckToDatabase(
+                                title = deckTitleTextField.text,
+                                creationDate = Date(),
+                                icon = emojiTextfield.text,
+                                color = deckColor
+                            )
+                        },
+                        showAlert = showAlert,
+                        toggleAlert = { showAlert = !showAlert },
+                        preSelectedColor = deck.color,
+                        onSetColor = { color -> deckColor = color },
+                        deckTitleTextField = deckTitleTextField,
+                        onDeckTextFieldValueChange = { text ->
+                            deckTitleTextField = text
+                            validationTitle = text.text.isNotBlank()
+                        },
+                        deckColor = deckColor,
+                        emojiTextfield = emojiTextfield,
+                        onEmojiTextFieldValueChange = { text ->
+                            if (characterCount == 0 && text.text.isNotBlank()) {
+                                emojiTextfield = text
+                                characterCount++
+                            } else if (text.text.isEmpty()) {
+                                characterCount--
+                                emojiTextfield = text
+                            }
+                        },
+                        validationTitle = validationTitle,
+                        validationEmoji = validationEmoji,
+                        submitButtonText = stringResource(id = R.string.create_deck_title)
+                    )
 
-		UIState.LOADING -> {
-			DeckLoading()
-		}
+                }
+            }
 
-		else -> {
+            UIState.LOADING -> {
+                DeckLoading()
+            }
 
-		}
-	}
+            else -> {
+
+            }
+        }
+    }
 
 }
 
 @Composable
 fun DeckLoading() {
-	Column(
-		Modifier.fillMaxSize(),
-		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.Center
-	) {
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
 
-	}
-	CircularProgressIndicator()
+    }
+    CircularProgressIndicator()
 }
