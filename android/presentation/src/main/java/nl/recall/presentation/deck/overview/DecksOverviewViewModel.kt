@@ -18,9 +18,9 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class DecksOverviewViewModel(
-    private val getDecksWithCardCount: GetDecksWithCardCount,
-    private val searchDecksWithCardCount: SearchDeckWithCardCount,
-    private val observeDecksWithCardCount: ObserveDecksWithCardCount,
+	private val getDecksWithCardCount: GetDecksWithCardCount,
+	private val searchDecksWithCardCount: SearchDeckWithCardCount,
+	private val observeDecksWithCardCount: ObserveDecksWithCardCount,
 ) : ViewModel() {
 
 	private val _state = MutableStateFlow(UIState.LOADING)
@@ -35,9 +35,14 @@ class DecksOverviewViewModel(
 		viewModelScope.launch(Dispatchers.IO) {
 			observeDecksWithCardCount().catch {
 				_state.value = UIState.ERROR
-			}.collectLatest {
-				_decks.value = it
-				_state.value = UIState.NORMAL
+			}.collectLatest { deckWithCount ->
+				_decks.value = deckWithCount
+
+				if (deckWithCount.isEmpty()) {
+					_state.value = UIState.EMPTY
+				} else {
+					_state.value = UIState.NORMAL
+				}
 			}
 		}
 	}
