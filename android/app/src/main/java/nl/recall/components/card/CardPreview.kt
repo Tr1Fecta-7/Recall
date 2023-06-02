@@ -1,5 +1,6 @@
 package nl.recall.components.card
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -53,7 +55,7 @@ fun CardPreview(card: CardPreviewData, paddingValues: PaddingValues, onClick: ()
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(top = 100.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
+                .padding(top = 100.dp, bottom = 0.dp, start = 50.dp, end = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(35.dp),
         ) {
@@ -69,7 +71,7 @@ fun CardPreview(card: CardPreviewData, paddingValues: PaddingValues, onClick: ()
                 )
             }
 
-            Column(modifier = Modifier.heightIn(0.dp, 200.dp)) {
+            Column(modifier = Modifier.heightIn(0.dp, 200.dp).widthIn()) {
                 OutlinedTextField(
                     value = backTextFieldValue,
                     onValueChange = {
