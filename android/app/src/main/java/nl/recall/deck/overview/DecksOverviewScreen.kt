@@ -3,12 +3,14 @@ package nl.recall.deck.overview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
@@ -52,9 +54,9 @@ import org.koin.androidx.compose.koinViewModel
 @Destination
 @Composable
 fun DecksOverviewScreen(
-	navController: NavController,
-	navigator: DestinationsNavigator,
-	viewModel: DecksOverviewViewModel = koinViewModel(),
+    navController: NavController,
+    navigator: DestinationsNavigator,
+    viewModel: DecksOverviewViewModel = koinViewModel(),
 ) {
 	LaunchedEffect(Unit) {
 		viewModel.navigation.collect {
@@ -67,123 +69,123 @@ fun DecksOverviewScreen(
 	val decks by viewModel.decks.collectAsState()
 	val uiState by viewModel.state.collectAsState()
 
-	Content(
-		navigateToCreateDeck = { navigator.navigate(DeckCreateDestination) },
-		navigateToDeckSearch = {
-			navigator.navigate(DecksOverviewSearchScreenDestination)
-		},
-		navController = navController,
-	) {
-		when (uiState) {
-			UIState.NORMAL -> {
-				LazyColumn(
-					verticalArrangement = Arrangement.spacedBy(8.dp)
-				) {
-					items(decks.entries.toList()) { entry ->
-						DeckPreview(entry.key, cardCount = entry.value, onClick = {
-							navigator.navigate(DeckDetailScreenDestination(deckId = entry.key.id))
-						})
-					}
-				}
-			}
+    Content(
+        navigateToCreateDeck = { navigator.navigate(DeckCreateDestination) },
+        navigateToDeckSearch = {
+            navigator.navigate(DecksOverviewSearchScreenDestination)
+        },
+        navController = navController,
+    ) {
+        when (uiState) {
+            UIState.NORMAL -> {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    decks.entries.forEach { entry ->
+                        DeckPreview(entry.key, cardCount = entry.value, onClick = {
+                            navigator.navigate(DeckDetailScreenDestination(deckId = entry.key.id))
+                        })
+                    }
+                }
+            }
 
-			UIState.EMPTY -> {
-				Column(
-					Modifier.fillMaxSize()
-				) {
-					ImageMessage(
-						painter = painterResource(id = R.drawable.no_decks_found),
-						text = stringResource(id = R.string.no_decks_found)
-					)
-				}
-			}
+            UIState.EMPTY -> {
+                Column(
+                    Modifier.fillMaxSize()
+                ) {
+                    ImageMessage(
+                        painter = painterResource(id = R.drawable.no_decks_found),
+                        text = stringResource(id = R.string.no_decks_found)
+                    )
+                }
+            }
 
-			UIState.LOADING -> {
-				Column(
-					Modifier.fillMaxSize(),
-					verticalArrangement = Arrangement.Center,
-					horizontalAlignment = Alignment.CenterHorizontally
-				) {
-					CircularProgressIndicator()
-				}
-			}
+            UIState.LOADING -> {
+                Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
 
-			UIState.ERROR -> {
-				ImageMessage(
-					painter = painterResource(id = R.drawable.error_image),
-					text = stringResource(id = R.string.no_decks_found)
-				)
-			}
-		}
-	}
+            UIState.ERROR -> {
+                ImageMessage(
+                    painter = painterResource(id = R.drawable.error_image),
+                    text = stringResource(id = R.string.no_decks_found)
+                )
+            }
+        }
+    }
 }
 
 @Composable
 private fun Content(
-	navigateToCreateDeck: () -> Unit,
-	navigateToDeckSearch: () -> Unit,
-	navController: NavController,
-	content: @Composable (() -> Unit),
+    navigateToCreateDeck: () -> Unit,
+    navigateToDeckSearch: () -> Unit,
+    navController: NavController,
+    content: @Composable (() -> (Unit)),
 ) {
-	Scaffold(
-		containerColor = AppTheme.neutral50,
-		floatingActionButton = {
-			FloatingActionButton(
-				onClick = { navigateToCreateDeck() },
-				contentColor = AppTheme.primary900,
-				containerColor = AppTheme.primary300
-			) {
-				Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
-			}
-		},
-		bottomBar = { BottomNav(navController = navController) }
-	) { paddingValues ->
-		Column(
-			Modifier.padding(
-				top = paddingValues.calculateTopPadding() + 56.dp,
-				bottom = paddingValues.calculateBottomPadding(),
-				start = 14.dp,
-				end = 14.dp
-			)
-		) {
-			Text(
-				text = stringResource(id = R.string.deck_overview_title),
-				color = AppTheme.neutral800,
-				style = MaterialTheme.typography.titleLarge,
-				fontWeight = FontWeight.Medium
-			)
-			Text(
-				text = stringResource(id = R.string.deck_overview_subtitle),
-				color = AppTheme.neutral500
-			)
+    val scrollState = rememberScrollState()
 
-			Card(modifier = Modifier
-				.fillMaxWidth()
-				.padding(vertical = 24.dp),
-				colors = CardDefaults.cardColors(
-					containerColor = AppTheme.neutral200,
-				),
-				shape = RoundedCornerShape(35.dp),
-				onClick = {
-					navigateToDeckSearch()
-				}
-			) {
-				Row(
-					modifier = Modifier
-						.padding(15.dp)
-						.fillMaxWidth(),
-					verticalAlignment = Alignment.CenterVertically,
-					horizontalArrangement = Arrangement.SpaceBetween
-				) {
-					Text(
-						text = stringResource(R.string.search_bar_deck_hint),
-						color = AppTheme.neutral500
-					)
-					Icon(imageVector = Icons.Default.Search, contentDescription = "search")
-				}
-			}
+    Scaffold(containerColor = AppTheme.neutral50, floatingActionButton = {
+        FloatingActionButton(
+            onClick = { navigateToCreateDeck() },
+            contentColor = AppTheme.primary900,
+            containerColor = AppTheme.primary300
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
+        }
+    }, bottomBar = { BottomNav(navController = navController) }) { paddingValues ->
+        Column(
+            Modifier
+                .padding(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = paddingValues.calculateBottomPadding(),
+                    start = 14.dp,
+                    end = 14.dp
+                )
+                .verticalScroll(scrollState)
+        ) {
+            Spacer(modifier = Modifier.height(56.dp))
+            Text(
+                text = stringResource(id = R.string.deck_overview_title),
+                color = AppTheme.neutral800,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = stringResource(id = R.string.deck_overview_subtitle),
+                color = AppTheme.neutral500
+            )
 
-			content()
-		}
-	}
+            Card(modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = AppTheme.neutral200,
+                ),
+                shape = RoundedCornerShape(35.dp),
+                onClick = {
+                    navigateToDeckSearch()
+                }) {
+                Row(
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(R.string.search_bar_deck_hint),
+                        color = AppTheme.neutral500
+                    )
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "search")
+                }
+
+            }
+            content()
+
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
 }

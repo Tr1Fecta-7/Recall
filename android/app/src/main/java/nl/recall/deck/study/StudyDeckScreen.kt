@@ -434,7 +434,6 @@ private fun Content(
                         cardStates[iterator], onSwiped = { direction ->
                             scope.launch {
                                 cardFaceUIState = CardFaceUIState.Front
-                                println(getStrength(context = context))
                                 if (direction == Direction.Left) {
                                     viewModel.onSwipeCard(
                                         SwipeDirection.LEFT, currentCard, getStrength(context)

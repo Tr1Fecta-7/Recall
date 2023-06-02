@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -61,10 +61,10 @@ fun CommunityDeckOverviewScreen(
 	) {
 		when (uiState) {
 			UIState.NORMAL -> {
-				LazyColumn(
+				Column(
 					verticalArrangement = Arrangement.spacedBy(8.dp)
 				) {
-					items(decks) { deck ->
+					decks.forEach { deck ->
 						CommunityDeckPreview(deck, onClick = {
 							navigator.navigate(CommunityDeckDetailScreenDestination(deckId = deck.id))
 						})
@@ -109,18 +109,22 @@ private fun Content(
 	navController: NavController,
 	content: @Composable (() -> Unit),
 ) {
+	val scrollState = rememberScrollState()
+
 	Scaffold(
 		containerColor = AppTheme.neutral50,
 		bottomBar = { BottomNav(navController = navController) }
 	) { paddingValues ->
 		Column(
 			Modifier.padding(
-				top = paddingValues.calculateTopPadding() + 56.dp,
+				top = paddingValues.calculateTopPadding(),
 				bottom = paddingValues.calculateBottomPadding(),
 				start = 14.dp,
 				end = 14.dp
 			)
+				.verticalScroll(scrollState)
 		) {
+			Spacer(modifier = Modifier.height(56.dp))
 			Text(
 				text = stringResource(id = R.string.community_deck_overview_title),
 				color = AppTheme.neutral800,
@@ -166,6 +170,8 @@ private fun Content(
 			Spacer(modifier = Modifier.height(6.dp))
 
 			content()
+
+			Spacer(modifier = Modifier.height(32.dp))
 		}
 	}
 }
