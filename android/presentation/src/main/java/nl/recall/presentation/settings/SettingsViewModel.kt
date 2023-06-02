@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import nl.recall.presentation.settings.model.AlgorithmStrength
+import nl.recall.domain.deck.model.AlgorithmStrength
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
 
@@ -22,6 +22,4 @@ class SettingsViewModel(
         _strength.value = algorithmStrength
         return true
     }
-
-
 }
