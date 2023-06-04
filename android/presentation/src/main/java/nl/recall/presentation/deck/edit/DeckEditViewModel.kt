@@ -28,13 +28,16 @@ class DeckEditViewModel(
 	val state: StateFlow<UIState> = _state.asStateFlow()
 
 	private val _deck = MutableStateFlow<Deck?>(null)
-	val deck: StateFlow<Deck?> = _deck.asStateFlow()
+	val deck: StateFlow<Deck?> by lazy {
+		observeDeck()
+		_deck.asStateFlow()
+	}
 
 	private val _updatedDeckBoolean = MutableStateFlow(false)
 
 	val updatedDeckBoolean: StateFlow<Boolean> = _updatedDeckBoolean.asStateFlow()
 
-	fun observeDeck() {
+	private fun observeDeck() {
 		viewModelScope.launch(Dispatchers.IO) {
 			observeDeckById(args.id).catch {
 				_state.value = UIState.ERROR

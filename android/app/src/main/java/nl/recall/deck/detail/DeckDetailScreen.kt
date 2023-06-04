@@ -94,7 +94,6 @@ fun DeckDetailScreen(
 		parametersOf(DeckDetailViewModelArgs(deckId))
 	}),
 ) {
-	viewModel.observeDeck()
 	val uiState by viewModel.state.collectAsState()
 	val deckWithCards by viewModel.deck.collectAsState()
 	val isDeckDeleted by viewModel.isDeckDeleted.collectAsState()

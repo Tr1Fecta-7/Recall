@@ -62,7 +62,6 @@ private fun MainContent(
     paddingValues: PaddingValues,
     viewModel: DeckEditViewModel,
 ) {
-    viewModel.observeDeck()
     val deck = viewModel.deck.collectAsState().value
     val uiState: UIState by viewModel.state.collectAsState()
     val updatedInDatabase by viewModel.updatedDeckBoolean.collectAsState()

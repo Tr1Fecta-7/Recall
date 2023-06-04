@@ -36,9 +36,12 @@ class DeckDetailViewModel(
 	val publishDeckState: StateFlow<UIState> = _publishDeckState.asStateFlow()
 
 	private val _deck = MutableStateFlow<DeckWithCards?>(null)
-	val deck: StateFlow<DeckWithCards?> = _deck.asStateFlow()
+	val deck: StateFlow<DeckWithCards?> by lazy {
+		observeDeck()
+		_deck.asStateFlow()
+	}
 
-	fun observeDeck() {
+	private fun observeDeck() {
 		viewModelScope.launch(Dispatchers.IO) {
 			observeDeckById(args.id).catch {
 				_state.value = UIState.ERROR
