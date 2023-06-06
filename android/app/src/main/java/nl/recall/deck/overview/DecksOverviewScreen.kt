@@ -62,7 +62,7 @@ fun DecksOverviewScreen(
 		viewModel.navigation.collect {
 			when(it) {
 				DeckOverviewNavigationAction.OPEN_ONBOARDING -> navigator.navigate(OnboardingScreenDestination)
-			}
+            }
 		}
 	}
 
@@ -115,6 +115,8 @@ fun DecksOverviewScreen(
                 )
             }
         }
+
+        viewModel.checkAndNavigateOnboarding()
     }
 }
 

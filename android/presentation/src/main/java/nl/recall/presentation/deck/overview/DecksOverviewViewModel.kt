@@ -1,5 +1,6 @@
 package nl.recall.presentation.deck.overview
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,8 @@ import nl.recall.domain.deck.GetDecksWithCardCount
 import nl.recall.domain.deck.ObserveDecksWithCardCount
 import nl.recall.domain.deck.SearchDeckWithCardCount
 import nl.recall.domain.deck.model.Deck
+import nl.recall.domain.onboarding.GetOnboardingCompleted
+import nl.recall.domain.onboarding.SetOnboardingCompleted
 import nl.recall.presentation.deck.overview.model.DeckOverviewNavigationAction
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
@@ -25,6 +28,7 @@ class DecksOverviewViewModel(
 	private val getDecksWithCardCount: GetDecksWithCardCount,
 	private val searchDecksWithCardCount: SearchDeckWithCardCount,
 	private val observeDecksWithCardCount: ObserveDecksWithCardCount,
+	private val getOnboardingCompleted: GetOnboardingCompleted,
 ) : ViewModel() {
 
 	private val _navigation = MutableSharedFlow<DeckOverviewNavigationAction>(replay = 0, extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
@@ -39,6 +43,13 @@ class DecksOverviewViewModel(
 	val decks: StateFlow<Map<Deck, Int>> by lazy {
 		observeDecks()
 		_decks.asStateFlow()
+	}
+
+	fun checkAndNavigateOnboarding() {
+		val completed = getOnboardingCompleted.invoke()
+		if (!completed) {
+			emitToNav()
+		}
 	}
 
 	fun observeDecks() {
