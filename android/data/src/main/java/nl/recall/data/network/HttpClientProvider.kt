@@ -6,6 +6,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
@@ -33,10 +34,11 @@ class HttpClientProvider {
     private fun HttpClientConfig<*>.installBaseUrl() = defaultRequest {
         url {
             host = BASE_URL
+            protocol = URLProtocol.HTTPS
         }
     }
 
     companion object {
-        private const val BASE_URL = "10.0.2.2:8080"
+        private const val BASE_URL = "recall-production-c77d.up.railway.app"
     }
 }
