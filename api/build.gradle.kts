@@ -19,7 +19,7 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web") {
-		exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
+		exclude(group = "org.springframework.boot")
 	}
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
