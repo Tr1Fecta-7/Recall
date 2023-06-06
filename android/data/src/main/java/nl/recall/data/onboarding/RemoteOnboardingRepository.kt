@@ -6,7 +6,7 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class RemoteOnboardingRepository(private val sharedPreferences: SharedPreferences) : OnboardingRepository  {
-    override suspend fun getOnboardingCompleted(): Boolean {
+    override fun getOnboardingCompleted(): Boolean {
         return sharedPreferences.getBoolean("OnboardingCompleted", false)
     }
 

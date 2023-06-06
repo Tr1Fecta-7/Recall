@@ -25,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,8 +42,13 @@ import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import nl.recall.destinations.DecksOverviewScreenDestination
+import nl.recall.destinations.OnboardingScreenDestination
 import nl.recall.onboarding.model.OnboardingItems
+import nl.recall.presentation.deck.overview.model.DeckOverviewNavigationAction
+import nl.recall.presentation.onboarding.OnboardingViewModel
+import nl.recall.presentation.onboarding.model.OnboardingNavigationAction
 import nl.recall.theme.AppTheme
+import org.koin.androidx.compose.koinViewModel
 
 @RootNavGraph
 @NavGraph
@@ -56,10 +62,24 @@ annotation class OnboardingNavGraph(
 @OnboardingNavGraph(start = true)
 @Destination
 @Composable
-fun OnboardingScreen(navController: NavController, navigator: DestinationsNavigator) {
+fun OnboardingScreen(
+    navController: NavController,
+    navigator: DestinationsNavigator,
+    viewModel: OnboardingViewModel = koinViewModel()
+) {
+    LaunchedEffect(Unit) {
+        viewModel.navigation.collect {
+            when(it) {
+                OnboardingNavigationAction.OPEN_DECKOVERVIEW -> navigator.navigate(
+                    DecksOverviewScreenDestination
+                )
+            }
+        }
+    }
+
     Scaffold(
         containerColor = AppTheme.neutral50,
-        content = { MainContent(navigator = navigator) }
+        content = { MainContent(navigator = navigator, viewModel) }
     )
 }
 
@@ -67,6 +87,7 @@ fun OnboardingScreen(navController: NavController, navigator: DestinationsNaviga
 @Composable
 fun MainContent(
     navigator: DestinationsNavigator,
+    viewModel: OnboardingViewModel
 ) {
     val pagerState = rememberPagerState()
     val items = OnboardingItems.getData()
@@ -103,8 +124,7 @@ fun MainContent(
             } else {
                 Button(
                     onClick = {
-//                        OnboardingManager.setOnboardingCompleted(context)
-                        navigator.navigate(DecksOverviewScreenDestination)
+                        viewModel.setOnboarding(completed = true)
                     },
                     modifier = Modifier
                         .padding(16.dp)
