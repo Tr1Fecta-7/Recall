@@ -18,34 +18,12 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-web") {
-		exclude(group = "org.springframework.boot")
-	}
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("com.mysql:mysql-connector-j")
-}
-
-springBoot {
-	mainClass.set("com.recall.api.ApiApplicationKt")
-}
-
-tasks.withType<Jar> {
-	manifest {
-		attributes["Main-Class"] = "com.recall.api.ApiApplicationKt"
-	}
-
-	// To avoid the duplicate handling strategy error
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-	// To add all of the dependencies
-	from(sourceSets.main.get().output)
-
-	dependsOn(configurations.runtimeClasspath)
-	from({
-		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-	})
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<KotlinCompile> {
