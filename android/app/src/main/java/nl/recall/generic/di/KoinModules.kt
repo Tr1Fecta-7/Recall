@@ -1,8 +1,11 @@
 package nl.recall.generic.di
 
+import android.content.Context
+import android.content.SharedPreferences
 import nl.recall.data.DataModule
 import nl.recall.domain.DomainModule
 import nl.recall.presentation.PresentationModule
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
@@ -25,5 +28,9 @@ val presentationModule = module {
 }
 
 val dataModule = module {
+    single<SharedPreferences> {
+        androidContext().getSharedPreferences("OnboardingPrefs", Context.MODE_PRIVATE)
+    }
+
     includes(DataModule().module)
 }
