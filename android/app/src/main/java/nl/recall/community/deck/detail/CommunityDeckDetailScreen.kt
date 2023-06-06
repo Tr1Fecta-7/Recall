@@ -73,7 +73,6 @@ fun CommunityDeckDetailScreen(
 		parametersOf(CommunityDeckDetailViewModelArgs(deckId))
 	}),
 ) {
-	viewModel.getDeckById()
 	val uiState by viewModel.state.collectAsState()
 	val importState by viewModel.importState.collectAsState()
 	val communityDeck by viewModel.communityDeck.collectAsState()

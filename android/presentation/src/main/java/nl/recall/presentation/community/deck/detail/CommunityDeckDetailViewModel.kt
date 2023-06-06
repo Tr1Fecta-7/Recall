@@ -37,7 +37,10 @@ class CommunityDeckDetailViewModel(
 	val importState: StateFlow<UIState> = _importState.asStateFlow()
 
 	private val _communityDeck = MutableStateFlow<CommunityDeck?>(null)
-	val communityDeck: StateFlow<CommunityDeck?> = _communityDeck.asStateFlow()
+	val communityDeck: StateFlow<CommunityDeck?> by lazy {
+		getDeckById()
+		_communityDeck.asStateFlow()
+	}
 
 	fun getDeckById() {
 		_state.value = UIState.LOADING
