@@ -1,14 +1,12 @@
 package nl.recall.onboarding
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,17 +35,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.os.bundleOf
 import androidx.navigation.NavController
-import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import nl.recall.NavGraphs
 import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.onboarding.model.OnboardingItems
-import nl.recall.onboarding.model.OnboardingManager
 import nl.recall.theme.AppTheme
 
 @RootNavGraph
@@ -109,7 +103,7 @@ fun MainContent(
             } else {
                 Button(
                     onClick = {
-                        OnboardingManager.setOnboardingCompleted(context)
+                        //OnboardingManager.setOnboardingCompleted(context)
                         navigator.navigate(DecksOverviewScreenDestination)
                     },
                     modifier = Modifier
