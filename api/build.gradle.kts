@@ -23,7 +23,6 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("com.mysql:mysql-connector-j")
-	"kotlinCompilerClasspath"(fileTree("libs/gradle-plugins/kotlin"))
 }
 
 springBoot {
