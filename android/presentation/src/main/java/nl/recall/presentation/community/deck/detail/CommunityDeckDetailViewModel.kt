@@ -46,8 +46,10 @@ class CommunityDeckDetailViewModel(
 		_state.value = UIState.LOADING
 		viewModelScope.launch(Dispatchers.IO) {
 			try {
-				_communityDeck.value = getCommunityDeckById(args.id)
-				_state.value = UIState.NORMAL
+				withTimeout(5_000) {
+					_communityDeck.value = getCommunityDeckById(args.id)
+					_state.value = UIState.NORMAL
+				}
 			} catch (e: Exception) {
 				_state.value = UIState.ERROR
 			}

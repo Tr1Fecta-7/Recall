@@ -1,6 +1,5 @@
 package nl.recall.presentation.deck.overview
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +17,6 @@ import nl.recall.domain.deck.ObserveDecksWithCardCount
 import nl.recall.domain.deck.SearchDeckWithCardCount
 import nl.recall.domain.deck.model.Deck
 import nl.recall.domain.onboarding.GetOnboardingCompleted
-import nl.recall.domain.onboarding.SetOnboardingCompleted
 import nl.recall.presentation.deck.overview.model.DeckOverviewNavigationAction
 import nl.recall.presentation.uiState.UIState
 import org.koin.android.annotation.KoinViewModel
@@ -31,7 +29,11 @@ class DecksOverviewViewModel(
 	private val getOnboardingCompleted: GetOnboardingCompleted,
 ) : ViewModel() {
 
-	private val _navigation = MutableSharedFlow<DeckOverviewNavigationAction>(replay = 0, extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+	private val _navigation = MutableSharedFlow<DeckOverviewNavigationAction>(
+		replay = 0,
+		extraBufferCapacity = 1,
+		onBufferOverflow = BufferOverflow.DROP_OLDEST
+	)
 	val navigation = _navigation.asSharedFlow()
 
 	private val _state = MutableStateFlow(UIState.LOADING)
@@ -53,6 +55,8 @@ class DecksOverviewViewModel(
 	}
 
 	fun observeDecks() {
+		_state.value = UIState.LOADING
+		
 		viewModelScope.launch(Dispatchers.IO) {
 			observeDecksWithCardCount().catch {
 				_state.value = UIState.ERROR
@@ -76,16 +80,21 @@ class DecksOverviewViewModel(
 		_state.value = UIState.LOADING
 
 		viewModelScope.launch(Dispatchers.IO) {
-			if (title.isEmpty()) {
-				_decks.value = getDecksWithCardCount()
-			} else {
-				_decks.value = searchDecksWithCardCount(title)
-			}
+			try {
 
-			if (_decks.value.isEmpty()) {
-				_state.value = UIState.EMPTY
-			} else {
-				_state.value = UIState.NORMAL
+				if (title.isEmpty()) {
+					_decks.value = getDecksWithCardCount()
+				} else {
+					_decks.value = searchDecksWithCardCount(title)
+				}
+
+				if (_decks.value.isEmpty()) {
+					_state.value = UIState.EMPTY
+				} else {
+					_state.value = UIState.NORMAL
+				}
+			} catch (e: Exception) {
+				_state.value = UIState.ERROR
 			}
 		}
 	}

@@ -53,16 +53,18 @@ class CommunityDeckViewModel(
 
 		viewModelScope.launch(Dispatchers.IO) {
 			try {
-				if (title.isEmpty()) {
-					_decks.value = getCommunityDecks()
-				} else {
-					_decks.value = getCommunityDecks(title)
-				}
+				withTimeout(5_000) {
+					if (title.isEmpty()) {
+						_decks.value = getCommunityDecks()
+					} else {
+						_decks.value = getCommunityDecks(title)
+					}
 
-				if (_decks.value.isEmpty()) {
-					_state.value = UIState.EMPTY
-				} else {
-					_state.value = UIState.NORMAL
+					if (_decks.value.isEmpty()) {
+						_state.value = UIState.EMPTY
+					} else {
+						_state.value = UIState.NORMAL
+					}
 				}
 			} catch (e: Exception) {
 				_state.value = UIState.ERROR
