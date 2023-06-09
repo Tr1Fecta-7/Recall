@@ -1,6 +1,25 @@
 package nl.recall.onboarding
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.EaseInBounce
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.EaseInOutBack
+import androidx.compose.animation.core.EaseInOutBounce
+import androidx.compose.animation.core.EaseInOutCirc
+import androidx.compose.animation.core.EaseInOutElastic
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,14 +45,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -41,6 +67,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.delay
 import nl.recall.destinations.DecksOverviewScreenDestination
 import nl.recall.destinations.OnboardingScreenDestination
 import nl.recall.onboarding.model.OnboardingItems
@@ -108,20 +135,15 @@ fun MainContent(
                 .offset(y = -(30).dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            if (pagerState.currentPage != items.size - 1) {
-                Text(
-                    text = stringResource(id = items[pagerState.currentPage].indicatorText),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
+            val isLastPage = pagerState.currentPage == items.size - 1
+            var shouldShowButton by remember { mutableStateOf(false) }
+            shouldShowButton = isLastPage
 
-                CustomPagerIndicator(
-                    pagerState = pagerState,
-                    pageCount = items.size,
-                    activeColor = AppTheme.primary400,
-                    inactiveColor = AppTheme.neutral300
-                )
-            } else {
+            AnimatedVisibility(
+                visible = shouldShowButton,
+                enter = fadeIn(animationSpec = tween(durationMillis = 300, easing = LinearEasing)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300, easing = LinearEasing))
+            ) {
                 Button(
                     onClick = {
                         viewModel.setOnboarding(completed = true)
@@ -133,6 +155,19 @@ fun MainContent(
                     Text(text = "Get Started")
                 }
             }
+
+            Text(
+                text = stringResource(id = items[pagerState.currentPage].indicatorText),
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            CustomPagerIndicator(
+                pagerState = pagerState,
+                pageCount = items.size,
+                activeColor = AppTheme.primary400,
+                inactiveColor = AppTheme.neutral300
+            )
         }
     }
 }
@@ -151,31 +186,26 @@ fun CustomPagerIndicator(
         verticalAlignment = Alignment.CenterVertically
     ) {
         repeat(pageCount) { pageIndex ->
+            val isSelected = pageIndex == pagerState.currentPage
+            val width by animateDpAsState(
+                targetValue = if (isSelected) 50.dp else 10.dp,
+                animationSpec = tween(durationMillis = 400, easing = EaseInOutCirc) //spring(dampingRatio = 1.5f)
+            )
+
             val dotShape = if (pageIndex == pagerState.currentPage) {
                 RoundedCornerShape(10.dp)
             } else {
                 CircleShape
             }
 
-            val dotColor = if (pageIndex == pagerState.currentPage) {
-                activeColor
-            } else {
-                inactiveColor
-            }
-
             Box(
                 modifier = Modifier
-                    .size(
-                        width = if (pageIndex == pagerState.currentPage) 50.dp else 8.dp,
-                        height = 8.dp
-                    )
-                    .background(color = dotColor, shape = dotShape)
-                    .padding(horizontal = 4.dp)
+                    .height(10.dp)
+                    .width(width)
+                    .background(color = if (isSelected) activeColor else inactiveColor, shape = dotShape)
             )
 
-            if (pageIndex < pageCount - 1) {
-                Spacer(modifier = Modifier.width(4.dp))
-            }
+            Spacer(modifier = Modifier.width(4.dp))
         }
     }
 }
