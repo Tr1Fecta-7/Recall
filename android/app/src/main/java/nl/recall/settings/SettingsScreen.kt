@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
@@ -93,7 +94,7 @@ private fun Content(
 
         Row(
             modifier = Modifier
-                .padding(vertical = 20.dp)
+                .padding(top = 20.dp, bottom = 5.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -101,7 +102,12 @@ private fun Content(
             Text(text = stringResource(id = R.string.algorithm_strength_setting_name))
             DropdownMenuBox(selectedStrength = selectedStrength, changeStrength = changeStrength)
         }
-
+        Text(
+            text = stringResource(id = R.string.algorithm_strength_setting_description),
+            color = AppTheme.neutral500,
+            fontSize = 10.sp,
+            lineHeight = 12.sp
+        )
 
     }
 }
@@ -144,7 +150,11 @@ private fun DropdownMenuBox(
                         onClick = {
                             expanded = false
                             if (changeStrength(saveStrength(context, item))) {
-                                Toast.makeText(context, "Algorithm strength changed to ${item.strengthName}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Algorithm strength changed to ${item.strengthName}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     )

@@ -95,4 +95,5 @@
     <string name="cards_done_today">Looks like you\'ve done all your cards today. Good job!. Come back later to study more.</string>
     <string name="settings_title">Settings</string>
     <string name="algorithm_strength_setting_name">Algorithm strength:</string>
+    <string name="algorithm_strength_setting_description">If you find learning your flashcards difficult or easy, you can adjust the algorithm strength. If you find learning the flashcards difficult, Easy is recommended. If you find it easy, you can use Hard. Generally, we recommend using Normal.</string>
 </resources>
