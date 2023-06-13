@@ -87,10 +87,6 @@ private fun Content(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Medium
         )
-        Text(
-            text = stringResource(id = R.string.deck_overview_subtitle),
-            color = AppTheme.neutral500
-        )
 
         Row(
             modifier = Modifier
